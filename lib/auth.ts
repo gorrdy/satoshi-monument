@@ -9,11 +9,15 @@ const COOKIE_NAME = "admin_session";
 const MAX_AGE = 60 * 60 * 12; // 12 hodin
 
 function secret(): string {
-  return (
-    process.env.SESSION_SECRET ||
-    process.env.ADMIN_PASSWORD ||
-    "insecure-dev-secret"
-  );
+  const s = process.env.SESSION_SECRET || process.env.ADMIN_PASSWORD;
+  if (s) return s;
+  // V produkci nikdy slabý fallback — radši tvrdě selhat.
+  if (process.env.NODE_ENV === "production") {
+    throw new Error(
+      "Chybí SESSION_SECRET (nebo ADMIN_PASSWORD) — nastav je v produkčním .env.",
+    );
+  }
+  return "insecure-dev-secret";
 }
 
 function sign(value: string): string {

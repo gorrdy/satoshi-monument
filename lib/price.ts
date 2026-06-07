@@ -19,6 +19,7 @@ export async function getBtcCzkRate(): Promise<number> {
       headers: { Accept: "application/json" },
       // necachovat na úrovni fetch, řídíme si to sami
       cache: "no-store",
+      signal: AbortSignal.timeout(5000),
     });
     if (res.ok) {
       const data = (await res.json()) as { bitcoin?: { czk?: number } };

@@ -84,6 +84,33 @@ export default async function LocaleLayout({
   }
   setRequestLocale(locale);
 
+  const t = await getTranslations({ locale, namespace: "meta" });
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  // Strukturovaná data pro vyhledávače i AI agenty (schema.org).
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": ["Organization", "NGO"],
+        "@id": `${siteUrl}/#org`,
+        name: "The Malahar Network z.s.",
+        url: siteUrl,
+        logo: `${siteUrl}/bitcoin.webp`,
+        email: "monument@jednadvacet.org",
+        sameAs: [siteUrl],
+      },
+      {
+        "@type": "WebSite",
+        "@id": `${siteUrl}/#website`,
+        url: `${siteUrl}/${locale}`,
+        name: t("title"),
+        description: t("description"),
+        inLanguage: locale === "en" ? "en" : "cs",
+        publisher: { "@id": `${siteUrl}/#org` },
+      },
+    ],
+  };
+
   return (
     <html
       lang={locale}
@@ -91,6 +118,10 @@ export default async function LocaleLayout({
       className={`${geistSans.variable} ${jetMono.variable} ${fraunces.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <I18nProvider initialLocale={locale}>
           <StatsProvider>
             <ScrollRestore />

@@ -63,6 +63,7 @@ export async function createInvoice(
         Authorization: `token ${API_KEY}`,
       },
       body: JSON.stringify(body),
+      signal: AbortSignal.timeout(10000),
     },
   );
 
@@ -86,7 +87,10 @@ export async function getInvoicePaymentMethods(invoiceId: string): Promise<
   assertConfigured();
   const res = await fetch(
     `${BTCPAY_URL}/api/v1/stores/${STORE_ID}/invoices/${invoiceId}/payment-methods`,
-    { headers: { Authorization: `token ${API_KEY}` } },
+    {
+      headers: { Authorization: `token ${API_KEY}` },
+      signal: AbortSignal.timeout(10000),
+    },
   );
   if (!res.ok) return [];
   return (await res.json()) as Array<{

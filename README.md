@@ -57,10 +57,23 @@ V BTCPay storu „Satoshi Monument" (btcpayserver.cz):
 ## Nasazení
 
 1. Nastav `.env` (produkční hodnoty, silné `ADMIN_PASSWORD` a `SESSION_SECRET`,
-   `NEXT_PUBLIC_SITE_URL` na veřejnou doménu).
+   `NEXT_PUBLIC_SITE_URL` na veřejnou doménu). V produkci appka bez
+   `SESSION_SECRET`/`ADMIN_PASSWORD` schválně spadne.
 2. `npm run build && npm start` (za reverzní proxy s HTTPS).
 3. `npx prisma migrate deploy` pro migraci DB na serveru.
 4. Po doplnění finálního čísla účtu uprav `BANK_ACCOUNT` / `BANK_CODE`.
+
+Bezpečnostní hlavičky (CSP s povolením BTCPay, Permissions-Policy, X-Frame-Options,
+nosniff, Referrer-Policy) řeší `next.config.ts`. **HSTS a HTTP/2** patří na reverzní
+proxy (nginx). Cron endpointy (`/api/cron/fio-sync`, `/api/cron/daily-report`) je
+potřeba periodicky volat (systemd timer / cron) s hlavičkou `x-cron-key: $CRON_SECRET`.
+
+## Strojová čitelnost / AI
+
+- `/llms.txt` — souhrn projektu pro AI agenty (llmstxt.org) + živý stav sbírky.
+- JSON-LD (schema.org Organization + WebSite) v hlavičce stránek.
+- `/api/stats` — veřejný JSON se stavem sbírky.
+- [`mcp/`](mcp/) — MCP server zpřístupňující stav sbírky AI asistentům (viz `mcp/README.md`).
 
 ## Licence
 

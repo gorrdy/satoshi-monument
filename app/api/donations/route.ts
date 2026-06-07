@@ -8,6 +8,8 @@ import QRCode from "qrcode";
 export const dynamic = "force-dynamic";
 
 const MIN_CZK = 250; // minimální fiat příspěvek
+const MAX_CZK = 5_000_000; // horní strop fiat příspěvku (sanity limit)
+const MAX_BTC = 21; // horní strop BTC příspěvku (sanity limit)
 
 const BANK_ACCOUNT = process.env.BANK_ACCOUNT ?? "";
 const BANK_CODE = process.env.BANK_CODE ?? "";
@@ -54,8 +56,11 @@ export async function POST(req: NextRequest) {
   if (!Number.isFinite(amount) || amount <= 0) {
     return NextResponse.json({ error: "invalid_amount" }, { status: 400 });
   }
-  // Minimální fiat příspěvek 250 Kč.
-  if (currency === "CZK" && amount < MIN_CZK) {
+  // Minimální fiat příspěvek + horní stropy (sanity proti spamu/přetečení).
+  if (currency === "CZK" && (amount < MIN_CZK || amount > MAX_CZK)) {
+    return NextResponse.json({ error: "invalid_amount" }, { status: 400 });
+  }
+  if (currency === "BTC" && amount > MAX_BTC) {
     return NextResponse.json({ error: "invalid_amount" }, { status: 400 });
   }
 

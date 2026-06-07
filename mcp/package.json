@@ -1,0 +1,17 @@
+{
+  "name": "satoshi-monument-mcp",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "MCP server zpřístupňující stav sbírky Satoshi Monument AI agentům (čte veřejné /api/stats).",
+  "bin": {
+    "satoshi-monument-mcp": "server.mjs"
+  },
+  "scripts": {
+    "start": "node server.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "zod": "^3.23.8"
+  }
+}

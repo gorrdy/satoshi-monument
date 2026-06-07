@@ -57,6 +57,7 @@ export async function fetchNewFioTransactions(): Promise<FioFetchResult> {
   try {
     res = await fetch(`${FIO_BASE}/last/${token}/transactions.json`, {
       cache: "no-store",
+      signal: AbortSignal.timeout(10000),
     });
   } catch {
     return { ok: false, reason: "error", transactions: [] };
@@ -85,6 +86,7 @@ export async function setFioCursorDate(date: string): Promise<boolean> {
   if (!token) return false;
   const res = await fetch(`${FIO_BASE}/set-last-date/${token}/${date}/`, {
     cache: "no-store",
+    signal: AbortSignal.timeout(10000),
   });
   return res.ok;
 }
