@@ -61,12 +61,13 @@ export default function InstallationsCarousel() {
 
   return (
     <div
-      className="relative w-full max-w-4xl mx-auto"
+      className="relative w-full max-w-xl mx-auto"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
       <div className="ui-card overflow-hidden p-0">
-        <div className="relative aspect-[16/10] sm:aspect-[16/9]">
+        {/* Čtvercový rámeček — zdrojové fotky jsou 1:1, takže je vidět celá socha. */}
+        <div className="relative aspect-square">
           {SLIDES.map((s, i) => (
             <div
               key={s.src}
@@ -79,7 +80,7 @@ export default function InstallationsCarousel() {
                 src={s.src}
                 alt={`${s.city[locale]}, ${s.country[locale]}`}
                 fill
-                sizes="(max-width: 768px) 100vw, 900px"
+                sizes="(max-width: 640px) 100vw, 576px"
                 className="object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent" />
@@ -120,10 +121,13 @@ export default function InstallationsCarousel() {
               onClick={() => go(i)}
               aria-label={s.city[locale]}
               aria-current={isActive}
-              className={`h-2 shrink-0 rounded-full transition-[width,opacity] duration-300 ease-out ${
-                isActive ? "w-6 opacity-100" : "w-2 opacity-40 hover:opacity-70"
+              className={`h-2.5 shrink-0 rounded-full transition-[width] duration-300 ease-out ${
+                isActive ? "w-7" : "w-2.5 hover:opacity-80"
               }`}
-              style={{ background: "var(--accent)" }}
+              style={{
+                background: isActive ? "var(--accent)" : "var(--muted)",
+                opacity: isActive ? 1 : 0.4,
+              }}
             />
           );
         })}
