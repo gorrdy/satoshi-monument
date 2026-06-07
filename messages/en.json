@@ -1,0 +1,197 @@
+{
+  "meta": {
+    "title": "Satoshi Monument Prague — fundraiser for the statue of Satoshi Nakamoto",
+    "description": "Contribute to the statue of Satoshi Nakamoto in Prague. The same statue as in Lugano, to be raised in 21 cities worldwide. The goal is 1 BTC.",
+    "pravidlaDesc": "What happens with the funds raised — whether the goal is reached, missed, or exceeded. Transparent rules of the fundraiser for the Satoshi Nakamoto statue.",
+    "pribehDesc": "The story of the Satoshi Nakamoto statue in Prague — who Satoshi was, why Prague, the community fundraiser and the list of all contributors.",
+    "dalsiDesc": "Our vision doesn't end with one statue: an open competition for an original Czech Bitcoin monument, an open-source gift to the world, and space for partners."
+  },
+  "nav": {
+    "donate": "Donate",
+    "about": "About",
+    "wall": "Supporters",
+    "cities": "Cities",
+    "pravidla": "Collection rules",
+    "pribeh": "Story",
+    "more": "Beyond this statue",
+    "menu": "Menu"
+  },
+  "cities": {
+    "title": "The statue already stands in world cities",
+    "subtitle": "Let's add Prague — as one of 21 cities worldwide.",
+    "caption": "Lugano · El Zonte · Tokyo · Hanoi … and soon Prague?"
+  },
+  "hero": {
+    "badge": "Prague · 1 of 21 cities",
+    "line1": "Let's raise a statue",
+    "line2": "of Satoshi in Prague",
+    "title": "Let's raise a statue of Satoshi in Prague",
+    "subtitle": "The Satoshi statue already stands in Lugano, El Zonte, Tokyo and Hanoi. Prague wants to be the next of 21 cities — and it's up to us. Goal: 1 BTC.",
+    "cta": "Donate to the statue",
+    "ctaSecondary": "How it works",
+    "imageCaption": "The Satoshi Nakamoto statue in Lugano"
+  },
+  "progress": {
+    "raised": "Raised",
+    "goal": "Goal",
+    "of": "of",
+    "donors": "supporters",
+    "rate": "rate",
+    "approxCzk": "≈ {czk} CZK",
+    "goalExplainer": "The goal is 1 BTC. If 2,000 people each send 50,000 sats — the statue is ours."
+  },
+  "form": {
+    "title": "Donate to the statue",
+    "subtitle": "Choose a payment method, enter an amount and an optional message.",
+    "method": "Payment method",
+    "methodBtc": "Bitcoin (on-chain / Lightning)",
+    "methodCzk": "Bank transfer (CZK)",
+    "methodBtcName": "Bitcoin",
+    "methodBtcSub": "On-chain · Lightning",
+    "methodCzkName": "Bank transfer",
+    "methodCzkSub": "QR payment · CZK",
+    "motivation": "Every sat brings the Satoshi statue closer to Prague. Thank you! 🙌",
+    "defaultMessage": "I'm contributing because I want a Satoshi statue in Prague",
+    "name": "Name or nickname",
+    "namePlaceholder": "Satoshi",
+    "amount": "Amount",
+    "amountCzkPlaceholder": "1000",
+    "amountBtcPlaceholder": "0.001",
+    "publicMessage": "Public message (shown on the wall)",
+    "publicMessagePlaceholder": "Why I contribute…",
+    "donorKey": "Pairing identifier for your payments (optional)",
+    "donorKeyPlaceholder": "e-mail or any string",
+    "donorKeyHint": "Use the same one for future payments — we'll sum them on the supporters wall. Only for pairing, never shown publicly.",
+    "privateMessage": "Private message to organizers",
+    "privateMessagePlaceholder": "Organizers only…",
+    "submitBtc": "Pay with Bitcoin",
+    "submitCzk": "Generate payment QR",
+    "submitting": "Preparing payment…",
+    "errorAmount": "Please enter a valid amount.",
+    "errorGeneric": "Something went wrong. Please try again.",
+    "errorBtcpay": "Could not open the payment gateway. Please try again later.",
+    "errorRateLimit": "Too many attempts. Please try again in an hour."
+  },
+  "qr": {
+    "title": "Scan the QR code in your banking app",
+    "subtitle": "Czech QR Payment pre-fills the account, amount and variable symbol.",
+    "account": "Account number",
+    "amount": "Amount",
+    "vs": "Variable symbol",
+    "note": "Note",
+    "hint": "Keep the variable symbol and the note in the payment — they let us match it quickly. Once the transfer arrives, organizers confirm it and your message appears on the supporters wall.",
+    "copy": "Copy details",
+    "copied": "Copied",
+    "done": "Done"
+  },
+  "btc": {
+    "opening": "Opening payment gateway…",
+    "thanks": "Thank you! Once the network confirms the payment, your contribution will appear on the wall.",
+    "fallback": "If the window didn't open, continue here"
+  },
+  "wall": {
+    "title": "Supporters wall",
+    "subtitle": "Thanks to everyone who has already contributed.",
+    "empty": "Be the first to contribute!",
+    "anonymous": "Anonymous",
+    "showMore": "Show more",
+    "showLess": "Show less",
+    "principle": "Supporters are ranked from the largest contribution. Multiple payments with the same identifier are summed. This list will become a permanent part of the statue's website — a QR code on the pedestal will link to it.",
+    "principleLink": "How are contributions counted?",
+    "searchPlaceholder": "Find your name…",
+    "noMatch": "We couldn't find anyone like that."
+  },
+  "about": {
+    "title": "About the project",
+    "p1": "The statue of Satoshi Nakamoto was created by artist Valentina Picozzi within the Satoshi Gallery initiative. The same statue already stands in Lugano, El Zonte, Tokyo and Hanoi — on its way to 21 cities worldwide.",
+    "p2": "Prague wants to be among them. The project is being adopted by the Czech Bitcoin community — not funded by the state or corporations, but by us. The way Czechs once funded the National Theatre: ‘the nation to itself’, today sat by sat.",
+    "p3": "The goal is 1 BTC to produce and install the statue in Prague. Every contribution — on-chain, via Lightning, or by bank transfer — brings us closer to joining those cities.",
+    "imageCaption": "Satoshi Gallery · “We are all Satoshi”",
+    "galleryLink": "Initiative: satoshigallery.com (Valentina Picozzi)",
+    "moreLink": "Beyond this statue — Variant 2 →"
+  },
+  "footer": {
+    "tagline": "Fundraiser for the statue of Satoshi Nakamoto in Prague",
+    "admin": "Admin",
+    "org": "A project of the Jednadvacet.org community under the auspices of The Malahar Network z.s.",
+    "photoCredit": "Lugano statue photos: satoshigallery.com · Wikimedia Commons (CC BY-SA)"
+  },
+  "princip": {
+    "title": "How contributions are counted",
+    "q1": "How are they counted?",
+    "a1": "Every contribution — in CZK or bitcoin — is converted to BTC at the market rate the moment it arrives. We work exclusively with contributions in bitcoin.",
+    "q2": "How does the supporters list work?",
+    "a2": "Supporters are ranked from the largest contribution to the smallest. If you contribute several times and use the same “Pairing identifier“, your contributions are summed and you move up the ranking. You choose your displayed name or nickname with your first contribution.",
+    "q3": "Why does it matter?",
+    "a3": "The supporters list won't be temporary. It will become a permanent part of the statue's website, linked by a QR code right on the monument's pedestal. To contribute today is to write yourself forever into the history of the Czech footprint in Bitcoin.",
+    "highlight": "Write yourself into history forever — a QR code on the statue's pedestal will lead to this supporters list."
+  },
+  "pravidla": {
+    "title": "Collection rules",
+    "intro": "The Satoshi Monument collection is a public, community-driven initiative run by the association The Malahar Network z.s. So everything is clear and transparent from the start, here's what happens to your contributions in each possible scenario.",
+    "okTitle": "If the target is reached",
+    "okBody": "The statue by Italian artist Valentina Picozzi — the same one standing in Lugano or Tokyo — will be purchased and installed in Prague. The final location is being negotiated with the city; until it is technically and administratively confirmed, the statue will be temporarily displayed at a suitable place (we are considering, for example, the premises of partner institutions). Once the statue finds its permanent home, the collection website will turn into the monument's permanent website, and a QR code on the pedestal will link to the project's story and the list of all supporters.",
+    "noTitle": "If the target is not reached",
+    "noBody": "No contribution goes to waste. The funds raised will be redirected in full to developing the project — specifically to preparing Variant 2, an open competition for an original Czech monument. Part of the funds may be devoted to bitcoin education via the INEV project. The Satoshi Monument Board, accountable to the Jednadvacet community, decides on the exact allocation.",
+    "moreTitle": "If we raise more",
+    "moreBody": "A pleasant problem — and one we're ready for. Any surplus will be divided among:",
+    "moreItems": [
+      "preparing Variant 2 (an original Czech statue, open art competition)",
+      "the Jednadvacet.org budget for community development",
+      "supporting bitcoin education via INEV"
+    ],
+    "moreNote": "The Satoshi Monument Board will publish the exact split of any surplus with proper justification.",
+    "transTitle": "Transparency",
+    "transBody": "All incoming contributions are carefully recorded. The running total is public and visible in real time on the main page. The Board keeps the Jednadvacet community informed about the project's status."
+  },
+  "pribeh": {
+    "disclaimer": "The collection is still running — this page is not final yet. After the statue is installed, it will become its permanent website (also accessible via a QR code on the pedestal).",
+    "title": "The story of the Satoshi Monument in Prague",
+    "s1h": "Why Satoshi Nakamoto?",
+    "s1a": "Satoshi Nakamoto is the pseudonym of the author (or authors) of Bitcoin. In 2008 they published a whitepaper describing a peer-to-peer electronic cash system without a central authority; a year later they launched the network, and in January 2009 mined the first block. Then they disappeared. Nobody knows who Satoshi really is — and maybe that's how it should be. Bitcoin was designed from the start to not need its creator; to run on its own, without anyone able to stop, censor or manipulate it. Satoshi's anonymity is part of the idea. And yet — or precisely because of that — they deserve a monument. Not to be glorified as a hero, but so that everyone who walks by can ask: Who was it? And what did they actually create?",
+    "s2h": "Why Prague?",
+    "s2a": "Prague isn't just a city that adopted Bitcoin. Prague is a city that helped create it. Born here:",
+    "s2list": [
+      "Trezor — the world's first hardware wallet",
+      "Slush Pool — the first bitcoin mining pool (now Braiins)",
+      "General Bytes — a global leader in bitcoin ATMs",
+      "Paralelní Polis — a world-renowned center of bitcoin culture",
+      "BTC Prague — the largest bitcoin conference in Europe"
+    ],
+    "s2foot": "Prague didn't just watch. It was there when Bitcoin was being born.",
+    "s3h": "Satoshi Gallery and the series of 21 installations",
+    "s3a": "The statue is the work of Italian artist Valentina Picozzi, who specializes in public sculpture — working with metal, layering, identity and anonymity. She is the author of the original Satoshi Nakamoto monument, first installed in Lugano, Switzerland. The statue is part of a limited series of 21 installations of the Satoshi Gallery project; the number 21 refers to the maximum of 21 million bitcoins that will ever exist. Prague will join cities like Lugano, Tokyo and El Zonte.",
+    "s4h": "A statue that appears and disappears",
+    "s4a": "The statue plays with the viewer's movement. From one spot a figure with a laptop emerges; from another the motif breaks into lines and vanishes. It isn't just aesthetics — it's a metaphor: Satoshi never fully revealed themselves, and yet their work is here, visible to anyone who looks from the right angle. A symbol of individual freedom, open code and decentralization.",
+    "s5h": "A statue built by the community",
+    "s5a": "The monument in Prague wasn't born from a city-hall decision or corporate sponsorship. It exists because the Czech and international bitcoin community chipped in — voluntarily, transparently and in bitcoin. The project was organized by Jednadvacet.org together with the community. Below is the complete list of everyone who contributed — from the largest contribution to the smallest. Every name is part of the story.",
+    "donorsTitle": "List of supporters"
+  },
+  "varianta2": {
+    "title": "Beyond this statue",
+    "intro": "The Satoshi Monument in Prague from the Satoshi Gallery series is the first step. But the Czech community has bigger ambitions.",
+    "s1h": "Prague deserves its own symbol",
+    "s1a": "The Satoshi Gallery statue is a world-recognized work and we're proud it will stand in Prague. At the same time, we believe the Czech Republic — as one of the world's most significant bitcoin countries — has the potential to bring the world something original; something not created elsewhere and not available from a catalogue. That's why the community around Jednadvacet.org is working in parallel on Variant 2: an open competition for an original Czech Satoshi Monument.",
+    "s2h": "What will the competition look like?",
+    "s2a": "The competition will be announced together with the Foundation for Contemporary Art Prague (NSU), which will ensure its organization, transparency and expert assessment. NSU is a respected institution with long experience in public art. The goal is to find a work that:",
+    "s2list": [
+      "is created specifically for the Czech and Prague context",
+      "reflects Bitcoin's values — decentralization, openness, individual freedom",
+      "holds up as a permanent public monument and as a work of art on an international scale"
+    ],
+    "s2foot": "CZK 100,000 from the Jednadvacet.org reserves is allocated to prepare and run the competition, and the Board is actively seeking corporate partners to contribute another 100–200 thousand CZK.",
+    "s3h": "An open-source gift to the world",
+    "s3a": "If the competition produces a work worth realizing, Jednadvacet.org will take one more step: it will offer the complete documentation of the winning design to the world as open source. Any community anywhere in the world will be able to realize it themselves. The Czech Republic will thus contribute to the global bitcoin story not just with one statue — but with an idea the world can make its own.",
+    "s4h": "Who supports the project",
+    "s4a": "Below are the companies and organizations that contributed to preparing the competition for Variant 2. Their support makes the competition possible.",
+    "partnersPlaceholder": "Partner logos and names will be added.",
+    "ctaH": "Want to be part of it?",
+    "ctaA": "Are you a company or organization from the bitcoin or crypto industry and want to support the competition? Get in touch.",
+    "ctaBtn": "Write to us"
+  },
+  "common": {
+    "close": "Close",
+    "loading": "Loading…",
+    "back": "Back to main page"
+  }
+}

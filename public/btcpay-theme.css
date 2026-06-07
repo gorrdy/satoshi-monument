@@ -1,0 +1,90 @@
+/* =====================================================================
+   Satoshi Monument — téma pro BTCPayServer (checkout + admin)
+   ---------------------------------------------------------------------
+   Sladí platební bránu se stylem webu monument.gorrdy.cz
+   (tmavý podklad + bitcoin oranžová).
+
+   JAK NASADIT (přes GUI BTCPayserveru):
+   1) Server Settings → Theme → zvol „Dark" (tmavý základ).
+   2) Vlož URL tohoto souboru do pole pro vlastní CSS:
+      https://monument.gorrdy.cz/btcpay-theme.css
+      - Server Settings → Theme → „Custom Theme Extension" (CSS URL), a/nebo
+      - Store → Settings → Checkout Appearance → „Custom CSS" (URL) — pro
+        samotnou platební stránku (to, co se otevírá v modalu na webu).
+   3) Ulož. Soubor jen přepisuje barvy/fonty/rádiusy, sedí na „Dark" základ.
+   ===================================================================== */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap");
+
+:root {
+  /* --- Značka: bitcoin oranžová --- */
+  --btcpay-brand-primary: #f7931a;
+  --btcpay-brand-secondary: #ffb454;
+  --btcpay-brand-tertiary: #c2710a;
+  --btcpay-brand-dark: #120d06;
+
+  /* Primární barva (tlačítka, akcenty, progress na checkoutu) */
+  --btcpay-primary: #f7931a;
+  --btcpay-primary-rgb: 247, 147, 26;
+  --btcpay-primary-accent: #c2710a;
+  --btcpay-primary-accent-rgb: 194, 113, 10;
+  --btcpay-primary-text: #0a0a0f;
+  --btcpay-primary-text-hover: #0a0a0f;
+  --btcpay-primary-text-active: #0a0a0f;
+  --btcpay-primary-bg-hover: var(--btcpay-primary-accent);
+  --btcpay-primary-bg-active: var(--btcpay-primary-accent);
+
+  /* Oranžová škála (používají ji různé prvky) */
+  --btcpay-primary-100: #ffe6c2;  --btcpay-primary-100-rgb: 255, 230, 194;
+  --btcpay-primary-200: #ffd49a;  --btcpay-primary-200-rgb: 255, 212, 154;
+  --btcpay-primary-300: #ffbf6b;  --btcpay-primary-300-rgb: 255, 191, 107;
+  --btcpay-primary-400: #fba93f;  --btcpay-primary-400-rgb: 251, 169, 63;
+  --btcpay-primary-500: #f7931a;  --btcpay-primary-500-rgb: 247, 147, 26;
+  --btcpay-primary-600: #e07f0c;  --btcpay-primary-600-rgb: 224, 127, 12;
+  --btcpay-primary-700: #c2710a;  --btcpay-primary-700-rgb: 194, 113, 10;
+  --btcpay-primary-800: #9c5a08;  --btcpay-primary-800-rgb: 156, 90, 8;
+  --btcpay-primary-900: #7d4806;  --btcpay-primary-900-rgb: 125, 72, 6;
+
+  /* Odkazy v oranžové */
+  --btcpay-body-link-accent: var(--btcpay-primary);
+  --btcpay-body-link-accent-rgb: var(--btcpay-primary-rgb);
+
+  /* --- Tmavý podklad (jako web) --- */
+  --btcpay-neutral-50: #08080b;       /* základní pozadí stránky */
+  --btcpay-bg-dark: #08080b;
+  --btcpay-body-bg-rgb: 8, 8, 11;
+  --btcpay-header-bg: #08080b;
+  --btcpay-bg-tile: #14141b;          /* karty / dlaždice */
+  --btcpay-form-bg: #14141b;          /* vstupní pole */
+
+  /* --- Zaoblení (mírně víc jako web) --- */
+  --btcpay-border-radius: 0.5rem;
+  --btcpay-border-radius-l: 0.75rem;
+  --btcpay-border-radius-xl: 1.25rem;
+  --btcpay-border-radius-xxl: 1.5rem;
+
+  /* --- Fonty --- */
+  --btcpay-font-family-base: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --btcpay-font-family-monospace: "JetBrains Mono", SFMono-Regular, Menlo, monospace;
+}
+
+/* ---------------------------------------------------------------------
+   Drobné doladění samotné platební stránky (checkout v2).
+   Většinu obstarají proměnné výše; tohle je jen jemný polish.
+   --------------------------------------------------------------------- */
+
+/* hlavní tlačítko „Zaplatit / Pay" — jistota tmavého textu na oranžové */
+.btn-primary,
+#Checkout .btn-primary,
+.payment-box .btn-primary {
+  color: #0a0a0f !important;
+  font-weight: 600;
+}
+
+/* částka / hodnoty monospace, ať to ladí s webem */
+.payment-box .fee-rate,
+#AmountDue,
+.invoice-details .amount,
+[class*="amount"] {
+  font-family: var(--btcpay-font-family-monospace);
+}

@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Donation {
+  id              String    @id @default(cuid())
+  createdAt       DateTime  @default(now())
+
+  name            String // jméno / přezdívka přispěvatele
+  currency        String // "BTC" | "CZK"
+  amount          Float // částka v zadané měně
+  amountBtc       Float? // BTC ekvivalent, zafixovaný při potvrzení
+
+  publicMessage   String? // zobrazí se na zdi přispěvatelů
+  privateMessage  String? // jen pro organizátory
+
+  status          String    @default("pending") // pending | confirmed | rejected
+  hiddenOnWall    Boolean   @default(false) // moderace veřejné zdi
+
+  btcpayInvoiceId String? // pro BTC platby
+  variableSymbol  String? // pro CZK platby (párování příchozího převodu)
+  paymentRef      String? // krátký kód v poznámce platby pro snadné spárování
+  donorKey        String? // identifikátor přispěvatele (e-mail/řetězec) pro sčítání plateb na zdi
+
+  confirmedAt     DateTime?
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+// Anonymní záznam návštěvy (bezcookie analytika). Neukládá IP, jen denní hash.
+model PageView {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  path        String
+  locale      String?
+  referrer    String? // jen doména nebo "direct"
+  device      String // "mobile" | "desktop"
+  isBot       Boolean  @default(false)
+  visitorHash String // sha256(denní salt + IP + UA), bez PII
+
+  @@index([createdAt])
+  @@index([isBot])
+}
+
+// Příchozí platby z Fio, které se nepodařilo automaticky spárovat.
+model FioPayment {
+  id         String   @id @default(cuid())
+  fioId      String   @unique // ID pohybu z Fio (dedupe)
+  date       String?
+  amount     Float
+  currency   String
+  vs         String?
+  message    String?
+  payerName  String?
+  status     String   @default("unmatched") // unmatched | matched | ignored
+  donationId String? // dar, ke kterému byla platba přiřazena
+  createdAt  DateTime @default(now())
+
+  @@index([status])
+}

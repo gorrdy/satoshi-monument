@@ -1,0 +1,431 @@
+@import "tailwindcss";
+
+/* =====================================================================
+   TÉMATA — řízeno [data-theme] na <html>. Vše ostatní čte CSS proměnné.
+   ===================================================================== */
+
+:root,
+[data-theme="midnight"] {
+  --bg: #08080b;
+  --bg-image: radial-gradient(60% 50% at 15% -5%, rgba(247, 147, 26, 0.16), transparent 60%),
+    radial-gradient(50% 40% at 90% 0%, rgba(255, 180, 84, 0.1), transparent 60%);
+  --surface: #131319;
+  --surface-2: #1b1b22;
+  --fg: #f4f4f5;
+  --muted: #a1a1aa;
+  --line: rgba(255, 255, 255, 0.1);
+  --accent: #f7931a;
+  --accent-2: #ffb454;
+  --accent-text: #ffb454;
+  --accent-fg: #08080b;
+  --radius: 1.25rem;
+  --radius-sm: 0.75rem;
+  --border-w: 1px;
+  --shadow-card: 0 24px 60px -28px rgba(0, 0, 0, 0.75);
+  --shadow-btn: 0 12px 28px -10px rgba(247, 147, 26, 0.45);
+  --font-display: var(--font-geist-sans);
+  --font-body: var(--font-geist-sans);
+  --font-mono: var(--font-jet);
+  --display-weight: 700;
+  --display-spacing: -0.02em;
+  --card-blur: blur(16px);
+}
+
+[data-theme="brutalist"] {
+  --bg: #f3ecdd;
+  --bg-image: linear-gradient(to right, rgba(23, 19, 13, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(23, 19, 13, 0.06) 1px, transparent 1px);
+  --bg-size: 32px 32px;
+  --surface: #fbf7ee;
+  --surface-2: #f3ecdd;
+  --fg: #17130d;
+  --muted: #6f6552;
+  --line: #17130d;
+  --accent: #f7931a;
+  --accent-2: #f7931a;
+  --accent-text: #b96807;
+  --accent-fg: #17130d;
+  --radius: 0px;
+  --radius-sm: 0px;
+  --border-w: 2px;
+  --shadow-card: 6px 6px 0 0 var(--line);
+  --shadow-btn: 5px 5px 0 0 var(--line);
+  --font-display: var(--font-fraunces);
+  --font-body: var(--font-geist-sans);
+  --font-mono: var(--font-jet);
+  --display-weight: 900;
+  --display-spacing: -0.01em;
+  --card-blur: none;
+}
+
+[data-theme="elegant"] {
+  --bg: #f7f6f2;
+  --bg-image: none;
+  --surface: #ffffff;
+  --surface-2: #faf9f6;
+  --fg: #1b1a16;
+  --muted: #807b72;
+  --line: #e7e4dc;
+  --accent: #e8870f;
+  --accent-2: #f7931a;
+  --accent-text: #b8700b;
+  --accent-fg: #ffffff;
+  --radius: 0.75rem;
+  --radius-sm: 0.5rem;
+  --border-w: 1px;
+  --shadow-card: 0 1px 2px rgba(20, 16, 8, 0.04), 0 22px 48px -30px rgba(20, 16, 8, 0.22);
+  --shadow-btn: 0 8px 20px -10px rgba(20, 16, 8, 0.25);
+  --font-display: var(--font-fraunces);
+  --font-body: var(--font-geist-sans);
+  --font-mono: var(--font-jet);
+  --display-weight: 500;
+  --display-spacing: -0.01em;
+  --card-blur: none;
+}
+
+[data-theme="terminal"] {
+  --bg: #0a0e0a;
+  --bg-image: repeating-linear-gradient(
+    0deg,
+    rgba(120, 255, 170, 0.04) 0px,
+    rgba(120, 255, 170, 0.04) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  --surface: #0e140e;
+  --surface-2: #0c110c;
+  --fg: #c8f7d0;
+  --muted: #5f8f68;
+  --line: #1e3a24;
+  --accent: #ffb000;
+  --accent-2: #ffc94d;
+  --accent-text: #ffc94d;
+  --accent-fg: #0a0e0a;
+  --radius: 0px;
+  --radius-sm: 0px;
+  --border-w: 1px;
+  --shadow-card: 0 0 0 1px rgba(120, 255, 170, 0.08), 0 0 24px -6px rgba(255, 176, 0, 0.15);
+  --shadow-btn: 0 0 16px -4px rgba(255, 176, 0, 0.5);
+  --font-display: var(--font-jet);
+  --font-body: var(--font-jet);
+  --font-mono: var(--font-jet);
+  --display-weight: 700;
+  --display-spacing: -0.01em;
+  --card-blur: none;
+}
+
+[data-theme="newsprint"] {
+  --bg: #f0e8d4;
+  --bg-image: none;
+  --surface: #f7f1e2;
+  --surface-2: #efe7d2;
+  --fg: #20180f;
+  --muted: #6e6453;
+  --line: #20180f;
+  --accent: #c0501a;
+  --accent-2: #d4631f;
+  --accent-text: #a23f12;
+  --accent-fg: #f7f1e2;
+  --radius: 0px;
+  --radius-sm: 0px;
+  --border-w: 1px;
+  --shadow-card: none;
+  --shadow-btn: none;
+  --font-display: var(--font-fraunces);
+  --font-body: var(--font-geist-sans);
+  --font-mono: var(--font-jet);
+  --display-weight: 700;
+  --display-spacing: 0em;
+  --card-blur: none;
+}
+
+/* Zpřístupnění barev aktivního tématu jako Tailwind utility (bg-accent, text-fg…) */
+@theme inline {
+  --color-accent: var(--accent);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+}
+
+* {
+  border-color: var(--line);
+}
+
+html {
+  scroll-behavior: smooth;
+  /* Odsazení kotev pod lepivou hlavičku (h-16 = 4rem). */
+  scroll-padding-top: 4.5rem;
+}
+
+/* Viditelný fokus pro klávesnici (myš ho neaktivuje). */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible,
+[role="button"]:focus-visible,
+input[type="range"]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+body {
+  background-color: var(--bg);
+  background-image: var(--bg-image, none);
+  background-size: var(--bg-size, auto);
+  background-attachment: fixed;
+  color: var(--fg);
+  font-family: var(--font-body), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+
+/* ---------- Tematizované komponentní třídy ---------- */
+.ui-display {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: var(--display-weight);
+  letter-spacing: var(--display-spacing);
+}
+.ui-mono {
+  font-family: var(--font-mono), monospace;
+}
+.ui-muted {
+  color: var(--muted);
+}
+.ui-accent {
+  color: var(--accent-text);
+}
+.text-shadow-hero {
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.55);
+}
+
+.ui-link {
+  color: var(--muted);
+  transition: color 0.15s ease;
+}
+.ui-link:hover {
+  color: var(--accent-text);
+}
+
+.ui-eyebrow {
+  font-family: var(--font-mono), monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+
+.ui-card {
+  background: var(--surface);
+  border: var(--border-w) solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: var(--card-blur);
+  -webkit-backdrop-filter: var(--card-blur);
+}
+
+.ui-soft {
+  background: var(--surface-2);
+}
+
+.ui-border {
+  border: var(--border-w) solid var(--line);
+}
+.ui-border-t {
+  border-top: var(--border-w) solid var(--line);
+}
+.ui-border-b {
+  border-bottom: var(--border-w) solid var(--line);
+}
+
+.ui-input {
+  width: 100%;
+  background: var(--surface-2);
+  border: var(--border-w) solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 0.7rem 1rem;
+  font-size: 1rem;
+  color: var(--fg);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.ui-input::placeholder {
+  color: var(--muted);
+  opacity: 0.6;
+}
+.ui-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
+.ui-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background: var(--accent);
+  color: var(--accent-fg);
+  border: var(--border-w) solid var(--line);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-btn);
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+}
+.ui-btn:hover {
+  filter: brightness(1.06);
+}
+.ui-btn:active {
+  transform: translateY(1px);
+}
+.ui-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* Brutalist „press" efekt */
+[data-theme="brutalist"] .ui-btn:hover,
+[data-theme="brutalist"] .press:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 3px 3px 0 0 var(--line);
+  filter: none;
+}
+[data-theme="brutalist"] .ui-btn:active {
+  transform: translate(5px, 5px);
+  box-shadow: 0 0 0 0 var(--line);
+}
+
+/* Akcentní výplň (logo box apod.) */
+.ui-accent-box {
+  background: var(--accent);
+  color: var(--accent-fg);
+  border: var(--border-w) solid var(--line);
+}
+
+/* Zvýraznění slova v nadpisu — liší se podle tématu */
+.ui-hl {
+  color: var(--accent-text);
+}
+[data-theme="midnight"] .ui-hl {
+  background: linear-gradient(100deg, #ffd9a0, var(--accent) 50%, #e87a00);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+[data-theme="brutalist"] .ui-hl {
+  background: var(--accent);
+  color: var(--accent-fg);
+  padding: 0 0.5rem;
+  font-style: italic;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+[data-theme="elegant"] .ui-hl {
+  font-style: italic;
+  color: var(--accent-text);
+}
+[data-theme="newsprint"] .ui-hl {
+  color: var(--accent-text);
+  text-decoration: underline;
+  text-underline-offset: 6px;
+  text-decoration-thickness: 2px;
+}
+[data-theme="terminal"] .ui-hl {
+  color: var(--accent-text);
+}
+[data-theme="terminal"] .ui-hl::after {
+  content: "_";
+  animation: blink 1.1s step-end infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* ---------- Animace ---------- */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-up {
+  animation: fadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Posuvník částky */
+input[type="range"].range-accent {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  border: var(--border-w) solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  cursor: pointer;
+}
+input[type="range"].range-accent::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  border: var(--border-w) solid var(--line);
+  cursor: pointer;
+}
+input[type="range"].range-accent::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  border: var(--border-w) solid var(--line);
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .animate-fade-up {
+    opacity: 1;
+    transform: none;
+    transition: none;
+    animation: none;
+  }
+  /* Globálně potlačit pohyb (respekt OS preference). */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
