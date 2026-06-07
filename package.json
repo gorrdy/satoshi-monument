@@ -9,6 +9,8 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@dicebear/collection": "^9.4.2",
+    "@dicebear/core": "^9.4.2",
     "@prisma/client": "^6.19.3",
     "isbot": "^5.1.40",
     "next": "16.2.6",
