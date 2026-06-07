@@ -64,10 +64,18 @@ export default function PaymentModal({
   const [copied, setCopied] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
 
-  // Klávesnice: ESC zavírá, Tab cyklí jen uvnitř modalu; zámek scrollu těla.
+  // Zámek scrollu pozadí — jen po dobu, co je modal otevřený (běží jednou na mount).
+  // Cleanup vždy vrátí scrollovatelnost (nezávislé na onClose → nehrozí zaseknutí).
   useEffect(() => {
-    const prevOverflow = document.body.style.overflow;
+    const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, []);
+
+  // Klávesnice: ESC zavírá, Tab cyklí jen uvnitř modalu + počáteční fokus.
+  useEffect(() => {
     const panel = panelRef.current;
     const focusable = () =>
       panel
@@ -98,10 +106,7 @@ export default function PaymentModal({
       }
     };
     document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prevOverflow;
-    };
+    return () => document.removeEventListener("keydown", onKey);
   }, [onClose]);
 
   useEffect(() => {
@@ -141,19 +146,21 @@ export default function PaymentModal({
 
   return (
     <div
-      className="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-[70] overflow-y-auto bg-black/80 backdrop-blur-sm"
       style={{ animation: "fadeUp 0.25s ease-out" }}
       onClick={onClose}
     >
-      <div
-        ref={panelRef}
-        role="dialog"
-        aria-modal="true"
-        aria-label={result.method === "czk" ? t("qr.title") : t("btc.opening")}
-        tabIndex={-1}
-        className="relative w-full max-w-md ui-card p-6 sm:p-7 outline-none"
-        onClick={(e) => e.stopPropagation()}
-      >
+      {/* min-h-full + flex → vysoký obsah (QR + detaily) jde odscrollovat uvnitř overlaye */}
+      <div className="flex min-h-full items-center justify-center p-4">
+        <div
+          ref={panelRef}
+          role="dialog"
+          aria-modal="true"
+          aria-label={result.method === "czk" ? t("qr.title") : t("btc.opening")}
+          tabIndex={-1}
+          className="relative w-full max-w-md ui-card p-6 sm:p-7 outline-none"
+          onClick={(e) => e.stopPropagation()}
+        >
         <button
           onClick={onClose}
           className="press absolute top-3 right-3 w-8 h-8 ui-border flex items-center justify-center rounded-[var(--radius-sm)]"
@@ -230,6 +237,7 @@ export default function PaymentModal({
             </a>
           </div>
         )}
+        </div>
       </div>
     </div>
   );
