@@ -185,8 +185,8 @@ export default function DonationForm({
       className="ui-card p-6 sm:p-8"
       style={{
         background: "color-mix(in srgb, var(--surface) 62%, transparent)",
-        backdropFilter: "blur(8px)",
-        WebkitBackdropFilter: "blur(8px)",
+        backdropFilter: "none",
+        WebkitBackdropFilter: "none",
       }}
     >
       <h3 className="ui-display text-3xl font-bold mb-1">{t("title")}</h3>
