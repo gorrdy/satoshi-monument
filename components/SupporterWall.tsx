@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { formatBtc, formatCzk } from "@/lib/format";
 import Reveal from "./Reveal";
+import Identicon from "./Identicon";
 
 const TOP_N = 12;
 
@@ -27,14 +28,6 @@ function amountLabel(entry: WallEntry): string {
   if (entry.currency === "MIX")
     return `≈ ${formatBtc(entry.amountBtc ?? entry.amount)} BTC`;
   return `${formatBtc(entry.amount)} BTC`;
-}
-
-function initials(name: string): string {
-  return name
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((w) => w[0]?.toUpperCase() ?? "")
-    .join("");
 }
 
 export default function SupporterWall({
@@ -102,10 +95,11 @@ export default function SupporterWall({
               )}
               <div className={`flex items-center gap-3 mb-2 ${medal >= 0 ? "pr-12" : ""}`}>
                 <div
-                  className="flex items-center justify-center w-10 h-10 ui-accent-box ui-mono font-bold text-sm shrink-0 rounded-[var(--radius-sm)]"
+                  className="w-10 h-10 shrink-0 overflow-hidden rounded-[var(--radius-sm)] ui-border"
                   style={mColor ? { boxShadow: `0 0 0 2px ${mColor}` } : undefined}
+                  title={entry.name}
                 >
-                  {initials(entry.name) || "₿"}
+                  <Identicon seed={entry.id || entry.name} className="w-full h-full" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="ui-display font-bold truncate">{entry.name}</div>
