@@ -55,7 +55,7 @@ export default function InstallationsCarousel() {
 
   useEffect(() => {
     if (paused || reduceMotion) return;
-    const id = setInterval(() => setIndex((i) => (i + 1) % SLIDES.length), 4500);
+    const id = setInterval(() => setIndex((i) => (i + 1) % SLIDES.length), 2000);
     return () => clearInterval(id);
   }, [paused, reduceMotion]);
 
@@ -71,7 +71,7 @@ export default function InstallationsCarousel() {
           {SLIDES.map((s, i) => (
             <div
               key={s.src}
-              className="absolute inset-0 transition-opacity duration-700"
+              className="absolute inset-0 transition-opacity duration-500"
               style={{ opacity: i === index ? 1 : 0 }}
               aria-hidden={i !== index}
               inert={i !== index}
