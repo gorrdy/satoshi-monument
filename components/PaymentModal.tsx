@@ -64,16 +64,6 @@ export default function PaymentModal({
   const [copied, setCopied] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
 
-  // Zámek scrollu pozadí — jen po dobu, co je modal otevřený (běží jednou na mount).
-  // Cleanup vždy vrátí scrollovatelnost (nezávislé na onClose → nehrozí zaseknutí).
-  useEffect(() => {
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prev;
-    };
-  }, []);
-
   // Klávesnice: ESC zavírá, Tab cyklí jen uvnitř modalu + počáteční fokus.
   useEffect(() => {
     const panel = panelRef.current;
