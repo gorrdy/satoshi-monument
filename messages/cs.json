@@ -124,7 +124,8 @@
     "a2": "Přispěvatelé jsou řazeni od největšího příspěvku po nejmenší. Když přispěješ vícekrát a použiješ stejný „Identifikátor pro párování plateb“, příspěvky se sečtou a posuneš se v žebříčku výš. Zobrazené jméno nebo přezdívku si volíš sám při prvním příspěvku.",
     "q3": "Proč na tom záleží?",
     "a3": "Seznam přispěvatelů nebude dočasný. Stane se trvalou součástí webu sochy a bude na něj odkazovat QR kód přímo na podstavci monumentu. Přispět dnes znamená zapsat se navždy do historie české stopy k Bitcoinu.",
-    "highlight": "Zapiš se navždy do historie — QR kód na podstavci sochy povede na tento seznam přispěvatelů."
+    "highlight": "Zapiš se navždy do historie — QR kód na podstavci sochy povede na tento seznam přispěvatelů.",
+    "contact": "Chceš změnit jméno nebo vzkaz, nebo dodatečně spárovat platbu, kterou jsi poslal? Napiš nám na"
   },
   "pravidla": {
     "title": "Pravidla sbírky",

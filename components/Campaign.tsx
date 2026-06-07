@@ -59,6 +59,16 @@ export default function Campaign() {
             <p className="ui-accent-box px-4 py-3 mt-6 text-sm font-medium rounded-[var(--radius-sm)]">
               <span className="ui-accent">★</span> {t("princip.highlight")}
             </p>
+            <p className="text-sm ui-muted leading-relaxed mt-4">
+              {t("princip.contact")}{" "}
+              <a
+                href="mailto:monument@jednadvacet.org"
+                className="ui-link font-medium"
+              >
+                monument@jednadvacet.org
+              </a>
+              .
+            </p>
           </div>
         </details>
 
