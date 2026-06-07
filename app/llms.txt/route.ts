@@ -2,7 +2,7 @@ import { getStats } from "@/lib/stats";
 
 export const dynamic = "force-dynamic";
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://monument.gorrdy.cz";
+const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://satoshi.jednadvacet.org";
 
 /**
  * /llms.txt — strojově čitelný souhrn pro AI agenty (llmstxt.org).

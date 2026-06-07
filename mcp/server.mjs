@@ -8,7 +8,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 
-const SITE_URL = (process.env.SITE_URL ?? "https://monument.gorrdy.cz").replace(
+const SITE_URL = (process.env.SITE_URL ?? "https://satoshi.jednadvacet.org").replace(
   /\/$/,
   "",
 );

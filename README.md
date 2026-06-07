@@ -4,7 +4,7 @@ Onepager pro veřejnou sbírku na sochu Satoshiho Nakamota v Praze.
 Cíl sbírky **1 BTC**. Přispívat lze on-chain Bitcoinem, přes Lightning (oboje
 přes BTCPayServer) a fiat bankovním převodem v CZK (QR Platba / SPAYD).
 
-Web: `monument.gorrdy.cz` → později `monument.jednadvacet.org`.
+Web: `satoshi.jednadvacet.org`.
 
 ## Stack
 

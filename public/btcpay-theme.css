@@ -1,13 +1,13 @@
 /* =====================================================================
    Satoshi Monument — téma pro BTCPayServer (checkout + admin)
    ---------------------------------------------------------------------
-   Sladí platební bránu se stylem webu monument.gorrdy.cz
+   Sladí platební bránu se stylem webu satoshi.jednadvacet.org
    (tmavý podklad + bitcoin oranžová).
 
    JAK NASADIT (přes GUI BTCPayserveru):
    1) Server Settings → Theme → zvol „Dark" (tmavý základ).
    2) Vlož URL tohoto souboru do pole pro vlastní CSS:
-      https://monument.gorrdy.cz/btcpay-theme.css
+      https://satoshi.jednadvacet.org/btcpay-theme.css
       - Server Settings → Theme → „Custom Theme Extension" (CSS URL), a/nebo
       - Store → Settings → Checkout Appearance → „Custom CSS" (URL) — pro
         samotnou platební stránku (to, co se otevírá v modalu na webu).

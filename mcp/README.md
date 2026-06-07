@@ -17,9 +17,9 @@ npm install
 
 ## Spuštění
 ```bash
-SITE_URL=https://monument.gorrdy.cz node server.mjs
+SITE_URL=https://satoshi.jednadvacet.org node server.mjs
 ```
-(`SITE_URL` je volitelné, default `https://monument.gorrdy.cz`.)
+(`SITE_URL` je volitelné, default `https://satoshi.jednadvacet.org`.)
 
 ## Konfigurace v MCP klientovi
 **Claude Desktop** (`claude_desktop_config.json`) / **Claude Code** (`.mcp.json`):
@@ -29,7 +29,7 @@ SITE_URL=https://monument.gorrdy.cz node server.mjs
     "satoshi-monument": {
       "command": "node",
       "args": ["/absolutni/cesta/k/mcp/server.mjs"],
-      "env": { "SITE_URL": "https://monument.gorrdy.cz" }
+      "env": { "SITE_URL": "https://satoshi.jednadvacet.org" }
     }
   }
 }
