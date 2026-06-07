@@ -99,7 +99,11 @@ export default function SupporterWall({
                   style={mColor ? { boxShadow: `0 0 0 2px ${mColor}` } : undefined}
                   title={entry.name}
                 >
-                  <Identicon seed={entry.id || entry.name} className="w-full h-full" />
+                  <Identicon
+                    seed={entry.id || entry.name}
+                    name={entry.name}
+                    className="w-full h-full"
+                  />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="ui-display font-bold truncate">{entry.name}</div>
