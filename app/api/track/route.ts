@@ -8,10 +8,10 @@ export const dynamic = "force-dynamic";
 const SITE_HOST = (() => {
   try {
     return new URL(
-      process.env.NEXT_PUBLIC_SITE_URL ?? "https://monument.gorrdy.cz",
+      process.env.NEXT_PUBLIC_SITE_URL ?? "https://satoshi.jednadvacet.org",
     ).host;
   } catch {
-    return "monument.gorrdy.cz";
+    return "satoshi.jednadvacet.org";
   }
 })();
 
