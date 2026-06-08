@@ -5,11 +5,10 @@ import ProgressBar from "./ProgressBar";
 import SupporterWall from "./SupporterWall";
 import Reveal from "./Reveal";
 import { useCampaignStats } from "./StatsProvider";
-import RecentTicker from "./RecentTicker";
 
 export default function Campaign() {
   const t = useTranslations();
-  const { stats, wall, recent } = useCampaignStats();
+  const { stats, wall } = useCampaignStats();
 
   return (
     <>
@@ -22,22 +21,6 @@ export default function Campaign() {
           </p>
         </div>
       </section>
-
-      {/* Živý ticker posledních příspěvků */}
-      {recent.length > 0 && (
-        <section className="ui-soft ui-border-b py-3 overflow-hidden">
-          <div className="max-w-6xl mx-auto px-4 flex items-center gap-3 sm:gap-5">
-            <span className="ui-eyebrow ui-accent flex items-center gap-2 shrink-0">
-              <span
-                aria-hidden
-                className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse"
-              />
-              <span className="hidden sm:inline">{t("progress.recent")}</span>
-            </span>
-            <RecentTicker recent={recent} />
-          </div>
-        </section>
-      )}
 
       {/* Zeď přispěvatelů */}
       <section id="wall" className="px-4 py-20 sm:py-24 ui-border-b">

@@ -1,16 +1,12 @@
 import { NextResponse } from "next/server";
-import { getStats, getWall, getRecent } from "@/lib/stats";
+import { getStats, getWall } from "@/lib/stats";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const [stats, wall, recent] = await Promise.all([
-    getStats(),
-    getWall(),
-    getRecent(),
-  ]);
+  const [stats, wall] = await Promise.all([getStats(), getWall()]);
   return NextResponse.json(
-    { stats, wall, recent },
+    { stats, wall },
     {
       headers: {
         // Krátká cache na okraji (nginx/CDN) ke koalescenci náporu; data zůstávají čerstvá.

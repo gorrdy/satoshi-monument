@@ -38,8 +38,7 @@
     "donors": "supporters",
     "rate": "rate",
     "approxCzk": "≈ {czk} CZK",
-    "goalExplainer": "The goal is 1 BTC. If 2,000 people each send 50,000 sats — the statue is ours.",
-    "recent": "Recent contributions"
+    "goalExplainer": "The goal is 1 BTC. If 2,000 people each send 50,000 sats — the statue is ours."
   },
   "form": {
     "title": "Donate to the statue",
