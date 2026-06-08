@@ -19,6 +19,16 @@ const MALE_TOP = [
 ] as const;
 const PASTELS = ["b6e3f4", "c0aede", "d1d4f9", "ffd5dc", "ffdfbf", "f7d9a6"];
 
+// Jen pozitivní / neutrální výrazy — žádné zvracející, smutné, naštvané obličeje.
+const NICE_MOUTH = ["default", "smile", "twinkle", "tongue", "eating"] as const;
+const NICE_EYES = [
+  "default", "happy", "hearts", "wink", "winkWacky", "squint", "side", "surprised",
+] as const;
+const NICE_BROWS = [
+  "default", "defaultNatural", "flatNatural", "raisedExcited",
+  "raisedExcitedNatural", "upDown", "upDownNatural",
+] as const;
+
 export default function Identicon({
   seed,
   name,
@@ -41,6 +51,9 @@ export default function Identicon({
     seed: seed || "satoshi",
     backgroundColor: PASTELS,
     backgroundType: ["solid"],
+    mouth: [...NICE_MOUTH],
+    eyes: [...NICE_EYES],
+    eyebrows: [...NICE_BROWS],
     ...genderOpts,
   }).toString();
 

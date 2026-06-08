@@ -102,8 +102,84 @@ export default function SupporterWall({
     : wall;
   // Pořadí v plném (seřazeném) seznamu → medaile zůstanou na skutečné top 3 i při hledání.
   const rankById = new Map(wall.map((e, i) => [e.id, i]));
-  // Při vyhledávání zobraz vše, co odpovídá; jinak top N (s tlačítkem „více").
-  const visible = q || expanded ? filtered : filtered.slice(0, TOP_N);
+
+  // Karta přispěvatele (sdílená pro stupně vítězů i mřížku).
+  const renderCard = (entry: WallEntry, delay: number, widthClass: string) => {
+    const rank = rankById.get(entry.id) ?? 99;
+    const medal = rank < 3 ? rank : -1;
+    const mColor = medal >= 0 ? MEDAL_COLOR[medal] : null;
+    const multi = (entry.count ?? 1) > 1 && (entry.items?.length ?? 0) > 1;
+    return (
+      <Reveal
+        key={entry.id}
+        delay={delay}
+        className={`ui-card p-5 ${widthClass} flex flex-col ${
+          medal >= 0 ? "relative overflow-hidden" : ""
+        }`}
+      >
+        {medal >= 0 && (
+          <>
+            <span
+              aria-hidden
+              className="absolute left-0 right-0 top-0 h-1"
+              style={{ background: mColor! }}
+            />
+            <span className="absolute top-2.5 right-3 text-4xl leading-none">
+              {MEDALS[medal]}
+            </span>
+          </>
+        )}
+        <div className={`flex items-center gap-3 mb-2 ${medal >= 0 ? "pr-12" : ""}`}>
+          <div
+            className="w-10 h-10 shrink-0 overflow-hidden rounded-[var(--radius-sm)] ui-border"
+            style={mColor ? { boxShadow: `0 0 0 2px ${mColor}` } : undefined}
+            title={entry.name}
+          >
+            <Avatar entry={entry} />
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="ui-display font-bold truncate">{entry.name}</div>
+            <div className="ui-mono text-xs ui-accent font-bold">
+              {amountLabel(entry)}
+              {entry.count && entry.count > 1 ? (
+                <span className="ui-muted font-normal"> · {entry.count}×</span>
+              ) : null}
+            </div>
+          </div>
+        </div>
+        {entry.publicMessage && (
+          <p className="text-sm ui-muted break-words leading-relaxed">
+            “{entry.publicMessage}”
+          </p>
+        )}
+        {multi && (
+          <button
+            onClick={() => setDetail(entry)}
+            className="ui-link ui-eyebrow text-left mt-3 self-start"
+          >
+            {t("showAll")} ({entry.count}) →
+          </button>
+        )}
+      </Reveal>
+    );
+  };
+
+  // Stupně vítězů jen ve výchozím pohledu (ne při hledání) a když je aspoň 3 přispěvatelé.
+  const showPodium = !q && wall.length >= 3;
+  const top3 = showPodium ? wall.slice(0, 3) : [];
+  const gridList = q
+    ? filtered
+    : showPodium
+      ? expanded
+        ? wall.slice(3)
+        : wall.slice(3, TOP_N)
+      : expanded
+        ? wall
+        : wall.slice(0, TOP_N);
+
+  // pořadí na stupních: vlevo 2., uprostřed 1. (nejvyšší), vpravo 3.
+  const PODIUM_ORDER = ["md:order-2", "md:order-1", "md:order-3"];
+  const PODIUM_H = ["md:h-28", "md:h-20", "md:h-14"];
 
   return (
     <div className="w-full max-w-6xl mx-auto">
@@ -120,72 +196,45 @@ export default function SupporterWall({
 
       {wall.length === 0 ? (
         <p className="ui-muted py-10 text-center">{t("empty")}</p>
-      ) : visible.length === 0 ? (
+      ) : q && filtered.length === 0 ? (
         <p className="ui-muted py-10 text-center">{t("noMatch")}</p>
       ) : (
-        <div className="flex flex-wrap justify-center gap-4">
-          {visible.map((entry, i) => {
-            const rank = rankById.get(entry.id) ?? 99;
-            const medal = rank < 3 ? rank : -1;
-            const mColor = medal >= 0 ? MEDAL_COLOR[medal] : null;
-            const multi = (entry.count ?? 1) > 1 && (entry.items?.length ?? 0) > 1;
-            return (
-              <Reveal
-                key={entry.id}
-                delay={(i % 3) * 80}
-                className={`ui-card p-5 w-full sm:w-[330px] flex flex-col ${
-                  medal >= 0 ? "relative overflow-hidden" : ""
-                }`}
-              >
-                {medal >= 0 && (
-                  <>
-                    <span
-                      aria-hidden
-                      className="absolute left-0 right-0 top-0 h-1"
-                      style={{ background: mColor! }}
-                    />
-                    <span className="absolute top-2.5 right-3 text-4xl leading-none">
-                      {MEDALS[medal]}
-                    </span>
-                  </>
-                )}
-                <div className={`flex items-center gap-3 mb-2 ${medal >= 0 ? "pr-12" : ""}`}>
+        <>
+          {/* Stupně vítězů (top 3) */}
+          {showPodium && (
+            <div className="flex flex-col md:flex-row md:items-end md:justify-center gap-5 md:gap-4 mb-12">
+              {top3.map((entry, place) => (
+                <div
+                  key={entry.id}
+                  className={`w-full md:w-[290px] flex flex-col ${PODIUM_ORDER[place]}`}
+                >
+                  {renderCard(entry, place * 80, "w-full")}
                   <div
-                    className="w-10 h-10 shrink-0 overflow-hidden rounded-[var(--radius-sm)] ui-border"
-                    style={mColor ? { boxShadow: `0 0 0 2px ${mColor}` } : undefined}
-                    title={entry.name}
+                    className={`mt-2 h-12 ${PODIUM_H[place]} rounded-b-[var(--radius-sm)] ui-border border-t-0 flex items-center justify-center`}
+                    style={{ background: MEDAL_COLOR[place] }}
+                    aria-hidden
                   >
-                    <Avatar entry={entry} />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="ui-display font-bold truncate">{entry.name}</div>
-                    <div className="ui-mono text-xs ui-accent font-bold">
-                      {amountLabel(entry)}
-                      {entry.count && entry.count > 1 ? (
-                        <span className="ui-muted font-normal">
-                          {" "}· {entry.count}×
-                        </span>
-                      ) : null}
-                    </div>
+                    <span
+                      className="ui-display font-black text-3xl"
+                      style={{ color: "rgba(0,0,0,0.55)" }}
+                    >
+                      {place + 1}
+                    </span>
                   </div>
                 </div>
-                {entry.publicMessage && (
-                  <p className="text-sm ui-muted break-words leading-relaxed">
-                    “{entry.publicMessage}”
-                  </p>
-                )}
-                {multi && (
-                  <button
-                    onClick={() => setDetail(entry)}
-                    className="ui-link ui-eyebrow text-left mt-3 self-start"
-                  >
-                    {t("showAll")} ({entry.count}) →
-                  </button>
-                )}
-              </Reveal>
-            );
-          })}
-        </div>
+              ))}
+            </div>
+          )}
+
+          {/* Zbytek (mřížka) */}
+          {gridList.length > 0 && (
+            <div className="flex flex-wrap justify-center gap-4">
+              {gridList.map((entry, i) =>
+                renderCard(entry, (i % 3) * 80, "w-full sm:w-[330px]"),
+              )}
+            </div>
+          )}
+        </>
       )}
 
       {!q && wall.length > TOP_N && (
