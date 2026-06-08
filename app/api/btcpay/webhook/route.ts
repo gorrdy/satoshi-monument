@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { verifyWebhookSignature } from "@/lib/btcpay";
+import { verifyWebhookSignature, getInvoiceBtcPaid } from "@/lib/btcpay";
 
 export const dynamic = "force-dynamic";
 
@@ -8,6 +8,9 @@ interface WebhookPayload {
   type?: string;
   invoiceId?: string;
   metadata?: { donationId?: string };
+  partiallyPaid?: boolean;
+  afterExpiration?: boolean;
+  overPaid?: boolean;
 }
 
 export async function POST(req: NextRequest) {
@@ -25,48 +28,76 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "invalid_json" }, { status: 400 });
   }
 
+  const type = payload.type ?? "";
+  // Settled (i pozdě po expiraci) → potvrdit. Expired/Invalid → vyřešit níže.
+  // Created / ReceivedPayment / Processing → jen potvrdit příjem, nic neměnit (necháme pending).
   const SETTLED = ["InvoiceSettled", "InvoicePaymentSettled"];
-  const EXPIRED = ["InvoiceExpired", "InvoiceInvalid"];
-  const isSettled = SETTLED.includes(payload.type ?? "");
-  const isExpired = EXPIRED.includes(payload.type ?? "");
+  const isSettled = SETTLED.includes(type);
+  const isExpired = type === "InvoiceExpired";
+  const isInvalid = type === "InvoiceInvalid";
 
-  if (!isSettled && !isExpired) {
-    return NextResponse.json({ ok: true, ignored: payload.type });
+  if (!isSettled && !isExpired && !isInvalid) {
+    return NextResponse.json({ ok: true, ignored: type });
   }
 
-  // Najdeme dar podle invoiceId (případně podle metadata.donationId).
   const donation = await prisma.donation.findFirst({
     where: payload.invoiceId
       ? { btcpayInvoiceId: payload.invoiceId }
       : { id: payload.metadata?.donationId },
   });
-
   if (!donation) {
     return NextResponse.json({ ok: true, notFound: true });
   }
-
-  // Potvrzený dar už nepřepisujeme (např. pozdní expired po settled).
+  // Potvrzený dar už nepřepisujeme (např. pozdní událost po settled).
   if (donation.status === "confirmed") {
     return NextResponse.json({ ok: true, alreadyConfirmed: true });
   }
 
-  if (isExpired) {
+  const invoiceId = donation.btcpayInvoiceId ?? payload.invoiceId ?? "";
+
+  // Neplatná invoice (double-spend / ručně označená) → zamítnout, nezapočítávat.
+  if (isInvalid) {
     await prisma.donation.update({
       where: { id: donation.id },
-      data: { status: "expired" },
+      data: { status: "rejected" },
     });
-    return NextResponse.json({ ok: true, expired: true });
+    return NextResponse.json({ ok: true, rejected: true });
   }
 
-  // Settled: invoice je denominovaná v BTC, takže částka = BTC ekvivalent.
+  // Kolik reálně přišlo (počítá i pozdní / částečné platby).
+  const paid = invoiceId ? await getInvoiceBtcPaid(invoiceId) : 0;
+
+  if (isSettled) {
+    // Plně zaplaceno (i pozdě) → potvrdit skutečně přijatou částkou (fallback požadovaná).
+    await prisma.donation.update({
+      where: { id: donation.id },
+      data: {
+        status: "confirmed",
+        amountBtc: paid > 0 ? paid : donation.amount,
+        confirmedAt: new Date(),
+      },
+    });
+    return NextResponse.json({ ok: true, confirmed: true, paid });
+  }
+
+  // isExpired: pokud něco reálně přišlo (částečná / pozdní platba), započítáme
+  // skutečnou částku; jinak prostě vyprší.
+  if (paid > 0) {
+    await prisma.donation.update({
+      where: { id: donation.id },
+      data: {
+        status: "confirmed",
+        amount: paid,
+        amountBtc: paid,
+        confirmedAt: new Date(),
+      },
+    });
+    return NextResponse.json({ ok: true, confirmedPartial: true, paid });
+  }
+
   await prisma.donation.update({
     where: { id: donation.id },
-    data: {
-      status: "confirmed",
-      amountBtc: donation.currency === "BTC" ? donation.amount : donation.amountBtc,
-      confirmedAt: new Date(),
-    },
+    data: { status: "expired" },
   });
-
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, expired: true });
 }

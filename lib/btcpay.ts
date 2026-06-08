@@ -100,6 +100,36 @@ export async function getInvoicePaymentMethods(invoiceId: string): Promise<
   }>;
 }
 
+/** Skutečně přijatá BTC částka na invoici (součet zaplaceného přes BTC metody). */
+export async function getInvoiceBtcPaid(invoiceId: string): Promise<number> {
+  assertConfigured();
+  try {
+    const res = await fetch(
+      `${BTCPAY_URL}/api/v1/stores/${STORE_ID}/invoices/${invoiceId}/payment-methods`,
+      {
+        headers: { Authorization: `token ${API_KEY}` },
+        signal: AbortSignal.timeout(10000),
+      },
+    );
+    if (!res.ok) return 0;
+    const pms = (await res.json()) as Array<{
+      cryptoCode?: string;
+      paymentMethod?: string;
+      paymentMethodPaid?: string;
+    }>;
+    let paid = 0;
+    for (const pm of pms) {
+      const code = (pm.cryptoCode ?? pm.paymentMethod ?? "").toUpperCase();
+      if (!code.includes("BTC")) continue;
+      const v = Number(pm.paymentMethodPaid ?? "0");
+      if (Number.isFinite(v)) paid += v;
+    }
+    return paid;
+  } catch {
+    return 0;
+  }
+}
+
 /**
  * Ověří HMAC-SHA256 podpis webhooku z hlavičky `BTCPay-Sig`.
  * Hlavička má tvar `sha256=<hex>`.
