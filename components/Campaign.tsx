@@ -5,10 +5,14 @@ import ProgressBar from "./ProgressBar";
 import SupporterWall from "./SupporterWall";
 import Reveal from "./Reveal";
 import { useCampaignStats } from "./StatsProvider";
+import { formatBtc } from "@/lib/format";
+
+// Postupné slábnutí řádků (recent → starší).
+const RECENT_OPACITY = [1, 0.7, 0.45, 0.25];
 
 export default function Campaign() {
   const t = useTranslations();
-  const { stats, wall } = useCampaignStats();
+  const { stats, wall, recent } = useCampaignStats();
 
   return (
     <>
@@ -19,6 +23,39 @@ export default function Campaign() {
           <p className="mt-6 ui-border-t pt-5 text-center text-sm ui-muted">
             <span className="ui-accent">⚡</span> {t("progress.goalExplainer")}
           </p>
+
+          {/* Poslední příspěvky — postupný fade-out, dojem „recent" feedu */}
+          {recent.length > 0 && (
+            <div className="mt-6 ui-border-t pt-5">
+              <p className="ui-eyebrow ui-muted text-center mb-3">
+                {t("progress.recent")}
+              </p>
+              <ul className="max-w-md mx-auto space-y-2">
+                {recent.slice(0, 4).map((r, i) => (
+                  <li
+                    key={i}
+                    className="flex items-center justify-between gap-3 text-sm"
+                    style={{ opacity: RECENT_OPACITY[i] ?? 0.2 }}
+                  >
+                    <span className="flex items-center gap-2 min-w-0">
+                      {i === 0 && (
+                        <span
+                          aria-hidden
+                          className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] shrink-0 animate-pulse"
+                        />
+                      )}
+                      <span className="ui-display font-semibold truncate">
+                        {r.name}
+                      </span>
+                    </span>
+                    <span className="ui-mono ui-accent font-bold whitespace-nowrap">
+                      {formatBtc(r.amountBtc)} BTC
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       </section>
 

@@ -49,6 +49,38 @@ export async function getStats(): Promise<CampaignStats> {
   };
 }
 
+export interface RecentPayment {
+  name: string;
+  amountBtc: number;
+  currency: string;
+  amount: number;
+  createdAt: string;
+}
+
+/** Poslední potvrzené platby (pro „recent" feed) — jen veřejná pole. */
+export async function getRecent(limit = 6): Promise<RecentPayment[]> {
+  const rows = await prisma.donation.findMany({
+    where: { status: "confirmed", hiddenOnWall: false },
+    orderBy: { confirmedAt: "desc" },
+    take: limit,
+    select: {
+      name: true,
+      amount: true,
+      currency: true,
+      amountBtc: true,
+      confirmedAt: true,
+      createdAt: true,
+    },
+  });
+  return rows.map((r) => ({
+    name: r.name,
+    amountBtc: r.amountBtc ?? 0,
+    currency: r.currency,
+    amount: r.amount,
+    createdAt: (r.confirmedAt ?? r.createdAt).toISOString(),
+  }));
+}
+
 export interface WallItem {
   amount: number;
   currency: string; // "BTC" | "CZK"
