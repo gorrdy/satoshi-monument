@@ -44,12 +44,27 @@ function isValidToken(token: string | undefined): boolean {
   return Number(exp) > Date.now();
 }
 
+function timingSafeEq(a: string, b: string): boolean {
+  const ab = Buffer.from(a);
+  const bb = Buffer.from(b);
+  return ab.length === bb.length && crypto.timingSafeEqual(ab, bb);
+}
+
 export function checkPassword(password: string): boolean {
   const expected = process.env.ADMIN_PASSWORD ?? "";
   if (!expected) return false;
-  const a = Buffer.from(password);
-  const b = Buffer.from(expected);
-  return a.length === b.length && crypto.timingSafeEqual(a, b);
+  return timingSafeEq(password, expected);
+}
+
+/** Ověří přihlašovací jméno + heslo (ADMIN_USERNAME, default "admin"). */
+export function checkCredentials(username: string, password: string): boolean {
+  const expectedUser = process.env.ADMIN_USERNAME || "admin";
+  const expectedPass = process.env.ADMIN_PASSWORD ?? "";
+  if (!expectedPass) return false;
+  // obě porovnání proběhnou vždy (konstantní čas), výsledek až na konci
+  const userOk = timingSafeEq(username, expectedUser);
+  const passOk = timingSafeEq(password, expectedPass);
+  return userOk && passOk;
 }
 
 export async function setSessionCookie() {

@@ -43,6 +43,7 @@ const FILTERS = [
 
 export default function AdminPage() {
   const [authed, setAuthed] = useState<boolean | null>(null);
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState<string | null>(null);
   const [filter, setFilter] = useState("pending");
@@ -104,13 +105,13 @@ export default function AdminPage() {
     const res = await fetch("/api/admin/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password }),
+      body: JSON.stringify({ username, password }),
     });
     if (res.ok) {
       setPassword("");
       load(filter);
     } else {
-      setLoginError("Nesprávné heslo.");
+      setLoginError("Nesprávné jméno nebo heslo.");
     }
   };
 
@@ -184,12 +185,23 @@ export default function AdminPage() {
         >
           <h1 className="text-xl font-bold mb-4">Správa sbírky</h1>
           <input
+            type="text"
+            name="username"
+            autoComplete="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Uživatelské jméno"
+            className="w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2.5 mb-3 focus:border-accent focus:outline-none"
+            autoFocus
+          />
+          <input
             type="password"
+            name="password"
+            autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Heslo"
             className="w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2.5 mb-3 focus:border-accent focus:outline-none"
-            autoFocus
           />
           {loginError && (
             <p className="text-sm text-red-400 mb-3">{loginError}</p>
