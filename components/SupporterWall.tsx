@@ -29,7 +29,25 @@ export interface WallEntry {
   publicMessage: string | null;
   count?: number;
   createdAt: string;
+  imageUrl?: string | null;
   items?: WallItem[];
+}
+
+/** Avatar přispěvatele: vlastní obrázek (logo), jinak generativní identicon. */
+function Avatar({ entry }: { entry: WallEntry }) {
+  if (entry.imageUrl) {
+    // eslint-disable-next-line @next/next/no-img-element
+    return (
+      <img
+        src={entry.imageUrl}
+        alt={entry.name}
+        className="w-full h-full object-contain bg-white"
+      />
+    );
+  }
+  return (
+    <Identicon seed={entry.id || entry.name} name={entry.name} className="w-full h-full" />
+  );
 }
 
 function amountLabel(entry: WallEntry): string {
@@ -135,11 +153,7 @@ export default function SupporterWall({
                     style={mColor ? { boxShadow: `0 0 0 2px ${mColor}` } : undefined}
                     title={entry.name}
                   >
-                    <Identicon
-                      seed={entry.id || entry.name}
-                      name={entry.name}
-                      className="w-full h-full"
-                    />
+                    <Avatar entry={entry} />
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="ui-display font-bold truncate">{entry.name}</div>
@@ -213,11 +227,7 @@ export default function SupporterWall({
 
               <div className="flex items-center gap-3 mb-1 pr-8">
                 <div className="w-10 h-10 shrink-0 overflow-hidden rounded-[var(--radius-sm)] ui-border">
-                  <Identicon
-                    seed={detail.id || detail.name}
-                    name={detail.name}
-                    className="w-full h-full"
-                  />
+                  <Avatar entry={detail} />
                 </div>
                 <div className="min-w-0">
                   <div className="ui-display font-bold truncate">{detail.name}</div>

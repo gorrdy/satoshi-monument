@@ -12,6 +12,7 @@ interface Donation {
   amountBtc: number | null;
   publicMessage: string | null;
   privateMessage: string | null;
+  imageUrl: string | null;
   status: string;
   hiddenOnWall: boolean;
   btcpayInvoiceId: string | null;
@@ -52,7 +53,7 @@ export default function AdminPage() {
   const [busy, setBusy] = useState<string | null>(null);
   const [keyDraft, setKeyDraft] = useState<Record<string, string>>({});
   const [edits, setEdits] = useState<
-    Record<string, { name?: string; publicMessage?: string }>
+    Record<string, { name?: string; publicMessage?: string; imageUrl?: string }>
   >({});
   const [fio, setFio] = useState<FioPayment[]>([]);
   const [vsDraft, setVsDraft] = useState<Record<string, string>>({});
@@ -157,6 +158,7 @@ export default function AdminPage() {
         action: "edit",
         name: edits[d.id]?.name ?? d.name,
         publicMessage: edits[d.id]?.publicMessage ?? d.publicMessage ?? "",
+        imageUrl: edits[d.id]?.imageUrl ?? d.imageUrl ?? "",
       }),
     });
     setEdits((s) => {
@@ -435,12 +437,39 @@ export default function AdminPage() {
                     !edits[d.id] ||
                     ((edits[d.id]?.name ?? d.name) === d.name &&
                       (edits[d.id]?.publicMessage ?? d.publicMessage ?? "") ===
-                        (d.publicMessage ?? ""))
+                        (d.publicMessage ?? "") &&
+                      (edits[d.id]?.imageUrl ?? d.imageUrl ?? "") ===
+                        (d.imageUrl ?? ""))
                   }
                   className="border border-white/10 bg-white/5 text-white px-2.5 py-1 text-xs font-medium hover:bg-white/10 transition disabled:opacity-40"
                 >
-                  Uložit jméno/vzkaz
+                  Uložit
                 </button>
+              </div>
+
+              <div className="flex items-center gap-2 mt-2">
+                <span className="text-xs text-white/50 shrink-0">
+                  Logo / obrázek (URL):
+                </span>
+                <input
+                  value={edits[d.id]?.imageUrl ?? d.imageUrl ?? ""}
+                  onChange={(e) =>
+                    setEdits((s) => ({
+                      ...s,
+                      [d.id]: { ...s[d.id], imageUrl: e.target.value },
+                    }))
+                  }
+                  placeholder="https://… (např. logo firmy; nahradí avatar)"
+                  className="flex-1 min-w-0 bg-white/5 border border-white/10 px-2 py-1 text-xs font-mono focus:outline-none"
+                />
+                {(edits[d.id]?.imageUrl ?? d.imageUrl) ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={edits[d.id]?.imageUrl ?? d.imageUrl ?? ""}
+                    alt="náhled"
+                    className="w-7 h-7 object-contain rounded bg-white/10 shrink-0"
+                  />
+                ) : null}
               </div>
 
               <div className="flex items-center gap-2 mt-2">

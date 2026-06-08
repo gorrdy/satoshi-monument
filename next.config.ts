@@ -12,7 +12,7 @@ const csp = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline' ${btcpayOrigin}`.trim(),
   "style-src 'self' 'unsafe-inline'",
-  `img-src 'self' data: blob: ${btcpayOrigin}`.trim(),
+  `img-src 'self' data: blob: https: ${btcpayOrigin}`.trim(),
   "font-src 'self'",
   `connect-src 'self' ${btcpayOrigin}`.trim(),
   `frame-src ${btcpayOrigin || "'none'"}`.trim(),

@@ -45,3 +45,6 @@ next-env.d.ts
 # Prisma SQLite (živá data — necommitovat)
 prisma/*.db
 prisma/*.db-journal
+
+# Propagační letáky (lokální buildy, ne do repa)
+/letak/
