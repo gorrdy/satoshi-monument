@@ -66,6 +66,7 @@ export interface WallEntry {
   publicMessage: string | null;
   count: number; // počet sečtených plateb
   createdAt: string;
+  imageUrl: string | null; // volitelné logo/obrázek (nastavuje admin)
   items: WallItem[]; // jednotlivé příspěvky (od nejnovějšího) — veřejná data
 }
 
@@ -80,6 +81,7 @@ export async function getWall(limit = 200): Promise<WallEntry[]> {
       amount: true,
       amountBtc: true,
       publicMessage: true,
+      imageUrl: true,
       donorKey: true,
       confirmedAt: true,
       createdAt: true,
@@ -106,6 +108,7 @@ export async function getWall(limit = 200): Promise<WallEntry[]> {
     );
     const latest = sorted[sorted.length - 1];
     const lastMsg = [...sorted].reverse().find((r) => r.publicMessage)?.publicMessage ?? null;
+    const imageUrl = [...sorted].reverse().find((r) => r.imageUrl)?.imageUrl ?? null;
 
     const totalBtc = list.reduce((s, r) => s + (r.amountBtc ?? 0), 0);
     const currencies = new Set(list.map((r) => r.currency));
@@ -141,6 +144,7 @@ export async function getWall(limit = 200): Promise<WallEntry[]> {
       publicMessage: lastMsg,
       count: list.length,
       createdAt: (latest.confirmedAt ?? latest.createdAt).toISOString(),
+      imageUrl,
       items,
     });
   }
