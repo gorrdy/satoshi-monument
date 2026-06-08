@@ -99,7 +99,10 @@
     "principle": "Supporters are ranked from the largest contribution. Multiple payments with the same identifier are summed. This list will become a permanent part of the statue's website — a QR code on the pedestal will link to it.",
     "principleLink": "How are contributions counted?",
     "searchPlaceholder": "Find your name…",
-    "noMatch": "We couldn't find anyone like that."
+    "noMatch": "We couldn't find anyone like that.",
+    "showAll": "Show all contributions",
+    "allContributions": "All contributions",
+    "contribution": "contribution"
   },
   "about": {
     "title": "About the project",
