@@ -41,14 +41,16 @@ export default function PravidlaContent() {
                 {t("moreTitle")}
               </h2>
               <p className="ui-muted leading-relaxed mb-3">{t("moreBody")}</p>
-              <ul className="space-y-1.5 mb-3">
-                {items.map((it, i) => (
-                  <li key={i} className="flex gap-2 ui-muted">
-                    <span className="ui-accent">→</span>
-                    <span>{it}</span>
-                  </li>
-                ))}
-              </ul>
+              {items.length > 0 && (
+                <ul className="space-y-1.5 mb-3">
+                  {items.map((it, i) => (
+                    <li key={i} className="flex gap-2 ui-muted">
+                      <span className="ui-accent">→</span>
+                      <span>{it}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
               <p className="text-sm ui-muted">{t("moreNote")}</p>
             </section>
           </div>

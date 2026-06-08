@@ -24,7 +24,7 @@ export default function Varianta2Content() {
       <main className="px-4 py-16 sm:py-20">
         <div className="max-w-3xl mx-auto">
           <BackLink />
-          <span className="ui-eyebrow ui-accent">{"// "}Varianta 2</span>
+          <span className="ui-eyebrow ui-accent">{"// "}Satoshi Monument</span>
           <h1 className="ui-display text-4xl sm:text-5xl font-bold mt-3 mb-5 leading-[1.05]">
             {t("title")}
           </h1>
@@ -36,14 +36,16 @@ export default function Varianta2Content() {
 
           <Section h={t("s2h")}>
             <p>{t("s2a")}</p>
-            <ul className="space-y-1.5">
-              {crit.map((it, i) => (
-                <li key={i} className="flex gap-2">
-                  <span className="ui-accent">→</span>
-                  <span>{it}</span>
-                </li>
-              ))}
-            </ul>
+            {crit.length > 0 && (
+              <ul className="space-y-1.5">
+                {crit.map((it, i) => (
+                  <li key={i} className="flex gap-2">
+                    <span className="ui-accent">→</span>
+                    <span>{it}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
             <p>{t("s2foot")}</p>
           </Section>
 

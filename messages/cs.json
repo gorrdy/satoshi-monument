@@ -108,7 +108,7 @@
     "p3": "Cíl je 1 BTC na výrobu a instalaci sochy v Praze. Každý příspěvek — on-chain, přes Lightning i bankovním převodem — nás mezi ty metropole přibližuje.",
     "imageCaption": "Satoshi Gallery · „We are all Satoshi“",
     "galleryLink": "Iniciativa: satoshigallery.com (Valentina Picozzi)",
-    "moreLink": "Touto sochou to nekončí — Varianta 2 →"
+    "moreLink": "Touto sochou to nekončí →"
   },
   "footer": {
     "tagline": "Sbírka na sochu Satoshiho Nakamota v Praze",
@@ -121,7 +121,7 @@
     "q1": "Jak se počítají?",
     "a1": "Každý příspěvek — v korunách i bitcoinu — se v okamžiku přijetí přepočítá na BTC podle aktuálního tržního kurzu. Pracujeme výhradně s příspěvky v bitcoinu.",
     "q2": "Jak funguje seznam přispěvatelů?",
-    "a2": "Přispěvatelé jsou řazeni od největšího příspěvku po nejmenší. Když přispěješ vícekrát a použiješ stejný „Identifikátor pro párování plateb“, příspěvky se sečtou a posuneš se v žebříčku výš. Zobrazené jméno nebo přezdívku si volíš sám při prvním příspěvku.",
+    "a2": "Přispěvatelé jsou řazeni od největšího příspěvku po nejmenší. Když přispěješ vícekrát a použiješ stejný „Identifikátor pro párování plateb“, příspěvky se sečtou a posuneš se v žebříčku výš. Zobrazené jméno nebo přezdívku si volíš sám při prvním příspěvku. Identifikátor se nikde nezobrazuje; když uvedeš e-mailovou adresu, máš zaručenou jeho jedinečnost.",
     "q3": "Proč na tom záleží?",
     "a3": "Seznam přispěvatelů nebude dočasný. Stane se trvalou součástí webu sochy a bude na něj odkazovat QR kód přímo na podstavci monumentu. Přispět dnes znamená zapsat se navždy do historie české stopy k Bitcoinu.",
     "highlight": "Zapiš se navždy do historie — QR kód na podstavci sochy povede na tento seznam přispěvatelů.",
@@ -131,16 +131,12 @@
     "title": "Pravidla sbírky",
     "intro": "Sbírka na Satoshi Monument je veřejná komunitní iniciativa zastřešená spolkem The Malahar Network z.s. Aby bylo od začátku vše jasné a transparentní, tady je, co se stane s vašimi příspěvky v každém z možných scénářů.",
     "okTitle": "Když se cílová částka vybere",
-    "okBody": "Socha od italské umělkyně Valentiny Picozzi — stejná, jaká stojí v Luganu nebo v Tokiu — bude zakoupena a instalována v Praze. Finální umístění je v jednání s městem; dokud nebude lokalita technicky a administrativně potvrzena, bude socha dočasně vystavena na vhodném místě (zvažujeme například prostory partnerských institucí). Jakmile socha najde svůj trvalý domov, web sbírky se promění v trvalý web monumentu a QR kód na podstavci bude odkazovat na příběh projektu a seznam všech přispěvatelů.",
+    "okBody": "Socha od italské umělkyně Valentiny Picozzi — stejná, jaká stojí v Luganu nebo v Tokiu — bude zakoupena a instalována v Praze. Finální umístění je v jednání; dokud nebude lokalita technicky a administrativně potvrzena, bude socha dočasně vystavena na vhodném místě (zvažujeme například prostory partnerských institucí). Jakmile socha najde svůj trvalý domov, web sbírky se promění v trvalý web monumentu a QR kód na podstavci bude odkazovat na příběh projektu a seznam všech přispěvatelů.",
     "noTitle": "Když se cílová částka nevybere",
-    "noBody": "Žádný příspěvek nepřijde nazmar. Vybrané prostředky budou v plné výši přesměrovány do rozvoje projektu Satoshi Monument — konkrétně na přípravu Varianty 2, tedy otevřené soutěže o originální český monument. Část prostředků může být věnována na bitcoinovou edukaci prostřednictvím projektu INEV. O konkrétním rozdělení rozhodne Board Satoshi Monument, který je za projekt odpovědný vůči komunitě Jednadvacet.",
+    "noBody": "Žádný příspěvek nepřijde nazmar. Vybrané prostředky budou v plné výši přesměrovány do rozvoje projektu Satoshi Monument — konkrétně na přípravu otevřené soutěže o originální český monument. Část prostředků může být věnována na bitcoinovou edukaci prostřednictvím projektu INEV. O konkrétním rozdělení rozhodne Board Satoshi Monument, který je za projekt odpovědný vůči komunitě Jednadvacet.",
     "moreTitle": "Když se vybere víc",
-    "moreBody": "To bude příjemný problém, ale i s tím počítáme. Případný přebytek bude rozdělen mezi:",
-    "moreItems": [
-      "přípravu Varianty 2 (česká originální socha, otevřená umělecká soutěž)",
-      "budget Jednadvacet.org na rozvoj komunity",
-      "podporu bitcoinové edukace prostřednictvím INEV"
-    ],
+    "moreBody": "To bude příjemný problém, ale i s tím počítáme. Případný přebytek bude směřovat na přípravu české originální sochy prostřednictvím otevřené umělecké soutěže. Všechny příspěvky i nad rámec cílové částky budou uvedeny v seznamu přispěvatelů a bude možnost je nadále navyšovat.",
+    "moreItems": [],
     "moreNote": "Přesné rozdělení přebytku zveřejní Board Satoshi Monument i s řádným odůvodněním.",
     "transTitle": "Transparentnost",
     "transBody": "Veškeré příchozí příspěvky jsou pečlivě evidovány. Průběžný stav sbírky je veřejný a viditelný v reálném čase na hlavní stránce. Board Satoshi Monument průběžně informuje komunitu Jednadvacet o stavu projektu."
@@ -172,19 +168,15 @@
     "title": "Touto sochou to nekončí",
     "intro": "Satoshi Monument v Praze ze série Satoshi Gallery je prvním krokem. Ale česká komunita má větší ambice.",
     "s1h": "Praha si zaslouží vlastní symbol",
-    "s1a": "Socha z dílny Satoshi Gallery je světově uznávané dílo a jsme hrdí, že bude stát v Praze. Zároveň věříme, že Česká republika jako jedna z nejvýznamnějších bitcoinových zemí světa má potenciál přinést světu něco originálního — něco, co nevzniklo jinde a nedá se koupit z katalogu. Proto komunita okolo Jednadvacet.org paralelně pracuje na Variantě 2: otevřené soutěži o originální český Satoshi Monument.",
+    "s1a": "Socha z dílny Satoshi Gallery je světově uznávané dílo a jsme hrdí, že bude stát v Praze. Zároveň věříme, že Česká republika jako jedna z nejvýznamnějších bitcoinových zemí světa má potenciál přinést světu něco originálního — něco, co nevzniklo jinde a nedá se koupit z katalogu. Proto komunita okolo Jednadvacet.org paralelně pracuje i na otevřené soutěži o originální český Satoshi Monument.",
     "s2h": "Jak bude soutěž vypadat?",
-    "s2a": "Soutěž bude vypsána ve spolupráci s Nadací pro současné umění Praha (NSU), která zajistí její organizaci, transparentnost a odborné posouzení. NSU je respektovaná instituce s dlouholetou zkušeností s veřejným uměním. Cílem je najít dílo, které:",
-    "s2list": [
-      "vznikne přímo pro český a pražský kontext",
-      "reflektuje hodnoty Bitcoinu — decentralizaci, otevřenost, individuální svobodu",
-      "obstojí jako trvalý veřejný monument i jako umělecké dílo v mezinárodním měřítku"
-    ],
-    "s2foot": "Na přípravu a realizaci výběrového řízení je vyčleněno 100 000 Kč z rezerv Jednadvacet.org a Board aktivně hledá firemní partnery, kteří by přispěli dalšími 100 až 200 tisíci Kč.",
+    "s2a": "Soutěž bude vypsána ve spolupráci s Nadací pro současné umění Praha (NSU), která zajistí její organizaci, transparentnost a odborné posouzení. NSU je respektovaná instituce s dlouholetou zkušeností s veřejným uměním.",
+    "s2list": [],
+    "s2foot": "Na přípravu a realizaci výběrového řízení je vyčleněno 100 000 Kč z budgetu Jednadvacet.org a Board aktivně hledá firemní partnery, kteří by přispěli dalšími 200 tisíci Kč.",
     "s3h": "Open-source dar světu",
     "s3a": "Pokud soutěž přinese umělecké dílo hodné realizace, Jednadvacet.org udělá ještě jeden krok: kompletní dokumentaci vítězného návrhu nabídne světu jako open-source řešení. Jakákoliv komunita kdekoliv na světě bude moci tento návrh sama realizovat. Česká republika tak nepřispěje světovému bitcoinovému příběhu jen jednou sochou — přispěje myšlenkou, kterou si svět může vzít za vlastní.",
     "s4h": "Kdo projekt podporuje",
-    "s4a": "Níže jsou firmy a organizace, které přispěly na přípravu výběrového řízení pro Variantu 2. Jejich podpora umožňuje, aby soutěž mohla proběhnout.",
+    "s4a": "Níže jsou firmy a organizace, které přispěly na přípravu výběrového řízení. Jejich podpora umožňuje, aby soutěž mohla proběhnout.",
     "partnersPlaceholder": "Loga a jména firemních partnerů budou doplněna.",
     "ctaH": "Chcete být součástí?",
     "ctaA": "Jste firma nebo organizace z bitcoinového či krypto průmyslu a chcete podpořit přípravu soutěže? Ozvěte se nám.",
