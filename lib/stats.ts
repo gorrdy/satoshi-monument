@@ -102,11 +102,10 @@ export async function getWall(limit = 200): Promise<WallEntry[]> {
 
   const entries: WallEntry[] = [];
   for (const [key, list] of groups) {
-    // poslední příspěvek (nejnovější confirmedAt) → jméno; poslední neprázdný vzkaz
+    // Řazení podle času ODESLÁNÍ (createdAt) → na zdi se ukáže POSLEDNÍ zadané
+    // jméno/nickname, poslední neprázdný vzkaz a poslední nastavené logo.
     const sorted = [...list].sort(
-      (a, b) =>
-        (a.confirmedAt ?? a.createdAt).getTime() -
-        (b.confirmedAt ?? b.createdAt).getTime(),
+      (a, b) => a.createdAt.getTime() - b.createdAt.getTime(),
     );
     const latest = sorted[sorted.length - 1];
     const lastMsg = [...sorted].reverse().find((r) => r.publicMessage)?.publicMessage ?? null;
