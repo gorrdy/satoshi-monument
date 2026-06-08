@@ -10,25 +10,12 @@ import {
 import type { Stats } from "./ProgressBar";
 import type { WallEntry } from "./SupporterWall";
 
-export interface RecentPayment {
-  name: string;
-  amountBtc: number;
-  currency: string;
-  amount: number;
-  createdAt: string;
-}
-
 interface StatsValue {
   stats: Stats | null;
   wall: WallEntry[];
-  recent: RecentPayment[];
 }
 
-const StatsContext = createContext<StatsValue>({
-  stats: null,
-  wall: [],
-  recent: [],
-});
+const StatsContext = createContext<StatsValue>({ stats: null, wall: [] });
 
 /** Jeden zdroj dat sbírky pro celou stránku — místo 3 nezávislých fetchů. */
 export default function StatsProvider({
@@ -38,20 +25,14 @@ export default function StatsProvider({
 }) {
   const [stats, setStats] = useState<Stats | null>(null);
   const [wall, setWall] = useState<WallEntry[]>([]);
-  const [recent, setRecent] = useState<RecentPayment[]>([]);
 
   const refresh = useCallback(async () => {
     try {
       const res = await fetch("/api/stats", { cache: "no-store" });
       if (!res.ok) return;
-      const data = (await res.json()) as {
-        stats: Stats;
-        wall: WallEntry[];
-        recent: RecentPayment[];
-      };
+      const data = (await res.json()) as { stats: Stats; wall: WallEntry[] };
       setStats(data.stats);
       setWall(data.wall ?? []);
-      setRecent(data.recent ?? []);
     } catch {}
   }, []);
 
@@ -76,7 +57,7 @@ export default function StatsProvider({
   }, [refresh]);
 
   return (
-    <StatsContext.Provider value={{ stats, wall, recent }}>
+    <StatsContext.Provider value={{ stats, wall }}>
       {children}
     </StatsContext.Provider>
   );

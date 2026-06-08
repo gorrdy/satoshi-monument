@@ -38,8 +38,7 @@
     "donors": "přispěvatelů",
     "rate": "kurz",
     "approxCzk": "≈ {czk} Kč",
-    "goalExplainer": "Cíl je 1 BTC. Stačí, aby 2 000 lidí poslalo 50 000 sats — a socha je naše.",
-    "recent": "Poslední příspěvky"
+    "goalExplainer": "Cíl je 1 BTC. Stačí, aby 2 000 lidí poslalo 50 000 sats — a socha je naše."
   },
   "form": {
     "title": "Přispět na sochu",
