@@ -29,6 +29,7 @@ interface ActionBody {
   name?: string;
   publicMessage?: string;
   imageUrl?: string;
+  imageBg?: string;
 }
 
 export async function POST(req: NextRequest) {
@@ -97,6 +98,7 @@ export async function POST(req: NextRequest) {
       name?: string;
       publicMessage?: string | null;
       imageUrl?: string | null;
+      imageBg?: string | null;
     } = {};
     if (typeof body.name === "string") {
       data.name = body.name.trim().slice(0, 80) || "Anonym";
@@ -108,6 +110,11 @@ export async function POST(req: NextRequest) {
       const u = body.imageUrl.trim().slice(0, 500);
       // Povolíme jen http(s) URL, jinak null.
       data.imageUrl = /^https?:\/\//i.test(u) ? u : null;
+    }
+    if (typeof body.imageBg === "string") {
+      const c = body.imageBg.trim();
+      // Jen platný hex (#rgb / #rrggbb), jinak null (= výchozí bílá).
+      data.imageBg = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(c) ? c : null;
     }
     const updated = await prisma.donation.update({ where: { id }, data });
     return NextResponse.json({ ok: true, donation: updated });

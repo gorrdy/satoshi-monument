@@ -19,6 +19,7 @@ model Donation {
   publicMessage   String? // zobrazí se na zdi přispěvatelů
   privateMessage  String? // jen pro organizátory
   imageUrl        String? // volitelné logo/obrázek na kartě (nastavuje admin, např. logo firmy)
+  imageBg         String? // barva pozadí pod logem (hex, např. #ffffff)
 
   status          String    @default("pending") // pending | confirmed | rejected
   hiddenOnWall    Boolean   @default(false) // moderace veřejné zdi

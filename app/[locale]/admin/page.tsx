@@ -13,6 +13,7 @@ interface Donation {
   publicMessage: string | null;
   privateMessage: string | null;
   imageUrl: string | null;
+  imageBg: string | null;
   status: string;
   hiddenOnWall: boolean;
   btcpayInvoiceId: string | null;
@@ -53,7 +54,10 @@ export default function AdminPage() {
   const [busy, setBusy] = useState<string | null>(null);
   const [keyDraft, setKeyDraft] = useState<Record<string, string>>({});
   const [edits, setEdits] = useState<
-    Record<string, { name?: string; publicMessage?: string; imageUrl?: string }>
+    Record<
+      string,
+      { name?: string; publicMessage?: string; imageUrl?: string; imageBg?: string }
+    >
   >({});
   const [fio, setFio] = useState<FioPayment[]>([]);
   const [vsDraft, setVsDraft] = useState<Record<string, string>>({});
@@ -159,6 +163,7 @@ export default function AdminPage() {
         name: edits[d.id]?.name ?? d.name,
         publicMessage: edits[d.id]?.publicMessage ?? d.publicMessage ?? "",
         imageUrl: edits[d.id]?.imageUrl ?? d.imageUrl ?? "",
+        imageBg: edits[d.id]?.imageBg ?? d.imageBg ?? "",
       }),
     });
     setEdits((s) => {
@@ -439,7 +444,9 @@ export default function AdminPage() {
                       (edits[d.id]?.publicMessage ?? d.publicMessage ?? "") ===
                         (d.publicMessage ?? "") &&
                       (edits[d.id]?.imageUrl ?? d.imageUrl ?? "") ===
-                        (d.imageUrl ?? ""))
+                        (d.imageUrl ?? "") &&
+                      (edits[d.id]?.imageBg ?? d.imageBg ?? "") ===
+                        (d.imageBg ?? ""))
                   }
                   className="border border-white/10 bg-white/5 text-white px-2.5 py-1 text-xs font-medium hover:bg-white/10 transition disabled:opacity-40"
                 >
@@ -463,12 +470,28 @@ export default function AdminPage() {
                   className="flex-1 min-w-0 bg-white/5 border border-white/10 px-2 py-1 text-xs font-mono focus:outline-none"
                 />
                 {(edits[d.id]?.imageUrl ?? d.imageUrl) ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={edits[d.id]?.imageUrl ?? d.imageUrl ?? ""}
-                    alt="náhled"
-                    className="w-7 h-7 object-contain rounded bg-white/10 shrink-0"
-                  />
+                  <>
+                    <span className="text-xs text-white/50 shrink-0">Pozadí:</span>
+                    <input
+                      type="color"
+                      value={edits[d.id]?.imageBg ?? d.imageBg ?? "#ffffff"}
+                      onChange={(e) =>
+                        setEdits((s) => ({
+                          ...s,
+                          [d.id]: { ...s[d.id], imageBg: e.target.value },
+                        }))
+                      }
+                      title="Barva pozadí pod logem"
+                      className="w-7 h-7 shrink-0 bg-transparent border border-white/10 rounded cursor-pointer"
+                    />
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={edits[d.id]?.imageUrl ?? d.imageUrl ?? ""}
+                      alt="náhled"
+                      className="w-7 h-7 object-contain rounded shrink-0"
+                      style={{ background: edits[d.id]?.imageBg ?? d.imageBg ?? "#ffffff" }}
+                    />
+                  </>
                 ) : null}
               </div>
 

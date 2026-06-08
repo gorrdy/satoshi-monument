@@ -30,6 +30,7 @@ export interface WallEntry {
   count?: number;
   createdAt: string;
   imageUrl?: string | null;
+  imageBg?: string | null;
   items?: WallItem[];
 }
 
@@ -41,7 +42,8 @@ function Avatar({ entry }: { entry: WallEntry }) {
       <img
         src={entry.imageUrl}
         alt={entry.name}
-        className="w-full h-full object-contain bg-white"
+        className="w-full h-full object-contain"
+        style={{ background: entry.imageBg || "#ffffff" }}
       />
     );
   }
