@@ -237,7 +237,7 @@ export default function SupporterWall({
             className="ui-btn press px-5 py-2.5 text-sm"
             aria-expanded={expanded}
           >
-            {expanded ? t("showLess") : `${t("showMore")} (${wall.length})`}
+            {expanded ? t("showLess") : `${t("showMore")} (${wall.length - TOP_N})`}
             <span
               className={`inline-block transition-transform ${expanded ? "rotate-180" : ""}`}
             >
