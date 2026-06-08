@@ -55,9 +55,23 @@ export default function Varianta2Content() {
 
           <Section h={t("s4h")}>
             <p>{t("s4a")}</p>
-            <div className="ui-card p-6 text-center ui-muted text-sm mt-2">
-              {t("partnersPlaceholder")}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-3">
+              <a
+                href="https://2bminer.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="2Bminer"
+                className="flex items-center justify-center bg-white rounded-[var(--radius-sm)] ui-border p-5 h-24 hover:brightness-105 transition"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/partners/2bminer.svg"
+                  alt="2Bminer"
+                  className="max-h-12 w-auto object-contain"
+                />
+              </a>
             </div>
+            <p className="ui-muted text-sm mt-3">{t("partnersPlaceholder")}</p>
           </Section>
 
           {/* CTA pro partnery */}
