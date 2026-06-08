@@ -23,6 +23,7 @@ model Donation {
 
   status          String    @default("pending") // pending | confirmed | rejected
   hiddenOnWall    Boolean   @default(false) // moderace veřejné zdi
+  btcPurchased    Boolean   @default(false) // fiat: už za to bylo nakoupeno BTC na burze
 
   btcpayInvoiceId String? // pro BTC platby
   variableSymbol  String? // pro CZK platby (párování příchozího převodu)

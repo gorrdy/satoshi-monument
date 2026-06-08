@@ -16,6 +16,7 @@ interface Donation {
   imageBg: string | null;
   status: string;
   hiddenOnWall: boolean;
+  btcPurchased: boolean;
   btcpayInvoiceId: string | null;
   variableSymbol: string | null;
   paymentRef: string | null;
@@ -56,7 +57,10 @@ export default function AdminPage() {
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState<string | null>(null);
   const [filter, setFilter] = useState("pending");
-  const [view, setView] = useState<"payments" | "analytics">("payments");
+  const [view, setView] = useState<"payments" | "analytics" | "fiat">(
+    "payments",
+  );
+  const [fiatList, setFiatList] = useState<Donation[]>([]);
   const [donations, setDonations] = useState<Donation[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
   const [keyDraft, setKeyDraft] = useState<Record<string, string>>({});
@@ -101,6 +105,44 @@ export default function AdminPage() {
   useEffect(() => {
     load(filter);
   }, [filter, load]);
+
+  // Checklist nákupu BTC za fiat: potvrzené CZK platby (nejstarší první).
+  const loadFiat = useCallback(async () => {
+    const res = await fetch("/api/admin/donations?status=confirmed", {
+      cache: "no-store",
+    });
+    if (!res.ok) return;
+    const data = (await res.json()) as { donations: Donation[] };
+    setFiatList(
+      data.donations
+        .filter((d) => d.currency === "CZK")
+        .sort((a, b) => a.createdAt.localeCompare(b.createdAt)),
+    );
+  }, []);
+
+  useEffect(() => {
+    if (view === "fiat") loadFiat();
+  }, [view, loadFiat]);
+
+  const togglePurchased = async (d: Donation) => {
+    setBusy("buy" + d.id);
+    // optimisticky překlopit
+    setFiatList((list) =>
+      list.map((x) =>
+        x.id === d.id ? { ...x, btcPurchased: !x.btcPurchased } : x,
+      ),
+    );
+    await fetch("/api/admin/donations", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: d.id,
+        action: "setPurchased",
+        purchased: !d.btcPurchased,
+      }),
+    });
+    setBusy(null);
+  };
 
   const actFio = async (id: string, action: string, vs?: string) => {
     setBusy("fio" + id + action);
@@ -252,6 +294,7 @@ export default function AdminPage() {
       <div className="flex gap-2 mb-6 border-b border-white/10 pb-4">
         {([
           { key: "payments", label: "Platby" },
+          { key: "fiat", label: "Nákup BTC za fiat" },
           { key: "analytics", label: "Analytika" },
         ] as const).map((tb) => (
           <button
@@ -270,6 +313,95 @@ export default function AdminPage() {
 
       {view === "analytics" ? (
         <AdminAnalytics />
+      ) : view === "fiat" ? (
+        (() => {
+          const todo = fiatList.filter((d) => !d.btcPurchased);
+          const done = fiatList.filter((d) => d.btcPurchased);
+          const sum = (arr: Donation[], f: (d: Donation) => number) =>
+            arr.reduce((s, d) => s + f(d), 0);
+          const czk = (n: number) => Math.round(n).toLocaleString("cs-CZ");
+          const btc = (n: number) => n.toFixed(8);
+          return (
+            <div>
+              <p className="text-sm text-white/50 mb-4">
+                Potvrzené CZK platby. Zaškrtni, za co už jsi nakoupil BTC na burze.
+                BTC částka = přepočet zafixovaný v okamžiku přijetí platby.
+              </p>
+
+              {/* Souhrn k nákupu */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+                <div className="rounded-xl bg-amber-500/10 border border-amber-500/30 p-3">
+                  <div className="text-xs text-white/50">Zbývá nakoupit (CZK)</div>
+                  <div className="text-lg font-bold text-amber-300">
+                    {czk(sum(todo, (d) => d.amount))} Kč
+                  </div>
+                </div>
+                <div className="rounded-xl bg-amber-500/10 border border-amber-500/30 p-3">
+                  <div className="text-xs text-white/50">Zbývá nakoupit (BTC)</div>
+                  <div className="text-lg font-bold font-mono text-amber-300">
+                    {btc(sum(todo, (d) => d.amountBtc ?? 0))}
+                  </div>
+                </div>
+                <div className="rounded-xl bg-green-500/10 border border-green-500/30 p-3">
+                  <div className="text-xs text-white/50">Nakoupeno (CZK)</div>
+                  <div className="text-lg font-bold text-green-300">
+                    {czk(sum(done, (d) => d.amount))} Kč
+                  </div>
+                </div>
+                <div className="rounded-xl bg-green-500/10 border border-green-500/30 p-3">
+                  <div className="text-xs text-white/50">Nakoupeno (BTC)</div>
+                  <div className="text-lg font-bold font-mono text-green-300">
+                    {btc(sum(done, (d) => d.amountBtc ?? 0))}
+                  </div>
+                </div>
+              </div>
+
+              {fiatList.length === 0 ? (
+                <p className="text-white/50 py-8 text-center">
+                  Zatím žádné potvrzené CZK platby.
+                </p>
+              ) : (
+                <ul className="space-y-2">
+                  {fiatList.map((d) => (
+                    <li
+                      key={d.id}
+                      className={`flex items-center gap-3 rounded-xl border p-3 transition-colors ${
+                        d.btcPurchased
+                          ? "border-green-500/30 bg-green-500/5 opacity-70"
+                          : "border-white/10 bg-white/5"
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={d.btcPurchased}
+                        disabled={busy === "buy" + d.id}
+                        onChange={() => togglePurchased(d)}
+                        className="w-5 h-5 shrink-0 accent-green-500 cursor-pointer"
+                      />
+                      <div className="min-w-0 flex-1">
+                        <span
+                          className={`font-semibold ${d.btcPurchased ? "line-through text-white/50" : ""}`}
+                        >
+                          {d.name}
+                        </span>
+                        <span className="text-white/40 text-xs ml-2">
+                          {new Date(d.createdAt).toLocaleDateString("cs-CZ")}
+                          {d.variableSymbol ? ` · VS ${d.variableSymbol}` : ""}
+                        </span>
+                      </div>
+                      <span className="font-mono text-sm whitespace-nowrap">
+                        {czk(d.amount)} Kč
+                      </span>
+                      <span className="font-mono text-sm text-accent whitespace-nowrap">
+                        {btc(d.amountBtc ?? 0)} BTC
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          );
+        })()
       ) : (
       <>
       <div className="flex flex-wrap gap-2 mb-6">

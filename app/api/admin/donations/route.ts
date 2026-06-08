@@ -34,12 +34,20 @@ export async function GET(req: NextRequest) {
 
 interface ActionBody {
   id?: string;
-  action?: "confirm" | "reject" | "hide" | "unhide" | "setKey" | "edit";
+  action?:
+    | "confirm"
+    | "reject"
+    | "hide"
+    | "unhide"
+    | "setKey"
+    | "edit"
+    | "setPurchased";
   donorKey?: string;
   name?: string;
   publicMessage?: string;
   imageUrl?: string;
   imageBg?: string;
+  purchased?: boolean;
 }
 
 export async function POST(req: NextRequest) {
@@ -99,6 +107,14 @@ export async function POST(req: NextRequest) {
     const updated = await prisma.donation.update({
       where: { id },
       data: { donorKey },
+    });
+    return NextResponse.json({ ok: true, donation: updated });
+  }
+
+  if (action === "setPurchased") {
+    const updated = await prisma.donation.update({
+      where: { id },
+      data: { btcPurchased: body.purchased === true },
     });
     return NextResponse.json({ ok: true, donation: updated });
   }
