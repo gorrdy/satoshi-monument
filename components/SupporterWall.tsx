@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { formatBtc } from "@/lib/format";
+import { formatBtc, formatCzk } from "@/lib/format";
 import Reveal from "./Reveal";
 import Identicon from "./Identicon";
 
@@ -57,9 +57,6 @@ function amountLabel(entry: WallEntry): string {
   return `${formatBtc(entry.amountBtc ?? entry.amount)} BTC`;
 }
 
-function itemAmountLabel(it: WallItem): string {
-  return `${formatBtc(it.amountBtc)} BTC`;
-}
 
 export default function SupporterWall({
   wall,
@@ -293,7 +290,12 @@ export default function SupporterWall({
                   <li key={idx} className="ui-soft ui-border rounded-[var(--radius-sm)] p-3">
                     <div className="flex items-baseline justify-between gap-2">
                       <span className="ui-mono font-bold ui-accent">
-                        {itemAmountLabel(it)}
+                        {formatBtc(it.amountBtc)} BTC
+                        {it.currency === "CZK" && (
+                          <span className="ui-muted font-normal">
+                            {" "}· {formatCzk(it.amount)} Kč
+                          </span>
+                        )}
                       </span>
                       <span className="text-xs ui-muted">{fmtDate(it.createdAt)}</span>
                     </div>
