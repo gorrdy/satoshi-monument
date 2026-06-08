@@ -48,6 +48,9 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: "meta" });
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
   return {
+    verification: {
+      google: "EH2hfAAUAo7H4UPkWSGNF-F6pRPrbDGVoTTP9FXPit0",
+    },
     metadataBase: new URL(siteUrl),
     title: t("title"),
     description: t("description"),
