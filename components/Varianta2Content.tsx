@@ -61,7 +61,7 @@ export default function Varianta2Content() {
                 target="_blank"
                 rel="noopener noreferrer"
                 title="2Bminer"
-                className="flex items-center justify-center bg-white rounded-[var(--radius-sm)] ui-border p-5 h-24 hover:brightness-105 transition"
+                className="flex items-center justify-center ui-soft ui-border rounded-[var(--radius-sm)] p-5 h-24 hover:brightness-110 transition"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
