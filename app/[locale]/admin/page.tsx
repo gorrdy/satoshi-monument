@@ -43,6 +43,13 @@ const FILTERS = [
   { key: "all", label: "Vše" },
 ];
 
+const STATUS_LABEL: Record<string, string> = {
+  pending: "Čekající",
+  confirmed: "Potvrzeno",
+  expired: "Expirováno",
+  rejected: "Zamítnuto",
+};
+
 export default function AdminPage() {
   const [authed, setAuthed] = useState<boolean | null>(null);
   const [username, setUsername] = useState("");
@@ -61,6 +68,7 @@ export default function AdminPage() {
   >({});
   const [fio, setFio] = useState<FioPayment[]>([]);
   const [vsDraft, setVsDraft] = useState<Record<string, string>>({});
+  const [counts, setCounts] = useState<Record<string, number>>({});
 
   const loadFio = useCallback(async () => {
     const res = await fetch("/api/admin/fio-payments", { cache: "no-store" });
@@ -79,8 +87,12 @@ export default function AdminPage() {
         return;
       }
       setAuthed(true);
-      const data = (await res.json()) as { donations: Donation[] };
+      const data = (await res.json()) as {
+        donations: Donation[];
+        counts?: Record<string, number>;
+      };
       setDonations(data.donations);
+      if (data.counts) setCounts(data.counts);
       loadFio();
     },
     [loadFio],
@@ -260,20 +272,30 @@ export default function AdminPage() {
         <AdminAnalytics />
       ) : (
       <>
-      <div className="flex gap-2 mb-6">
-        {FILTERS.map((f) => (
-          <button
-            key={f.key}
-            onClick={() => setFilter(f.key)}
-            className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
-              filter === f.key
-                ? "bg-accent text-black font-semibold"
-                : "bg-white/5 text-white/60 hover:text-white"
-            }`}
-          >
-            {f.label}
-          </button>
-        ))}
+      <div className="flex flex-wrap gap-2 mb-6">
+        {FILTERS.map((f) => {
+          const c = counts[f.key];
+          return (
+            <button
+              key={f.key}
+              onClick={() => setFilter(f.key)}
+              className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
+                filter === f.key
+                  ? "bg-accent text-black font-semibold"
+                  : "bg-white/5 text-white/60 hover:text-white"
+              }`}
+            >
+              {f.label}
+              {c != null && (
+                <span
+                  className={`ml-1.5 ${filter === f.key ? "opacity-70" : "opacity-50"}`}
+                >
+                  {c}
+                </span>
+              )}
+            </button>
+          );
+        })}
       </div>
 
       {/* Nepárované příchozí platby z Fio */}
@@ -367,7 +389,7 @@ export default function AdminPage() {
                             : "bg-amber-500/20 text-amber-300"
                     }`}
                   >
-                    {d.status}
+                    {STATUS_LABEL[d.status] ?? d.status}
                   </span>
                   <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-white/60">
                     {d.currency}

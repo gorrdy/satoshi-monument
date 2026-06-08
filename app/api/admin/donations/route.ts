@@ -13,13 +13,23 @@ export async function GET(req: NextRequest) {
   const status = req.nextUrl.searchParams.get("status"); // pending | confirmed | rejected | all
   const where = status && status !== "all" ? { status } : {};
 
-  const donations = await prisma.donation.findMany({
-    where,
-    orderBy: { createdAt: "desc" },
-    take: 500,
-  });
+  const [donations, grouped] = await Promise.all([
+    prisma.donation.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      take: 500,
+    }),
+    prisma.donation.groupBy({ by: ["status"], _count: { _all: true } }),
+  ]);
 
-  return NextResponse.json({ donations });
+  // Počty podle stavu (pro přehled v adminu).
+  const counts: Record<string, number> = { all: 0 };
+  for (const g of grouped) {
+    counts[g.status] = g._count._all;
+    counts.all += g._count._all;
+  }
+
+  return NextResponse.json({ donations, counts });
 }
 
 interface ActionBody {
