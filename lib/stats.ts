@@ -49,6 +49,14 @@ export async function getStats(): Promise<CampaignStats> {
   };
 }
 
+export interface WallItem {
+  amount: number;
+  currency: string; // "BTC" | "CZK"
+  amountBtc: number;
+  publicMessage: string | null;
+  createdAt: string;
+}
+
 export interface WallEntry {
   id: string;
   name: string;
@@ -58,6 +66,7 @@ export interface WallEntry {
   publicMessage: string | null;
   count: number; // počet sečtených plateb
   createdAt: string;
+  items: WallItem[]; // jednotlivé příspěvky (od nejnovějšího) — veřejná data
 }
 
 export async function getWall(limit = 200): Promise<WallEntry[]> {
@@ -114,6 +123,15 @@ export async function getWall(limit = 200): Promise<WallEntry[]> {
       amount = totalBtc;
     }
 
+    // Rozpis jednotlivých příspěvků (od nejnovějšího) — jen veřejná pole.
+    const items: WallItem[] = [...sorted].reverse().map((r) => ({
+      amount: r.amount,
+      currency: r.currency,
+      amountBtc: r.amountBtc ?? 0,
+      publicMessage: r.publicMessage,
+      createdAt: (r.confirmedAt ?? r.createdAt).toISOString(),
+    }));
+
     entries.push({
       id: publicGroupId(key),
       name: latest.name,
@@ -123,6 +141,7 @@ export async function getWall(limit = 200): Promise<WallEntry[]> {
       publicMessage: lastMsg,
       count: list.length,
       createdAt: (latest.confirmedAt ?? latest.createdAt).toISOString(),
+      items,
     });
   }
 

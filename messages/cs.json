@@ -99,7 +99,10 @@
     "principle": "Přispěvatelé jsou řazeni od největšího příspěvku. Více plateb se stejným identifikátorem se sčítá. Tento seznam bude trvalou součástí webu sochy — QR na podstavci na něj povede.",
     "principleLink": "Jak se počítají příspěvky?",
     "searchPlaceholder": "Najdi své jméno…",
-    "noMatch": "Nikoho takového jsme nenašli."
+    "noMatch": "Nikoho takového jsme nenašli.",
+    "showAll": "Zobrazit všechny příspěvky",
+    "allContributions": "Všechny příspěvky",
+    "contribution": "příspěvek"
   },
   "about": {
     "title": "O projektu",
