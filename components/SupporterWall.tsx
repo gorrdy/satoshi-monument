@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { formatBtc, formatCzk } from "@/lib/format";
+import { formatBtc } from "@/lib/format";
 import Reveal from "./Reveal";
 import Identicon from "./Identicon";
 
@@ -52,17 +52,13 @@ function Avatar({ entry }: { entry: WallEntry }) {
   );
 }
 
+// Vše v BTC — ekvivalent zafixovaný v okamžiku přijetí platby.
 function amountLabel(entry: WallEntry): string {
-  if (entry.currency === "CZK") return `${formatCzk(entry.amount)} Kč`;
-  if (entry.currency === "MIX")
-    return `≈ ${formatBtc(entry.amountBtc ?? entry.amount)} BTC`;
-  return `${formatBtc(entry.amount)} BTC`;
+  return `${formatBtc(entry.amountBtc ?? entry.amount)} BTC`;
 }
 
 function itemAmountLabel(it: WallItem): string {
-  return it.currency === "CZK"
-    ? `${formatCzk(it.amount)} Kč`
-    : `${formatBtc(it.amount)} BTC`;
+  return `${formatBtc(it.amountBtc)} BTC`;
 }
 
 export default function SupporterWall({
