@@ -140,7 +140,6 @@ export default function DonationForm({
   const range = RANGES[method];
   const amtNum = parseFloat(amount.replace(",", "."));
   const safeAmt = Number.isFinite(amtNum) && amtNum > 0 ? amtNum : range.min;
-  const pct = Math.round(toPos(safeAmt, range.min, range.max) * 100);
   // Jednotka zobrazení: u CZK vždy CZK; u BTC dle zvoleného přepínače (klikem).
   // CZK volba bez kurzu spadne zpět na sats.
   const unit =
@@ -159,6 +158,27 @@ export default function DonationForm({
         : unit === "CZK" && czkRate
           ? String(Math.round((safeAmt / SATS_PER_BTC) * czkRate))
           : amount;
+
+  // Doména posuvníku v aktuální jednotce. Při zobrazení v CZK (i u BTC platby)
+  // respektuje limity bankovního převodu 250–1 000 000 Kč.
+  const dom =
+    method !== "BTC"
+      ? { min: 250, max: 1_000_000 }
+      : unit === "BTC"
+        ? { min: RANGES.BTC.min / SATS_PER_BTC, max: RANGES.BTC.max / SATS_PER_BTC }
+        : unit === "CZK" && czkRate
+          ? { min: 250, max: 1_000_000 }
+          : { min: RANGES.BTC.min, max: RANGES.BTC.max }; // sats
+
+  // Aktuální hodnota přepočtená do jednotky posuvníku.
+  const dispVal =
+    method !== "BTC"
+      ? safeAmt
+      : unit === "BTC"
+        ? safeAmt / SATS_PER_BTC
+        : unit === "CZK" && czkRate
+          ? (safeAmt / SATS_PER_BTC) * czkRate
+          : safeAmt; // sats
 
   // Klik na štítek → cyklus sats → BTC → CZK (CZK jen když máme kurz).
   const cycleUnit = () =>
@@ -186,12 +206,21 @@ export default function DonationForm({
   const selectMethod = (m: Method) => {
     setMethod(m);
     setAmount(DEFAULTS[m]);
+    setBtcDisplay("sats");
   };
 
   const onSlider = (e: React.ChangeEvent<HTMLInputElement>) => {
     const p = Number(e.target.value) / 1000;
-    const v = fromPos(p, range.min, range.max);
-    setAmount(String(method === "BTC" ? roundSats(v) : roundCzk(v)));
+    const v = fromPos(p, dom.min, dom.max);
+    if (method !== "BTC") {
+      setAmount(String(roundCzk(v)));
+    } else if (unit === "BTC") {
+      setAmount(String(roundSats(v * SATS_PER_BTC)));
+    } else if (unit === "CZK" && czkRate) {
+      setAmount(String(Math.round((roundCzk(v) / czkRate) * SATS_PER_BTC)));
+    } else {
+      setAmount(String(roundSats(v))); // sats
+    }
   };
 
   const submit = async (e: React.FormEvent) => {
@@ -239,12 +268,11 @@ export default function DonationForm({
     }
   };
 
-  // Meze posuvníku v aktuálně zvolené jednotce.
-  const fmtBound = (v: number) => {
+  // Popisek meze — hodnota už je v jednotce posuvníku (dom).
+  const boundLabel = (v: number) => {
     if (method !== "BTC") return `${v.toLocaleString("cs-CZ")} Kč`;
-    if (unit === "BTC") return `${trimBtc(v / SATS_PER_BTC)} BTC`;
-    if (unit === "CZK" && czkRate)
-      return `${Math.round((v / SATS_PER_BTC) * czkRate).toLocaleString("cs-CZ")} Kč`;
+    if (unit === "BTC") return `${trimBtc(v)} BTC`;
+    if (unit === "CZK") return `${Math.round(v).toLocaleString("cs-CZ")} Kč`;
     return `${v.toLocaleString("cs-CZ")} sats`;
   };
 
@@ -378,14 +406,14 @@ export default function DonationForm({
             type="range"
             min={0}
             max={1000}
-            value={Math.round(toPos(safeAmt, range.min, range.max) * 1000)}
+            value={Math.round(toPos(dispVal, dom.min, dom.max) * 1000)}
             onChange={onSlider}
             className="range-accent mt-3"
             aria-label={t("amount")}
           />
           <div className="flex justify-between ui-mono text-xs ui-muted mt-1.5">
-            <span>{fmtBound(range.min)}</span>
-            <span>{fmtBound(range.max)}</span>
+            <span>{boundLabel(dom.min)}</span>
+            <span>{boundLabel(dom.max)}</span>
           </div>
         </div>
 
