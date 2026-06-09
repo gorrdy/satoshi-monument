@@ -9,6 +9,7 @@ export const dynamic = "force-dynamic";
 
 const MIN_CZK = 250; // minimální fiat příspěvek
 const MAX_CZK = 5_000_000; // horní strop fiat příspěvku (sanity limit)
+const MIN_BTC = 0.0001; // minimální BTC příspěvek (10 000 sats)
 const MAX_BTC = 21; // horní strop BTC příspěvku (sanity limit)
 
 const BANK_ACCOUNT = process.env.BANK_ACCOUNT ?? "";
@@ -60,7 +61,7 @@ export async function POST(req: NextRequest) {
   if (currency === "CZK" && (amount < MIN_CZK || amount > MAX_CZK)) {
     return NextResponse.json({ error: "invalid_amount" }, { status: 400 });
   }
-  if (currency === "BTC" && amount > MAX_BTC) {
+  if (currency === "BTC" && (amount < MIN_BTC || amount > MAX_BTC)) {
     return NextResponse.json({ error: "invalid_amount" }, { status: 400 });
   }
 

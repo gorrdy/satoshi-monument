@@ -8,7 +8,7 @@ type Method = "CZK" | "BTC";
 
 const RANGES: Record<Method, { min: number; max: number }> = {
   CZK: { min: 250, max: 1_000_000 },
-  BTC: { min: 0.00001, max: 1 },
+  BTC: { min: 0.0001, max: 1 },
 };
 const DEFAULTS: Record<Method, string> = { CZK: "500", BTC: "0.0005" };
 
