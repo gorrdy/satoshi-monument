@@ -4,7 +4,6 @@ import { useTranslations } from "next-intl";
 import ProgressBar from "./ProgressBar";
 import SupporterWall from "./SupporterWall";
 import Reveal from "./Reveal";
-import ShareCampaign from "./ShareCampaign";
 import { useCampaignStats } from "./StatsProvider";
 
 export default function Campaign() {
@@ -20,9 +19,6 @@ export default function Campaign() {
           <p className="mt-6 ui-border-t pt-5 text-center text-sm ui-muted">
             <span className="ui-accent">⚡</span> {t("progress.goalExplainer")}
           </p>
-        </div>
-        <div className="mt-6">
-          <ShareCampaign />
         </div>
       </section>
 

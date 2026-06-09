@@ -209,6 +209,8 @@
   "share": {
     "title": "Share the fundraiser",
     "lead": "Help build the statue sooner — share the live status with your friends.",
-    "download": "Status image"
+    "download": "Status image",
+    "copy": "Copy link",
+    "copied": "Copied"
   }
 }
