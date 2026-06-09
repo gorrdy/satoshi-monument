@@ -1,11 +1,24 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useLocaleSwitch } from "./I18nProvider";
+import { CONFETTI_KEY } from "@/lib/confetti";
 
 export default function SiteFooter() {
   const t = useTranslations();
   const { locale } = useLocaleSwitch();
+  const [confetti, setConfetti] = useState(true);
+
+  useEffect(() => {
+    setConfetti(localStorage.getItem(CONFETTI_KEY) !== "off");
+  }, []);
+
+  const toggleConfetti = () => {
+    const next = !confetti;
+    setConfetti(next);
+    localStorage.setItem(CONFETTI_KEY, next ? "on" : "off");
+  };
 
   return (
     <footer className="mt-auto px-4 py-12 ui-soft text-center text-sm ui-muted">
@@ -25,7 +38,7 @@ export default function SiteFooter() {
 
         <p className="mb-3">{t("footer.tagline")}</p>
         <p className="max-w-xl mx-auto mb-3">{t("footer.org")}</p>
-        <p>
+        <p className="mb-4">
           <a
             href="mailto:monument@jednadvacet.org"
             className="ui-accent hover:underline"
@@ -33,6 +46,14 @@ export default function SiteFooter() {
             monument@jednadvacet.org
           </a>
         </p>
+
+        <button
+          onClick={toggleConfetti}
+          className="ui-link ui-eyebrow"
+          aria-pressed={confetti}
+        >
+          {confetti ? t("footer.confettiHide") : t("footer.confettiShow")}
+        </button>
       </div>
     </footer>
   );

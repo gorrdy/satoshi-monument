@@ -5,10 +5,12 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import type { Stats } from "./ProgressBar";
 import type { WallEntry } from "./SupporterWall";
+import { fireConfetti } from "@/lib/confetti";
 
 interface StatsValue {
   stats: Stats | null;
@@ -25,12 +27,20 @@ export default function StatsProvider({
 }) {
   const [stats, setStats] = useState<Stats | null>(null);
   const [wall, setWall] = useState<WallEntry[]>([]);
+  // Předchozí vybraná částka — nárůst = právě přišla nová platba → konfety.
+  const prevRaised = useRef<number | null>(null);
 
   const refresh = useCallback(async () => {
     try {
       const res = await fetch("/api/stats", { cache: "no-store" });
       if (!res.ok) return;
       const data = (await res.json()) as { stats: Stats; wall: WallEntry[] };
+      const raised = data.stats?.raisedBtc ?? 0;
+      // Při prvním načtení jen zapamatovat; potom oslavit každý nárůst.
+      if (prevRaised.current !== null && raised > prevRaised.current + 1e-9) {
+        fireConfetti();
+      }
+      prevRaised.current = raised;
       setStats(data.stats);
       setWall(data.wall ?? []);
     } catch {}

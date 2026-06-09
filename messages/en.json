@@ -117,7 +117,9 @@
     "tagline": "Fundraiser for the statue of Satoshi Nakamoto in Prague",
     "admin": "Admin",
     "org": "A project of the Jednadvacet.org community under the auspices of The Malahar Network z.s.",
-    "photoCredit": "Lugano statue photos: satoshigallery.com · Wikimedia Commons (CC BY-SA)"
+    "photoCredit": "Lugano statue photos: satoshigallery.com · Wikimedia Commons (CC BY-SA)",
+    "confettiHide": "Hide confetti 🎉",
+    "confettiShow": "Show confetti 🎉"
   },
   "princip": {
     "title": "How contributions are counted",
