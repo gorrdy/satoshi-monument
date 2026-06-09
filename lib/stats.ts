@@ -4,7 +4,7 @@
 
 import crypto from "crypto";
 import { prisma } from "./prisma";
-import { getBtcCzkRate } from "./price";
+import { getBtcCzkRate, getBtcUsdRate } from "./price";
 
 // Neodvoditelné id skupiny pro veřejnou zeď (nesmí prozradit donorKey/e-mail).
 function publicGroupId(key: string): string {
@@ -19,6 +19,7 @@ export interface CampaignStats {
   percent: number;
   donorCount: number;
   btcCzkRate: number;
+  btcUsdRate: number;
   raisedCzk: number;
 }
 
@@ -29,7 +30,10 @@ export async function getStats(): Promise<CampaignStats> {
   });
 
   const raisedBtc = confirmed.reduce((sum, d) => sum + (d.amountBtc ?? 0), 0);
-  const btcCzkRate = await getBtcCzkRate();
+  const [btcCzkRate, btcUsdRate] = await Promise.all([
+    getBtcCzkRate(),
+    getBtcUsdRate(),
+  ]);
 
   // Unikátní přispěvatelé: seskupení podle donorKey (kdo nemá klíč = samostatně),
   // stejně jako na zdi — víc plateb jednoho dárce = jeden přispěvatel.
@@ -45,6 +49,7 @@ export async function getStats(): Promise<CampaignStats> {
     percent,
     donorCount: donors.size,
     btcCzkRate,
+    btcUsdRate,
     raisedCzk: raisedBtc * btcCzkRate,
   };
 }

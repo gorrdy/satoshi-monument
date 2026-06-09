@@ -62,6 +62,7 @@ export default function AdminPage() {
   );
   const [fiatList, setFiatList] = useState<Donation[]>([]);
   const [btcRate, setBtcRate] = useState<number | null>(null);
+  const [btcUsd, setBtcUsd] = useState<number | null>(null);
   const [donations, setDonations] = useState<Donation[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
   const [keyDraft, setKeyDraft] = useState<Record<string, string>>({});
@@ -123,8 +124,11 @@ export default function AdminPage() {
     try {
       const s = await fetch("/api/stats", { cache: "no-store" });
       if (s.ok) {
-        const sd = (await s.json()) as { stats?: { btcCzkRate?: number } };
+        const sd = (await s.json()) as {
+          stats?: { btcCzkRate?: number; btcUsdRate?: number };
+        };
         if (sd.stats?.btcCzkRate) setBtcRate(sd.stats.btcCzkRate);
+        if (sd.stats?.btcUsdRate) setBtcUsd(sd.stats.btcUsdRate);
       }
     } catch {}
   }, []);
@@ -383,6 +387,13 @@ export default function AdminPage() {
                 const shortBtc = btcOwed - btcBuyableNow; // + = jsme short (cena vzrostla)
                 const positionCzk = czkTodo - btcOwed * btcRate; // + = přebytek, − = ztráta
                 const isShort = shortBtc > 0;
+                // Break-even: kurz, při kterém držené CZK koupí přesně dlužené BTC.
+                const breakEvenCzk = btcOwed > 0 ? czkTodo / btcOwed : 0;
+                // Převod na USD přes poměr aktuálních kurzů (czkPerUsd = czk/usd).
+                const breakEvenUsd =
+                  btcUsd && btcRate ? breakEvenCzk * (btcUsd / btcRate) : 0;
+                const usd = (n: number) =>
+                  "$" + Math.round(n).toLocaleString("en-US");
                 return (
                   <div className="rounded-xl border border-white/15 bg-white/5 p-4 mb-6">
                     <div className="flex items-center justify-between mb-3">
@@ -393,7 +404,7 @@ export default function AdminPage() {
                         kurz {czk(btcRate)} Kč/BTC
                       </span>
                     </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                       <div>
                         <div className="text-xs text-white/50">
                           Dlužíme dárcům (BTC)
@@ -427,6 +438,17 @@ export default function AdminPage() {
                         >
                           {positionCzk >= 0 ? "+" : "−"}
                           {czk(Math.abs(positionCzk))} Kč
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-white/50">
+                          Break-even cena BTC
+                        </div>
+                        <div className="font-mono font-bold">
+                          {breakEvenUsd ? usd(breakEvenUsd) : "—"}
+                        </div>
+                        <div className="text-xs text-white/40">
+                          {czk(breakEvenCzk)} Kč · pod ní jsi v plusu
                         </div>
                       </div>
                     </div>
