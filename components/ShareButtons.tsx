@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useTranslations } from "next-intl";
 
 // Loga sítí (24×24, fill currentColor) — jednotný vzhled v kroužcích.
@@ -68,7 +67,6 @@ export default function ShareButtons({
   downloadHref?: string;
 }) {
   const t = useTranslations("share");
-  const [copied, setCopied] = useState(false);
 
   const u = encodeURIComponent(url);
   const tx = encodeURIComponent(text);
@@ -78,14 +76,6 @@ export default function ShareButtons({
     { key: "whatsapp", label: "WhatsApp", href: `https://wa.me/?text=${tx}%20${u}` },
     { key: "facebook", label: "Facebook", href: `https://www.facebook.com/sharer/sharer.php?u=${u}` },
   ];
-
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {}
-  };
 
   return (
     <div className="flex flex-wrap items-center justify-center gap-3">
@@ -101,18 +91,6 @@ export default function ShareButtons({
           </svg>
         </Circle>
       )}
-      <Circle label={copied ? t("copied") : t("copy")} onClick={copy}>
-        {copied ? (
-          <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-            <path d="M5 12.5l4.5 4.5L19 7" />
-          </svg>
-        ) : (
-          <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-            <rect x="9" y="9" width="11" height="11" rx="2" />
-            <path d="M5 15V5a2 2 0 012-2h10" />
-          </svg>
-        )}
-      </Circle>
     </div>
   );
 }
