@@ -189,5 +189,19 @@
     "close": "Zavřít",
     "loading": "Načítám…",
     "back": "Zpět na hlavní stránku"
+  },
+  "diky": {
+    "title": "Díky, že stavíš Satoshiho!",
+    "lead": "Tvůj příspěvek je na cestě a brzy se objeví na zdi přispěvatelů. Každý sat nás přibližuje k soše Satoshiho v Praze.",
+    "shareTitle": "Pomoz to rozšířit",
+    "shareLead": "Sbírka stojí na komunitě. Když dáš vědět svým známým a kamarádům, socha vznikne dřív. Sdílej:",
+    "shareText": "Právě jsem přispěl na sochu Satoshiho Nakamota v Praze. Přidej se a buď součástí historie! 🟠⚡",
+    "x": "Sdílet na X",
+    "telegram": "Sdílet na Telegramu",
+    "whatsapp": "Sdílet na WhatsAppu",
+    "facebook": "Sdílet na Facebooku",
+    "copy": "Kopírovat odkaz",
+    "copied": "Odkaz zkopírován",
+    "back": "Zpět na hlavní stránku"
   }
 }

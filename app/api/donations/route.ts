@@ -7,7 +7,6 @@ import QRCode from "qrcode";
 
 export const dynamic = "force-dynamic";
 
-const MIN_CZK = 250; // minimální fiat příspěvek
 const MAX_CZK = 5_000_000; // horní strop fiat příspěvku (sanity limit)
 const MAX_BTC = 21; // horní strop BTC příspěvku (sanity limit)
 
@@ -33,6 +32,7 @@ interface Body {
   publicMessage?: string;
   privateMessage?: string;
   donorKey?: string; // identifikátor pro párování plateb
+  locale?: string; // pro redirect na děkovnou stránku
 }
 
 export async function POST(req: NextRequest) {
@@ -52,12 +52,13 @@ export async function POST(req: NextRequest) {
   // Párovací identifikátor: normalizovaný (trim + lowercase) pro spolehlivé párování.
   const donorKey =
     (body.donorKey ?? "").trim().toLowerCase().slice(0, 120) || null;
+  const locale = body.locale === "en" ? "en" : "cs";
 
   if (!Number.isFinite(amount) || amount <= 0) {
     return NextResponse.json({ error: "invalid_amount" }, { status: 400 });
   }
-  // Minimální fiat příspěvek + horní stropy (sanity proti spamu/přetečení).
-  if (currency === "CZK" && (amount < MIN_CZK || amount > MAX_CZK)) {
+  // Min není vymáhán (jen mez slideru); server hlídá jen horní strop (sanity).
+  if (currency === "CZK" && amount > MAX_CZK) {
     return NextResponse.json({ error: "invalid_amount" }, { status: 400 });
   }
   if (currency === "BTC" && amount > MAX_BTC) {
@@ -86,7 +87,7 @@ export async function POST(req: NextRequest) {
         orderId: donation.id,
         buyerName: name,
         publicMessage: publicMessage ?? undefined,
-        redirectUrl: SITE_URL,
+        redirectUrl: `${SITE_URL}/${locale}/diky`,
       });
 
       await prisma.donation.update({

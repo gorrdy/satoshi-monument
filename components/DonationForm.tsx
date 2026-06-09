@@ -152,6 +152,7 @@ export default function DonationForm({
           publicMessage,
           privateMessage,
           donorKey,
+          locale,
         }),
       });
       if (!res.ok) {

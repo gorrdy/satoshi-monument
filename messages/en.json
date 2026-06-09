@@ -189,5 +189,19 @@
     "close": "Close",
     "loading": "Loading…",
     "back": "Back to main page"
+  },
+  "diky": {
+    "title": "Thank you for building Satoshi!",
+    "lead": "Your contribution is on its way and will soon appear on the supporters wall. Every sat brings the Satoshi statue in Prague closer.",
+    "shareTitle": "Help spread the word",
+    "shareLead": "This fundraiser runs on community. Tell your friends and it'll happen sooner. Share:",
+    "shareText": "I just contributed to the statue of Satoshi Nakamoto in Prague. Join in and be part of history! 🟠⚡",
+    "x": "Share on X",
+    "telegram": "Share on Telegram",
+    "whatsapp": "Share on WhatsApp",
+    "facebook": "Share on Facebook",
+    "copy": "Copy link",
+    "copied": "Link copied",
+    "back": "Back to home"
   }
 }
