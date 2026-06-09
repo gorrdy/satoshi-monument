@@ -12,6 +12,8 @@
     "@dicebear/collection": "^9.4.2",
     "@dicebear/core": "^9.4.2",
     "@prisma/client": "^6.19.3",
+    "@types/canvas-confetti": "^1.9.0",
+    "canvas-confetti": "^1.9.4",
     "isbot": "^5.1.40",
     "next": "16.2.6",
     "next-intl": "^4.13.0",
