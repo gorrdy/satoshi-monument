@@ -6,6 +6,8 @@ import ThankYouContent from "@/components/ThankYouContent";
 export const metadata: Metadata = {
   robots: { index: false, follow: true },
 };
+// Čte query params (?amt=&cur=) → dynamická.
+export const dynamic = "force-dynamic";
 
 export default async function DikyPage({
   params,
