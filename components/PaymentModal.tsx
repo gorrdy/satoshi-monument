@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 export interface CzkResult {
   method: "czk";
@@ -61,8 +61,14 @@ export default function PaymentModal({
   onPaid: () => void;
 }) {
   const t = useTranslations();
+  const locale = useLocale();
   const [copied, setCopied] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
+
+  // „Hotovo" u QR → poděkování + výzva ke sdílení.
+  const goThanks = () => {
+    window.location.href = `/${locale}/diky`;
+  };
 
   // Klávesnice: ESC zavírá, Tab cyklí jen uvnitř modalu + počáteční fokus.
   useEffect(() => {
@@ -114,6 +120,8 @@ export default function PaymentModal({
             data?.status === "settled"
           ) {
             onPaid();
+            // Po úspěšné platbě v modalu → děkovná stránka.
+            setTimeout(goThanks, 1200);
           }
         });
         window.btcpay.showInvoice(result.invoiceId);
@@ -203,7 +211,7 @@ export default function PaymentModal({
 
             <p className="text-xs ui-muted mb-4">{t("qr.hint")}</p>
 
-            <button onClick={onClose} className="ui-btn press w-full py-3">
+            <button onClick={goThanks} className="ui-btn press w-full py-3">
               {t("qr.done")}
             </button>
           </div>
