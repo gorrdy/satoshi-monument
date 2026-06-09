@@ -7,8 +7,16 @@ import { prisma } from "./prisma";
 import { getBtcCzkRate, getBtcUsdRate } from "./price";
 
 // Neodvoditelné id skupiny pro veřejnou zeď (nesmí prozradit donorKey/e-mail).
+// Solíme serverovým tajemstvím → z id nelze potvrdit konkrétní e-mail (hash
+// bez soli by šlo ověřit přepočítáním sha256 z uhádnutého e-mailu).
+const GROUP_SALT =
+  process.env.SESSION_SECRET || process.env.ADMIN_PASSWORD || "monument";
 function publicGroupId(key: string): string {
-  return crypto.createHash("sha256").update(key).digest("hex").slice(0, 16);
+  return crypto
+    .createHmac("sha256", GROUP_SALT)
+    .update(key)
+    .digest("hex")
+    .slice(0, 16);
 }
 
 const GOAL_BTC = Number(process.env.GOAL_BTC ?? "1");
