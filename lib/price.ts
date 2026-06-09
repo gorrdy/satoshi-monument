@@ -1,40 +1,50 @@
 /**
- * BTC/CZK kurz z CoinGecko s jednoduchou in-memory cache (~5 min).
+ * BTC kurz (CZK + USD) z CoinGecko s jednoduchou in-memory cache (~5 min).
  */
 
-let cached: { rate: number; at: number } | null = null;
+let cached: { czk: number; usd: number; at: number } | null = null;
 const TTL_MS = 5 * 60 * 1000;
 
 const COINGECKO_URL =
-  "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=czk";
+  "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=czk,usd";
 
-export async function getBtcCzkRate(): Promise<number> {
+async function getRates(): Promise<{ czk: number; usd: number }> {
   const now = Date.now();
   if (cached && now - cached.at < TTL_MS) {
-    return cached.rate;
+    return { czk: cached.czk, usd: cached.usd };
   }
 
   try {
     const res = await fetch(COINGECKO_URL, {
       headers: { Accept: "application/json" },
-      // necachovat na úrovni fetch, řídíme si to sami
       cache: "no-store",
       signal: AbortSignal.timeout(5000),
     });
     if (res.ok) {
-      const data = (await res.json()) as { bitcoin?: { czk?: number } };
-      const rate = data.bitcoin?.czk;
-      if (rate && rate > 0) {
-        cached = { rate, at: now };
-        return rate;
+      const data = (await res.json()) as {
+        bitcoin?: { czk?: number; usd?: number };
+      };
+      const czk = data.bitcoin?.czk;
+      const usd = data.bitcoin?.usd;
+      if (czk && czk > 0) {
+        cached = { czk, usd: usd && usd > 0 ? usd : (cached?.usd ?? 0), at: now };
+        return { czk: cached.czk, usd: cached.usd };
       }
     }
   } catch {
     // spadneme na poslední známý kurz níže
   }
 
-  // fallback: poslední známý kurz, jinak rozumný odhad
-  return cached?.rate ?? 2_000_000;
+  // fallback: poslední známé kurzy, jinak rozumný odhad
+  return { czk: cached?.czk ?? 2_000_000, usd: cached?.usd ?? 90_000 };
+}
+
+export async function getBtcCzkRate(): Promise<number> {
+  return (await getRates()).czk;
+}
+
+export async function getBtcUsdRate(): Promise<number> {
+  return (await getRates()).usd;
 }
 
 /** Přepočet CZK na BTC aktuálním kurzem. */
