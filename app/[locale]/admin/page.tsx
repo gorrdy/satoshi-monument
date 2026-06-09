@@ -61,6 +61,7 @@ export default function AdminPage() {
     "payments",
   );
   const [fiatList, setFiatList] = useState<Donation[]>([]);
+  const [btcRate, setBtcRate] = useState<number | null>(null);
   const [donations, setDonations] = useState<Donation[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
   const [keyDraft, setKeyDraft] = useState<Record<string, string>>({});
@@ -118,6 +119,14 @@ export default function AdminPage() {
         .filter((d) => d.currency === "CZK")
         .sort((a, b) => a.createdAt.localeCompare(b.createdAt)),
     );
+    // Aktuální kurz BTC/CZK pro výpočet short pozice.
+    try {
+      const s = await fetch("/api/stats", { cache: "no-store" });
+      if (s.ok) {
+        const sd = (await s.json()) as { stats?: { btcCzkRate?: number } };
+        if (sd.stats?.btcCzkRate) setBtcRate(sd.stats.btcCzkRate);
+      }
+    } catch {}
   }, []);
 
   useEffect(() => {
@@ -355,6 +364,80 @@ export default function AdminPage() {
                   </div>
                 </div>
               </div>
+
+              {/* Short pozice: kolik BTC dlužíme dárcům (zafixováno při přijetí)
+                  vs. kolik BTC reálně koupíme teď za držené CZK. */}
+              {(() => {
+                const czkTodo = sum(todo, (d) => d.amount);
+                const btcOwed = sum(todo, (d) => d.amountBtc ?? 0);
+                if (!btcRate || todo.length === 0) {
+                  return (
+                    <p className="text-sm text-white/40 mb-6">
+                      {todo.length === 0
+                        ? "Vše nakoupeno — žádná otevřená pozice. 🎉"
+                        : "Načítám aktuální kurz…"}
+                    </p>
+                  );
+                }
+                const btcBuyableNow = czkTodo / btcRate; // co koupíme teď za držené CZK
+                const shortBtc = btcOwed - btcBuyableNow; // + = jsme short (cena vzrostla)
+                const positionCzk = czkTodo - btcOwed * btcRate; // + = přebytek, − = ztráta
+                const isShort = shortBtc > 0;
+                return (
+                  <div className="rounded-xl border border-white/15 bg-white/5 p-4 mb-6">
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="font-semibold">
+                        Otevřená pozice (zbývá nakoupit)
+                      </h3>
+                      <span className="text-xs text-white/40">
+                        kurz {czk(btcRate)} Kč/BTC
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      <div>
+                        <div className="text-xs text-white/50">
+                          Dlužíme dárcům (BTC)
+                        </div>
+                        <div className="font-mono font-bold">{btc(btcOwed)}</div>
+                        <div className="text-xs text-white/40">
+                          kurz při přijetí plateb
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-white/50">
+                          Koupíme teď za {czk(czkTodo)} Kč
+                        </div>
+                        <div className="font-mono font-bold">
+                          {btc(btcBuyableNow)}
+                        </div>
+                        <div className="text-xs text-white/40">aktuální kurz</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-white/50">
+                          {isShort ? "Chybí (short) BTC" : "Přebytek BTC"}
+                        </div>
+                        <div
+                          className={`font-mono font-bold ${isShort ? "text-red-300" : "text-green-300"}`}
+                        >
+                          {isShort ? "−" : "+"}
+                          {btc(Math.abs(shortBtc))}
+                        </div>
+                        <div
+                          className={`text-xs ${positionCzk < 0 ? "text-red-300/70" : "text-green-300/70"}`}
+                        >
+                          {positionCzk >= 0 ? "+" : "−"}
+                          {czk(Math.abs(positionCzk))} Kč
+                        </div>
+                      </div>
+                    </div>
+                    <p className="text-xs text-white/40 mt-3 leading-relaxed">
+                      {isShort
+                        ? "Cena BTC od přijetí plateb vzrostla — za držené koruny teď koupíš méně, než kolik dárcům „dlužíš“. Čím dřív nakoupíš, tím menší riziko."
+                        : "Cena BTC od přijetí plateb klesla — za držené koruny teď koupíš víc, než kolik dárcům „dlužíš“."}
+                    </p>
+                  </div>
+                );
+              })()}
 
               {fiatList.length === 0 ? (
                 <p className="text-white/50 py-8 text-center">
