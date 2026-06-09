@@ -96,6 +96,9 @@ function roundSats(v: number) {
   if (v < 1_000_000) return Math.round(v / 10_000) * 10_000;
   return Math.round(v / 100_000) * 100_000;
 }
+function trimBtc(btc: number): string {
+  return String(Number(btc.toFixed(8)));
+}
 
 export default function DonationForm({
   onResult,
@@ -112,6 +115,9 @@ export default function DonationForm({
   const [donorKey, setDonorKey] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Zvolená jednotka zobrazení u BTC platby (klik na štítek cyklí sats→BTC→CZK).
+  const [btcDisplay, setBtcDisplay] = useState<"sats" | "BTC" | "CZK">("sats");
+  const [czkRate, setCzkRate] = useState<number | null>(null);
 
   // Předvyplnění (jen na klientu, ať nevznikne hydration mismatch).
   useEffect(() => {
@@ -121,10 +127,61 @@ export default function DonationForm({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Kurz pro přepočet zobrazení sats ↔ CZK.
+  useEffect(() => {
+    fetch("/api/stats", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (d?.stats?.btcCzkRate) setCzkRate(d.stats.btcCzkRate);
+      })
+      .catch(() => {});
+  }, []);
+
   const range = RANGES[method];
   const amtNum = parseFloat(amount.replace(",", "."));
   const safeAmt = Number.isFinite(amtNum) && amtNum > 0 ? amtNum : range.min;
   const pct = Math.round(toPos(safeAmt, range.min, range.max) * 100);
+  // Jednotka zobrazení: u CZK vždy CZK; u BTC dle zvoleného přepínače (klikem).
+  // CZK volba bez kurzu spadne zpět na sats.
+  const unit =
+    method !== "BTC"
+      ? "CZK"
+      : btcDisplay === "CZK" && !czkRate
+        ? "sats"
+        : btcDisplay;
+
+  // Hodnota v inputu (safeAmt je u BTC v sats).
+  const displayValue =
+    method !== "BTC"
+      ? amount
+      : unit === "BTC"
+        ? trimBtc(safeAmt / SATS_PER_BTC)
+        : unit === "CZK" && czkRate
+          ? String(Math.round((safeAmt / SATS_PER_BTC) * czkRate))
+          : amount;
+
+  // Klik na štítek → cyklus sats → BTC → CZK (CZK jen když máme kurz).
+  const cycleUnit = () =>
+    setBtcDisplay((u) =>
+      u === "sats" ? "BTC" : u === "BTC" ? (czkRate ? "CZK" : "sats") : "sats",
+    );
+
+  // Zápis z inputu → ulož kanonicky v sats (u BTC).
+  const onAmountInput = (raw: string) => {
+    if (method !== "BTC") {
+      setAmount(raw);
+      return;
+    }
+    const n = parseFloat(raw.replace(",", "."));
+    if (!Number.isFinite(n)) {
+      setAmount("0");
+      return;
+    }
+    if (unit === "BTC") setAmount(String(Math.round(n * SATS_PER_BTC)));
+    else if (unit === "CZK" && czkRate)
+      setAmount(String(Math.round((n / czkRate) * SATS_PER_BTC)));
+    else setAmount(String(Math.round(n))); // sats
+  };
 
   const selectMethod = (m: Method) => {
     setMethod(m);
@@ -182,10 +239,14 @@ export default function DonationForm({
     }
   };
 
-  const fmtBound = (v: number) =>
-    method === "BTC"
-      ? `${v.toLocaleString("cs-CZ")} sats`
-      : `${v.toLocaleString("cs-CZ")} Kč`;
+  // Meze posuvníku v aktuálně zvolené jednotce.
+  const fmtBound = (v: number) => {
+    if (method !== "BTC") return `${v.toLocaleString("cs-CZ")} Kč`;
+    if (unit === "BTC") return `${trimBtc(v / SATS_PER_BTC)} BTC`;
+    if (unit === "CZK" && czkRate)
+      return `${Math.round((v / SATS_PER_BTC) * czkRate).toLocaleString("cs-CZ")} Kč`;
+    return `${v.toLocaleString("cs-CZ")} sats`;
+  };
 
   return (
     <form
@@ -288,19 +349,30 @@ export default function DonationForm({
         {/* Částka — posuvník (log) + ruční zadání */}
         <div>
           <label htmlFor="don-amount" className="block ui-eyebrow ui-muted mb-1.5">
-            {t("amount")} · {method === "BTC" ? "sats" : "CZK"}
+            {t("amount")} · {unit === "CZK" ? "CZK" : unit}
           </label>
           <div className="relative">
             <input
               id="don-amount"
-              className="ui-input ui-mono text-lg pr-16"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              className="ui-input ui-mono text-lg pr-20"
+              value={displayValue}
+              onChange={(e) => onAmountInput(e.target.value)}
               inputMode="decimal"
             />
-            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm ui-mono ui-muted">
-              {method === "BTC" ? "sats" : "Kč"}
-            </span>
+            {method === "BTC" ? (
+              <button
+                type="button"
+                onClick={cycleUnit}
+                title="Přepnout jednotku (sats / BTC / CZK)"
+                className="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-xs ui-mono ui-border rounded-[var(--radius-sm)] ui-soft press"
+              >
+                {unit} ⇅
+              </button>
+            ) : (
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm ui-mono ui-muted">
+                Kč
+              </span>
+            )}
           </div>
           <input
             type="range"
