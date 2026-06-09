@@ -29,10 +29,12 @@ export async function POST(req: NextRequest) {
   }
 
   const type = payload.type ?? "";
-  // Settled (i pozdě po expiraci) → potvrdit. Expired/Invalid → vyřešit níže.
-  // Created / ReceivedPayment / Processing → jen potvrdit příjem, nic neměnit (necháme pending).
-  const SETTLED = ["InvoiceSettled", "InvoicePaymentSettled"];
-  const isSettled = SETTLED.includes(type);
+  // POZOR: jen "InvoiceSettled" = faktura plně zaplacená a zúčtovaná.
+  // "InvoicePaymentSettled" přijde i při potvrzení DÍLČÍ (částečné) platby →
+  // nesmí se brát jako plné zúčtování (jinak by se připsala celá požadovaná částka).
+  // Settled → potvrdit. Expired/Invalid → vyřešit níže.
+  // Created / ReceivedPayment / Processing / PaymentSettled → jen ack (necháme pending).
+  const isSettled = type === "InvoiceSettled";
   const isExpired = type === "InvoiceExpired";
   const isInvalid = type === "InvoiceInvalid";
 
