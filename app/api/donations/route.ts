@@ -87,7 +87,7 @@ export async function POST(req: NextRequest) {
         orderId: donation.id,
         buyerName: name,
         publicMessage: publicMessage ?? undefined,
-        redirectUrl: `${SITE_URL}/${locale}/diky`,
+        redirectUrl: `${SITE_URL}/${locale}/diky?amt=${amount}&cur=btc`,
       });
 
       await prisma.donation.update({
@@ -101,6 +101,7 @@ export async function POST(req: NextRequest) {
         invoiceId: invoice.id,
         checkoutLink: invoice.checkoutLink,
         btcpayUrl: process.env.BTCPAY_URL,
+        amount,
       });
     } catch (err) {
       // invoice se nepovedlo – záznam zrušíme, ať nezůstává pending balast

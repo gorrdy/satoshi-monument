@@ -202,6 +202,13 @@
     "facebook": "Share on Facebook",
     "copy": "Copy link",
     "copied": "Link copied",
-    "back": "Back to home"
+    "back": "Back to home",
+    "amountThanks": "Thank you for your {amount} contribution! 🙌",
+    "downloadImage": "Download status image"
+  },
+  "share": {
+    "title": "Share the fundraiser",
+    "lead": "Help build the statue sooner — share the live status with your friends.",
+    "download": "Status image"
   }
 }

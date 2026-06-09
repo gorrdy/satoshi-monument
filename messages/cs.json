@@ -202,6 +202,13 @@
     "facebook": "Sdílet na Facebooku",
     "copy": "Kopírovat odkaz",
     "copied": "Odkaz zkopírován",
-    "back": "Zpět na hlavní stránku"
+    "back": "Zpět na hlavní stránku",
+    "amountThanks": "Děkujeme za tvůj příspěvek {amount}! 🙌",
+    "downloadImage": "Stáhnout obrázek se stavem"
+  },
+  "share": {
+    "title": "Sdílej sbírku",
+    "lead": "Pomoz sochu postavit dřív — sdílej aktuální stav mezi přátele.",
+    "download": "Obrázek se stavem"
   }
 }

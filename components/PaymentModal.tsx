@@ -21,6 +21,7 @@ export interface BtcResult {
   invoiceId: string;
   checkoutLink: string;
   btcpayUrl: string;
+  amount: number;
 }
 
 export type PaymentResult = CzkResult | BtcResult;
@@ -67,7 +68,8 @@ export default function PaymentModal({
 
   // „Hotovo" u QR → poděkování + výzva ke sdílení.
   const goThanks = () => {
-    window.location.href = `/${locale}/diky`;
+    const cur = result.method === "btc" ? "btc" : "czk";
+    window.location.href = `/${locale}/diky?amt=${result.amount}&cur=${cur}`;
   };
 
   // Klávesnice: ESC zavírá, Tab cyklí jen uvnitř modalu + počáteční fokus.

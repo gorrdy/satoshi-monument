@@ -1,14 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useLocaleSwitch } from "./I18nProvider";
+import { formatBtc, formatCzk } from "@/lib/format";
 import SiteHeader from "./SiteHeader";
 import SiteFooter from "./SiteFooter";
 
 export default function ThankYouContent() {
   const t = useTranslations("diky");
   const { locale } = useLocaleSwitch();
+  const params = useSearchParams();
   const [copied, setCopied] = useState(false);
   const [shareUrl, setShareUrl] = useState("https://satoshi.jednadvacet.org");
 
@@ -16,6 +19,16 @@ export default function ThankYouContent() {
     // Sdílíme veřejnou hlavní stránku (ne /diky).
     setShareUrl(`${window.location.origin}/${locale}`);
   }, [locale]);
+
+  // Personalizace částkou z platby (?amt=&cur=).
+  const amt = Number(params.get("amt"));
+  const cur = params.get("cur");
+  const amountLabel =
+    Number.isFinite(amt) && amt > 0
+      ? cur === "czk"
+        ? `${formatCzk(amt)} Kč`
+        : `${formatBtc(amt)} BTC`
+      : null;
 
   const text = t("shareText");
   const u = encodeURIComponent(shareUrl);
@@ -45,6 +58,11 @@ export default function ThankYouContent() {
           <h1 className="ui-display text-4xl sm:text-5xl font-bold mb-5 leading-[1.05]">
             {t("title")}
           </h1>
+          {amountLabel && (
+            <p className="ui-accent-box inline-block px-4 py-2 rounded-[var(--radius-sm)] font-bold mb-5">
+              {t("amountThanks", { amount: amountLabel })}
+            </p>
+          )}
           <p className="text-lg ui-muted leading-relaxed mb-12">{t("lead")}</p>
 
           <div className="ui-card p-7 sm:p-9">
@@ -67,6 +85,14 @@ export default function ThankYouContent() {
                   {t(l.key)} ↗
                 </a>
               ))}
+              <a
+                href={`/${locale}/share-image`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="press w-full py-3 ui-border rounded-[var(--radius-sm)] ui-eyebrow text-center"
+              >
+                {t("downloadImage")} ⤓
+              </a>
               <button
                 onClick={copy}
                 className="press w-full py-3 ui-border rounded-[var(--radius-sm)] ui-eyebrow"
