@@ -6,11 +6,13 @@ import type { PaymentResult } from "./PaymentModal";
 
 type Method = "CZK" | "BTC";
 
+const SATS_PER_BTC = 100_000_000;
+// BTC se ve formuláři zadává v satoshi; na BTC se převede až při odeslání.
 const RANGES: Record<Method, { min: number; max: number }> = {
   CZK: { min: 250, max: 1_000_000 },
-  BTC: { min: 0.0001, max: 1 },
+  BTC: { min: 10_000, max: 100_000_000 }, // 10k sats – 1 BTC
 };
-const DEFAULTS: Record<Method, string> = { CZK: "500", BTC: "0.0005" };
+const DEFAULTS: Record<Method, string> = { CZK: "500", BTC: "50000" };
 
 const NAMES = {
   cs: {
@@ -89,8 +91,10 @@ function roundCzk(v: number) {
   if (v < 10000) return Math.round(v / 50) * 50;
   return Math.round(v / 500) * 500;
 }
-function roundBtc(v: number) {
-  return Math.round(v * 1e5) / 1e5;
+function roundSats(v: number) {
+  if (v < 100_000) return Math.round(v / 1000) * 1000;
+  if (v < 1_000_000) return Math.round(v / 10_000) * 10_000;
+  return Math.round(v / 100_000) * 100_000;
 }
 
 export default function DonationForm({
@@ -130,7 +134,7 @@ export default function DonationForm({
   const onSlider = (e: React.ChangeEvent<HTMLInputElement>) => {
     const p = Number(e.target.value) / 1000;
     const v = fromPos(p, range.min, range.max);
-    setAmount(String(method === "BTC" ? roundBtc(v) : roundCzk(v)));
+    setAmount(String(method === "BTC" ? roundSats(v) : roundCzk(v)));
   };
 
   const submit = async (e: React.FormEvent) => {
@@ -148,7 +152,8 @@ export default function DonationForm({
         body: JSON.stringify({
           name,
           currency: method,
-          amount: amtNum,
+          // BTC se zadává v sats → převést na BTC pro API.
+          amount: method === "BTC" ? amtNum / SATS_PER_BTC : amtNum,
           publicMessage,
           privateMessage,
           donorKey,
@@ -178,7 +183,9 @@ export default function DonationForm({
   };
 
   const fmtBound = (v: number) =>
-    method === "BTC" ? `${v} BTC` : `${v.toLocaleString("cs-CZ")} Kč`;
+    method === "BTC"
+      ? `${v.toLocaleString("cs-CZ")} sats`
+      : `${v.toLocaleString("cs-CZ")} Kč`;
 
   return (
     <form
@@ -281,7 +288,7 @@ export default function DonationForm({
         {/* Částka — posuvník (log) + ruční zadání */}
         <div>
           <label htmlFor="don-amount" className="block ui-eyebrow ui-muted mb-1.5">
-            {t("amount")} · {method}
+            {t("amount")} · {method === "BTC" ? "sats" : "CZK"}
           </label>
           <div className="relative">
             <input
@@ -292,7 +299,7 @@ export default function DonationForm({
               inputMode="decimal"
             />
             <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm ui-mono ui-muted">
-              {method === "BTC" ? "BTC" : "Kč"}
+              {method === "BTC" ? "sats" : "Kč"}
             </span>
           </div>
           <input
