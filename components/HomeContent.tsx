@@ -10,6 +10,7 @@ import DonationWidget from "@/components/DonationWidget";
 import InstallationsCarousel from "@/components/InstallationsCarousel";
 import HeroStats from "@/components/HeroStats";
 import Reveal from "@/components/Reveal";
+import ShareCampaign from "@/components/ShareCampaign";
 
 export default function HomeContent() {
   const t = useTranslations();
@@ -107,6 +108,11 @@ export default function HomeContent() {
         <Reveal delay={120}>
           <InstallationsCarousel />
         </Reveal>
+      </section>
+
+      {/* Sdílení sbírky — předposlední, před O projektu */}
+      <section className="px-4 py-16 sm:py-20 ui-border-b">
+        <ShareCampaign />
       </section>
 
       {/* O projektu */}

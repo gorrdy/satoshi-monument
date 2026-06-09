@@ -1,10 +1,12 @@
 import { ImageResponse } from "next/og";
+import { readFile } from "fs/promises";
+import path from "path";
 import { getStats } from "@/lib/stats";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt = "Satoshi Monument Praha";
-// Dynamická karta — náhled při sdílení odráží aktuální stav sbírky.
+export const alt = "Satoshi Monument v Praze";
+// Dynamická karta — náhled při sdílení (foto sochy + nadpis + živý stav).
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
@@ -20,21 +22,26 @@ export default async function OgImage({
   const { locale } = await params;
   const en = locale === "en";
 
+  let percent = 0;
   let raisedBtc = 0;
   let goalBtc = 1;
-  let percent = 0;
   let donorCount = 0;
   try {
     const s = await getStats();
+    percent = s.percent;
     raisedBtc = s.raisedBtc;
     goalBtc = s.goalBtc;
-    percent = s.percent;
     donorCount = s.donorCount;
   } catch {}
 
-  const title = en
-    ? "Let's raise a statue of Satoshi in Prague"
-    : "Postavme Satoshimu sochu v Praze";
+  // Foto sochy jako pozadí (JPEG → data URI; satori neumí webp).
+  let heroSrc = "";
+  try {
+    const buf = await readFile(path.join(process.cwd(), "public/og-hero.jpg"));
+    heroSrc = `data:image/jpeg;base64,${buf.toString("base64")}`;
+  } catch {}
+
+  const title = en ? "Satoshi Monument in Prague" : "Satoshi Monument v Praze";
   const raisedLabel = en ? "raised" : "vybráno";
   const donorsLabel = en ? "supporters" : "přispěvatelů";
 
@@ -45,70 +52,76 @@ export default async function OgImage({
           width: "100%",
           height: "100%",
           display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          background:
-            "radial-gradient(60% 60% at 50% 0%, rgba(247,147,26,0.25) 0%, #0a0a0f 70%)",
-          color: "#f5f5f4",
+          position: "relative",
           fontFamily: "sans-serif",
-          padding: "70px 80px",
+          color: "#f5f5f4",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              width: 80,
-              height: 80,
-              borderRadius: 40,
-              background: "#f7931a",
-              color: "#0a0a0f",
-              fontSize: 48,
-              fontWeight: 800,
-            }}
-          >
-            B
-          </div>
-          <div style={{ fontSize: 30, color: "#f7931a", fontWeight: 700 }}>
-            Satoshi Monument
-          </div>
-        </div>
-
+        {/* Foto sochy na pozadí */}
+        {heroSrc ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={heroSrc}
+            width={1200}
+            height={630}
+            style={{ position: "absolute", top: 0, left: 0, width: 1200, height: 630, objectFit: "cover" }}
+          />
+        ) : null}
+        {/* Ztmavení pro čitelnost */}
         <div
-          style={{ fontSize: 60, fontWeight: 800, lineHeight: 1.05, maxWidth: 1040 }}
+          style={{
+            position: "absolute",
+            inset: 0,
+            display: "flex",
+            background:
+              "linear-gradient(to top, rgba(8,8,11,0.92) 0%, rgba(8,8,11,0.35) 55%, rgba(8,8,11,0.15) 100%)",
+          }}
+        />
+        {/* Obsah */}
+        <div
+          style={{
+            position: "relative",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "flex-end",
+            width: "100%",
+            height: "100%",
+            padding: "64px 70px",
+          }}
         >
-          {title}
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-          <div style={{ display: "flex", alignItems: "flex-end", gap: 28 }}>
-            <div style={{ fontSize: 72, fontWeight: 800, color: "#f7931a" }}>
-              {`${percent.toFixed(1)} %`}
-            </div>
-            <div style={{ fontSize: 34, color: "#a1a1aa", paddingBottom: 14 }}>
-              {`${fmtBtc(raisedBtc)} / ${goalBtc} BTC ${raisedLabel} · ${donorCount} ${donorsLabel}`}
-            </div>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              width: "100%",
-              height: 28,
-              borderRadius: 14,
-              background: "rgba(255,255,255,0.1)",
-              overflow: "hidden",
-            }}
-          >
+          <div style={{ display: "flex", alignItems: "center", gap: 18, marginBottom: 16 }}>
             <div
               style={{
-                width: `${Math.max(2, Math.min(100, percent))}%`,
-                height: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: 56,
+                height: 56,
+                borderRadius: 28,
                 background: "#f7931a",
-                borderRadius: 14,
+                color: "#0a0a0f",
+                fontSize: 34,
+                fontWeight: 800,
               }}
-            />
+            >
+              B
+            </div>
+            <div style={{ fontSize: 26, color: "#f7931a", fontWeight: 700 }}>
+              {en ? "Community Bitcoin fundraiser" : "Komunitní bitcoinová sbírka"}
+            </div>
+          </div>
+
+          <div style={{ fontSize: 72, fontWeight: 800, lineHeight: 1.02 }}>
+            {title}
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 20, marginTop: 22 }}>
+            <div style={{ fontSize: 40, fontWeight: 800, color: "#f7931a" }}>
+              {`${percent.toFixed(1)} %`}
+            </div>
+            <div style={{ fontSize: 28, color: "#e5e5e5" }}>
+              {`${fmtBtc(raisedBtc)} / ${goalBtc} BTC ${raisedLabel} · ${donorCount} ${donorsLabel}`}
+            </div>
           </div>
         </div>
       </div>

@@ -7,12 +7,12 @@ import { useLocaleSwitch } from "./I18nProvider";
 import { formatBtc, formatCzk } from "@/lib/format";
 import SiteHeader from "./SiteHeader";
 import SiteFooter from "./SiteFooter";
+import ShareButtons from "./ShareButtons";
 
 export default function ThankYouContent() {
   const t = useTranslations("diky");
   const { locale } = useLocaleSwitch();
   const params = useSearchParams();
-  const [copied, setCopied] = useState(false);
   const [shareUrl, setShareUrl] = useState("https://satoshi.jednadvacet.org");
 
   useEffect(() => {
@@ -29,25 +29,6 @@ export default function ThankYouContent() {
         ? `${formatCzk(amt)} Kč`
         : `${formatBtc(amt)} BTC`
       : null;
-
-  const text = t("shareText");
-  const u = encodeURIComponent(shareUrl);
-  const tx = encodeURIComponent(text);
-
-  const links = [
-    { key: "x", href: `https://twitter.com/intent/tweet?text=${tx}&url=${u}` },
-    { key: "telegram", href: `https://t.me/share/url?url=${u}&text=${tx}` },
-    { key: "whatsapp", href: `https://wa.me/?text=${tx}%20${u}` },
-    { key: "facebook", href: `https://www.facebook.com/sharer/sharer.php?u=${u}` },
-  ] as const;
-
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(shareUrl);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {}
-  };
 
   return (
     <>
@@ -73,33 +54,11 @@ export default function ThankYouContent() {
               {t("shareLead")}
             </p>
 
-            <div className="flex flex-col gap-3 max-w-sm mx-auto">
-              {links.map((l) => (
-                <a
-                  key={l.key}
-                  href={l.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="ui-btn press w-full py-3"
-                >
-                  {t(l.key)} ↗
-                </a>
-              ))}
-              <a
-                href={`/${locale}/share-image`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="press w-full py-3 ui-border rounded-[var(--radius-sm)] ui-eyebrow text-center"
-              >
-                {t("downloadImage")} ⤓
-              </a>
-              <button
-                onClick={copy}
-                className="press w-full py-3 ui-border rounded-[var(--radius-sm)] ui-eyebrow"
-              >
-                {copied ? t("copied") : t("copy")}
-              </button>
-            </div>
+            <ShareButtons
+              url={shareUrl}
+              text={t("shareText")}
+              downloadHref={`/${locale}/share-image`}
+            />
           </div>
 
           <a

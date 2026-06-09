@@ -209,6 +209,8 @@
   "share": {
     "title": "Sdílej sbírku",
     "lead": "Pomoz sochu postavit dřív — sdílej aktuální stav mezi přátele.",
-    "download": "Obrázek se stavem"
+    "download": "Obrázek se stavem",
+    "copy": "Kopírovat odkaz",
+    "copied": "Zkopírováno"
   }
 }
