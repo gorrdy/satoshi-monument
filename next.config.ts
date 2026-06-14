@@ -14,6 +14,7 @@ const csp = [
   "style-src 'self' 'unsafe-inline'",
   `img-src 'self' data: blob: https: ${btcpayOrigin}`.trim(),
   "font-src 'self'",
+  "worker-src 'self' blob:", // canvas-confetti (Web Worker přes blob: URL)
   `connect-src 'self' ${btcpayOrigin}`.trim(),
   `frame-src ${btcpayOrigin || "'none'"}`.trim(),
   "base-uri 'self'",
