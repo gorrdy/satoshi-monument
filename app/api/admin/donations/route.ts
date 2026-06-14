@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { isAuthenticated } from "@/lib/auth";
 import { czkToBtc } from "@/lib/price";
+import { normalizeDonorKey } from "@/lib/donorKey";
 
 export const dynamic = "force-dynamic";
 
@@ -102,8 +103,7 @@ export async function POST(req: NextRequest) {
   }
 
   if (action === "setKey") {
-    const donorKey =
-      (body.donorKey ?? "").trim().toLowerCase().slice(0, 120) || null;
+    const donorKey = normalizeDonorKey(body.donorKey);
     const updated = await prisma.donation.update({
       where: { id },
       data: { donorKey },

@@ -3,6 +3,7 @@ import crypto from "crypto";
 import { prisma } from "@/lib/prisma";
 import { createInvoice } from "@/lib/btcpay";
 import { buildSpayd, makeVariableSymbol } from "@/lib/spayd";
+import { normalizeDonorKey } from "@/lib/donorKey";
 import QRCode from "qrcode";
 
 export const dynamic = "force-dynamic";
@@ -50,8 +51,7 @@ export async function POST(req: NextRequest) {
   const privateMessage =
     (body.privateMessage ?? "").trim().slice(0, 1000) || null;
   // Párovací identifikátor: normalizovaný (trim + lowercase) pro spolehlivé párování.
-  const donorKey =
-    (body.donorKey ?? "").trim().toLowerCase().slice(0, 120) || null;
+  const donorKey = normalizeDonorKey(body.donorKey);
   const locale = body.locale === "en" ? "en" : "cs";
 
   if (!Number.isFinite(amount) || amount <= 0) {
