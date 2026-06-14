@@ -75,13 +75,14 @@ export default function Varianta2Content() {
                 target="_blank"
                 rel="noopener noreferrer"
                 title="GENERAL BYTES"
-                className="flex items-center justify-center ui-soft ui-border rounded-[var(--radius-sm)] p-5 h-24 hover:brightness-110 transition"
+                className="flex items-center justify-center overflow-hidden ui-border rounded-[var(--radius-sm)] h-24 hover:brightness-110 transition"
+                style={{ background: "#1f57a0" }}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src="/partners/generalbytes.png"
                   alt="GENERAL BYTES"
-                  className="max-h-12 w-auto object-contain"
+                  className="h-full w-auto object-contain"
                 />
               </a>
               <a
