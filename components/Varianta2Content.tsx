@@ -70,6 +70,34 @@ export default function Varianta2Content() {
                   className="max-h-12 w-auto object-contain"
                 />
               </a>
+              <a
+                href="https://generalbytes.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="GENERAL BYTES"
+                className="flex items-center justify-center ui-soft ui-border rounded-[var(--radius-sm)] p-5 h-24 hover:brightness-110 transition"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/partners/generalbytes.png"
+                  alt="GENERAL BYTES"
+                  className="max-h-12 w-auto object-contain"
+                />
+              </a>
+              <a
+                href="https://jednadvacet.org"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Jednadvacet"
+                className="flex items-center justify-center ui-soft ui-border rounded-[var(--radius-sm)] p-5 h-24 hover:brightness-110 transition"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/partners/jednadvacet.png"
+                  alt="Jednadvacet"
+                  className="max-h-12 w-auto object-contain"
+                />
+              </a>
             </div>
             <p className="ui-muted text-sm mt-3">{t("partnersPlaceholder")}</p>
           </Section>
