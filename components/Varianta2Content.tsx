@@ -81,7 +81,7 @@ export default function Varianta2Content() {
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="/partners/generalbytes.png"
+                  src="/partners/generalbytes.webp"
                   alt="GENERAL BYTES"
                   draggable={false}
                   className="h-full w-auto object-contain pointer-events-none select-none"
@@ -96,7 +96,7 @@ export default function Varianta2Content() {
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="/partners/jednadvacet.png"
+                  src="/partners/jednadvacet.webp"
                   alt="Jednadvacet"
                   draggable={false}
                   className="max-h-12 w-auto object-contain pointer-events-none select-none"
