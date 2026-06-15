@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { isAuthenticated } from "@/lib/auth";
 import { czkToBtc } from "@/lib/price";
 import { normalizeDonorKey } from "@/lib/donorKey";
+import { resolveImageUrl } from "@/lib/imageStore";
 
 export const dynamic = "force-dynamic";
 
@@ -133,10 +134,8 @@ export async function POST(req: NextRequest) {
       data.publicMessage = body.publicMessage.trim().slice(0, 280) || null;
     }
     if (typeof body.imageUrl === "string") {
-      const u = body.imageUrl.trim().slice(0, 500);
-      // http(s) URL nebo lokálně nahraný soubor (/uploads/…), jinak null.
-      data.imageUrl =
-        /^https?:\/\//i.test(u) || /^\/api\/uploads\/[\w.-]+$/.test(u) ? u : null;
+      // Externí URL se stáhne a uloží jako malý lokální webp; lokální se ponechá.
+      data.imageUrl = await resolveImageUrl(body.imageUrl);
     }
     if (typeof body.imageBg === "string") {
       const c = body.imageBg.trim();

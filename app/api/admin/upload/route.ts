@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
-import crypto from "crypto";
-import sharp from "sharp";
 import { isAuthenticated } from "@/lib/auth";
+import { saveWebp } from "@/lib/imageStore";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -31,24 +28,12 @@ export async function POST(req: NextRequest) {
   }
 
   const input = Buffer.from(await file.arrayBuffer());
-  let out: Buffer;
   try {
-    // Re-enkódování přes sharp zahodí případný škodlivý obsah (vč. SVG skriptů)
-    // a sjednotí formát; logo/avatar nepotřebuje víc než ~512 px.
-    out = await sharp(input, { density: 200 })
-      .resize(512, 512, { fit: "inside", withoutEnlargement: true })
-      .webp({ quality: 85 })
-      .toBuffer();
+    // Re-enkódování přes sharp zahodí případný škodlivý obsah (vč. SVG skriptů),
+    // sjednotí formát a zmenší na ~256 px (na stránce se reálně načte jen pár kB).
+    const url = await saveWebp(input);
+    return NextResponse.json({ url });
   } catch {
     return NextResponse.json({ error: "bad_image" }, { status: 422 });
   }
-
-  const name = `${crypto.randomBytes(8).toString("hex")}.webp`;
-  // Mimo public/ — `next start` runtime-přidané public soubory neservíruje.
-  // Servíruje se přes GET /api/uploads/[name].
-  const dir = path.join(process.cwd(), "uploads");
-  await mkdir(dir, { recursive: true });
-  await writeFile(path.join(dir, name), out);
-
-  return NextResponse.json({ url: `/api/uploads/${name}` });
 }

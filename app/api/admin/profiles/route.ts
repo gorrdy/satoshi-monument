@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { isAuthenticated } from "@/lib/auth";
 import { normalizeDonorKey } from "@/lib/donorKey";
+import { resolveImageUrl } from "@/lib/imageStore";
 
 export const dynamic = "force-dynamic";
 
@@ -59,11 +60,8 @@ export async function POST(req: NextRequest) {
   if (!name) {
     return NextResponse.json({ error: "missing_name" }, { status: 400 });
   }
-  const rawUrl = (body.imageUrl ?? "").trim().slice(0, 500);
-  const imageUrl =
-    /^https?:\/\//i.test(rawUrl) || /^\/api\/uploads\/[\w.-]+$/.test(rawUrl)
-      ? rawUrl
-      : null;
+  // Externí URL se stáhne a uloží jako malý lokální webp; lokální se ponechá.
+  const imageUrl = await resolveImageUrl(body.imageUrl);
   const rawBg = (body.imageBg ?? "").trim();
   const imageBg = /^#[0-9a-fA-F]{3,8}$/.test(rawBg) ? rawBg : null;
 
