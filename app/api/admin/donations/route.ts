@@ -134,8 +134,9 @@ export async function POST(req: NextRequest) {
     }
     if (typeof body.imageUrl === "string") {
       const u = body.imageUrl.trim().slice(0, 500);
-      // Povolíme jen http(s) URL, jinak null.
-      data.imageUrl = /^https?:\/\//i.test(u) ? u : null;
+      // http(s) URL nebo lokálně nahraný soubor (/uploads/…), jinak null.
+      data.imageUrl =
+        /^https?:\/\//i.test(u) || /^\/api\/uploads\/[\w.-]+$/.test(u) ? u : null;
     }
     if (typeof body.imageBg === "string") {
       const c = body.imageBg.trim();

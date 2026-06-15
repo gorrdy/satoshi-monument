@@ -48,3 +48,6 @@ prisma/*.db-journal
 
 # Propagační letáky (lokální buildy, ne do repa)
 /letak/
+
+# Nahrané obrázky (admin) — runtime obsah, ne do gitu
+/uploads/

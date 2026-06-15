@@ -60,7 +60,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "missing_name" }, { status: 400 });
   }
   const rawUrl = (body.imageUrl ?? "").trim().slice(0, 500);
-  const imageUrl = /^https?:\/\//i.test(rawUrl) ? rawUrl : null;
+  const imageUrl =
+    /^https?:\/\//i.test(rawUrl) || /^\/api\/uploads\/[\w.-]+$/.test(rawUrl)
+      ? rawUrl
+      : null;
   const rawBg = (body.imageBg ?? "").trim();
   const imageBg = /^#[0-9a-fA-F]{3,8}$/.test(rawBg) ? rawBg : null;
 

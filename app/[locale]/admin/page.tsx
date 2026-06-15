@@ -147,6 +147,26 @@ export default function AdminPage() {
     loadProfiles();
   };
 
+  // Nahrání obrázku z disku → vrátí veřejnou URL (/uploads/…), nebo null.
+  const uploadImage = async (
+    file: File,
+    busyKey: string,
+  ): Promise<string | null> => {
+    setBusy("up" + busyKey);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
+      if (!res.ok) return null;
+      const d = (await res.json()) as { url?: string };
+      return d.url ?? null;
+    } catch {
+      return null;
+    } finally {
+      setBusy(null);
+    }
+  };
+
   const loadFio = useCallback(async () => {
     const res = await fetch("/api/admin/fio-payments", { cache: "no-store" });
     if (!res.ok) return;
@@ -663,9 +683,24 @@ export default function AdminPage() {
                         <input
                           value={imageUrl}
                           onChange={(e) => set({ imageUrl: e.target.value })}
-                          placeholder="URL loga (https://…)"
+                          placeholder="URL loga nebo nahraj →"
                           className={`${inp} flex-1 min-w-[12rem]`}
                         />
+                        <label className="shrink-0 px-2 py-1 text-sm rounded bg-white/15 text-white hover:bg-white/25 cursor-pointer">
+                          {busy === "up" + p.donorKey ? "…" : "Nahrát"}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={async (e) => {
+                              const f = e.target.files?.[0];
+                              e.target.value = "";
+                              if (!f) return;
+                              const url = await uploadImage(f, p.donorKey);
+                              if (url) set({ imageUrl: url });
+                            }}
+                          />
+                        </label>
                         <input
                           type="color"
                           value={/^#[0-9a-fA-F]{6}$/.test(imageBg) ? imageBg : "#ffffff"}
@@ -1001,9 +1036,28 @@ export default function AdminPage() {
                       [d.id]: { ...s[d.id], imageUrl: e.target.value },
                     }))
                   }
-                  placeholder="https://… (např. logo firmy; nahradí avatar)"
+                  placeholder="https://… nebo nahraj z disku →"
                   className="flex-1 min-w-0 bg-white/5 border border-white/10 px-2 py-1 text-xs font-mono focus:outline-none"
                 />
+                <label className="shrink-0 px-2 py-1 text-xs rounded bg-white/15 text-white hover:bg-white/25 cursor-pointer">
+                  {busy === "up" + d.id ? "…" : "Nahrát"}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={async (e) => {
+                      const f = e.target.files?.[0];
+                      e.target.value = "";
+                      if (!f) return;
+                      const url = await uploadImage(f, d.id);
+                      if (url)
+                        setEdits((s) => ({
+                          ...s,
+                          [d.id]: { ...s[d.id], imageUrl: url },
+                        }));
+                    }}
+                  />
+                </label>
                 {(edits[d.id]?.imageUrl ?? d.imageUrl) ? (
                   <>
                     <span className="text-xs text-white/50 shrink-0">Pozadí:</span>
