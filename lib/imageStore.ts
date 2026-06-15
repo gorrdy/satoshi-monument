@@ -9,7 +9,7 @@ import sharp from "sharp";
  * reálně načítá jen pár kB. Servíruje se přes GET /api/uploads/[name].
  */
 
-const DIR = path.join(process.cwd(), "uploads");
+const DIR = process.env.UPLOAD_DIR || path.join(process.cwd(), "uploads");
 const MAX_DIM = 256; // avatary na stránce jsou ≤ ~64 px (256 = retina rezerva)
 const MAX_FETCH_BYTES = 12 * 1024 * 1024;
 
