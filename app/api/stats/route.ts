@@ -1,15 +1,11 @@
 import { NextResponse } from "next/server";
-import { getStats, getWall, getRecent, getPending } from "@/lib/stats";
+import { getStatsBundle } from "@/lib/stats";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const [stats, wall, recent, pending] = await Promise.all([
-    getStats(),
-    getWall(),
-    getRecent(10),
-    getPending(3),
-  ]);
+  // Krátká in-process cache (lib/stats) — bez recompute ze SQLite při každém pollu.
+  const { stats, wall, recent, pending } = await getStatsBundle();
   return NextResponse.json(
     { stats, wall, recent, pending },
     {
