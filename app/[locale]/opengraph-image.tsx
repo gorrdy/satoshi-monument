@@ -10,6 +10,12 @@ export const alt = "Satoshi Monument v Praze";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
+// Verze OG karty → mění URL og:image (cache-bust pro sociální sítě).
+// Bump při výměně fotky/designu, ať si scrapery stáhnou nový náhled.
+export function generateImageMetadata() {
+  return [{ id: "v2", size, contentType, alt }];
+}
+
 function fmtBtc(n: number): string {
   return n.toFixed(4).replace(/0+$/, "").replace(/\.$/, "");
 }
