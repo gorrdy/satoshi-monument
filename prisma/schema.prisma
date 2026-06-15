@@ -36,6 +36,18 @@ model Donation {
   @@index([createdAt])
 }
 
+// Profil identifikátoru (donorKey): jedno kanonické jméno + logo, které přebíjí
+// to, co zadá přispěvatel. Z platby se pak použije jen zpráva a částka.
+model DonorProfile {
+  id        String   @id @default(cuid())
+  donorKey  String   @unique // normalizovaný identifikátor (lib/donorKey)
+  name      String // kanonické jméno zobrazené na zdi i v recent
+  imageUrl  String? // logo (http/https)
+  imageBg   String? // barva pozadí pod logem (hex)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 // Anonymní záznam návštěvy (bezcookie analytika). Neukládá IP, jen denní hash.
 model PageView {
   id          String   @id @default(cuid())

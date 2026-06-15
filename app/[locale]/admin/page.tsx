@@ -57,9 +57,9 @@ export default function AdminPage() {
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState<string | null>(null);
   const [filter, setFilter] = useState("pending");
-  const [view, setView] = useState<"payments" | "analytics" | "fiat">(
-    "payments",
-  );
+  const [view, setView] = useState<
+    "payments" | "analytics" | "fiat" | "identity"
+  >("payments");
   const [fiatList, setFiatList] = useState<Donation[]>([]);
   const [btcRate, setBtcRate] = useState<number | null>(null);
   const [btcUsd, setBtcUsd] = useState<number | null>(null);
@@ -75,6 +75,66 @@ export default function AdminPage() {
   const [fio, setFio] = useState<FioPayment[]>([]);
   const [vsDraft, setVsDraft] = useState<Record<string, string>>({});
   const [counts, setCounts] = useState<Record<string, number>>({});
+  // Profily identifikátorů (kanonické jméno + logo)
+  const [profiles, setProfiles] = useState<
+    {
+      id: string;
+      donorKey: string;
+      name: string;
+      imageUrl: string | null;
+      imageBg: string | null;
+    }[]
+  >([]);
+  const [profKeys, setProfKeys] = useState<
+    { donorKey: string; count: number; lastName: string }[]
+  >([]);
+  const [profDraft, setProfDraft] = useState<
+    Record<string, { name?: string; imageUrl?: string; imageBg?: string }>
+  >({});
+  const [newKey, setNewKey] = useState("");
+
+  const loadProfiles = useCallback(async () => {
+    const res = await fetch("/api/admin/profiles", { cache: "no-store" });
+    if (!res.ok) return;
+    const data = (await res.json()) as {
+      profiles: typeof profiles;
+      keys: typeof profKeys;
+    };
+    setProfiles(data.profiles);
+    setProfKeys(data.keys);
+  }, []);
+
+  const saveProfile = async (
+    donorKey: string,
+    d: { name?: string; imageUrl?: string; imageBg?: string },
+  ) => {
+    if (!d.name?.trim()) return;
+    setBusy("prof" + donorKey);
+    await fetch("/api/admin/profiles", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "save", donorKey, ...d }),
+    });
+    setBusy(null);
+    setNewKey("");
+    setProfDraft((s) => {
+      const c = { ...s };
+      delete c[donorKey];
+      return c;
+    });
+    loadProfiles();
+  };
+
+  const deleteProfile = async (donorKey: string) => {
+    setBusy("prof" + donorKey);
+    await fetch("/api/admin/profiles", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "delete", donorKey }),
+    });
+    setBusy(null);
+    loadProfiles();
+  };
 
   const loadFio = useCallback(async () => {
     const res = await fetch("/api/admin/fio-payments", { cache: "no-store" });
@@ -135,7 +195,8 @@ export default function AdminPage() {
 
   useEffect(() => {
     if (view === "fiat") loadFiat();
-  }, [view, loadFiat]);
+    if (view === "identity") loadProfiles();
+  }, [view, loadFiat, loadProfiles]);
 
   const togglePurchased = async (d: Donation) => {
     setBusy("buy" + d.id);
@@ -308,6 +369,7 @@ export default function AdminPage() {
         {([
           { key: "payments", label: "Platby" },
           { key: "fiat", label: "Nákup BTC za fiat" },
+          { key: "identity", label: "Identity" },
           { key: "analytics", label: "Analytika" },
         ] as const).map((tb) => (
           <button
@@ -504,6 +566,201 @@ export default function AdminPage() {
                   ))}
                 </ul>
               )}
+            </div>
+          );
+        })()
+      ) : view === "identity" ? (
+        (() => {
+          const inp =
+            "bg-white/10 border border-white/10 rounded px-2 py-1 text-sm text-white placeholder:text-white/30";
+          const withoutProfile = profKeys.filter(
+            (k) => !profiles.some((p) => p.donorKey === k.donorKey),
+          );
+          const newDraft = profDraft["__new__"] ?? {};
+          return (
+            <div className="space-y-8">
+              <p className="text-sm text-white/60 max-w-2xl leading-relaxed">
+                Profil identifikátoru: jedno kanonické <strong>jméno</strong> a{" "}
+                <strong>logo</strong>, které se použije na zdi i v recent — bez
+                ohledu na to, co přispěvatel zadá. Z platby se převezme jen
+                zpráva a částka.
+              </p>
+
+              {/* Existující profily */}
+              <div>
+                <h3 className="text-sm font-semibold text-white/80 mb-3">
+                  Profily ({profiles.length})
+                </h3>
+                <div className="space-y-2">
+                  {profiles.length === 0 && (
+                    <p className="text-white/40 text-sm">Zatím žádné.</p>
+                  )}
+                  {profiles.map((p) => {
+                    const d = profDraft[p.donorKey] ?? {};
+                    const name = d.name ?? p.name;
+                    const imageUrl = d.imageUrl ?? p.imageUrl ?? "";
+                    const imageBg = d.imageBg ?? p.imageBg ?? "";
+                    const set = (
+                      patch: Partial<{
+                        name: string;
+                        imageUrl: string;
+                        imageBg: string;
+                      }>,
+                    ) =>
+                      setProfDraft((s) => ({
+                        ...s,
+                        [p.donorKey]: { ...s[p.donorKey], ...patch },
+                      }));
+                    return (
+                      <div
+                        key={p.id}
+                        className="flex flex-wrap items-center gap-2 bg-white/5 border border-white/10 rounded-lg p-3"
+                      >
+                        <div
+                          className="w-10 h-10 shrink-0 overflow-hidden rounded border border-white/10"
+                          style={{ background: imageBg || "#ffffff" }}
+                        >
+                          {imageUrl ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={imageUrl}
+                              alt=""
+                              className="w-full h-full object-contain p-0.5"
+                            />
+                          ) : null}
+                        </div>
+                        <code
+                          className="text-xs text-white/50 w-28 truncate"
+                          title={p.donorKey}
+                        >
+                          {p.donorKey}
+                        </code>
+                        <input
+                          value={name}
+                          onChange={(e) => set({ name: e.target.value })}
+                          placeholder="Jméno"
+                          className={`${inp} w-36`}
+                        />
+                        <input
+                          value={imageUrl}
+                          onChange={(e) => set({ imageUrl: e.target.value })}
+                          placeholder="URL loga (https://…)"
+                          className={`${inp} flex-1 min-w-[12rem]`}
+                        />
+                        <input
+                          type="color"
+                          value={/^#[0-9a-fA-F]{6}$/.test(imageBg) ? imageBg : "#ffffff"}
+                          onChange={(e) => set({ imageBg: e.target.value })}
+                          className="w-8 h-8 rounded bg-transparent border border-white/10 cursor-pointer"
+                          title="Barva pozadí pod logem"
+                        />
+                        <button
+                          onClick={() =>
+                            saveProfile(p.donorKey, { name, imageUrl, imageBg })
+                          }
+                          disabled={busy === "prof" + p.donorKey}
+                          className="px-3 py-1 rounded bg-white/15 text-white text-sm hover:bg-white/25 disabled:opacity-40"
+                        >
+                          Uložit
+                        </button>
+                        <button
+                          onClick={() => deleteProfile(p.donorKey)}
+                          disabled={busy === "prof" + p.donorKey}
+                          className="px-3 py-1 rounded text-red-300 text-sm hover:bg-red-500/15"
+                        >
+                          Smazat
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Použité identifikátory bez profilu */}
+              {withoutProfile.length > 0 && (
+                <div>
+                  <h3 className="text-sm font-semibold text-white/80 mb-3">
+                    Identifikátory bez profilu ({withoutProfile.length})
+                  </h3>
+                  <div className="space-y-2">
+                    {withoutProfile.map((k) => {
+                      const draftName = profDraft[k.donorKey]?.name ?? k.lastName;
+                      return (
+                        <div
+                          key={k.donorKey}
+                          className="flex flex-wrap items-center gap-2 bg-white/5 border border-white/10 rounded-lg p-3"
+                        >
+                          <code
+                            className="text-xs text-white/50 w-28 truncate"
+                            title={k.donorKey}
+                          >
+                            {k.donorKey}
+                          </code>
+                          <span className="text-xs text-white/40">
+                            {k.count}× · naposledy „{k.lastName}"
+                          </span>
+                          <input
+                            value={draftName}
+                            onChange={(e) =>
+                              setProfDraft((s) => ({
+                                ...s,
+                                [k.donorKey]: {
+                                  ...s[k.donorKey],
+                                  name: e.target.value,
+                                },
+                              }))
+                            }
+                            placeholder="kanonické jméno"
+                            className={`${inp} w-36`}
+                          />
+                          <button
+                            onClick={() =>
+                              saveProfile(k.donorKey, { name: draftName })
+                            }
+                            disabled={busy === "prof" + k.donorKey}
+                            className="px-3 py-1 rounded bg-white/15 text-white text-sm hover:bg-white/25 disabled:opacity-40"
+                          >
+                            Vytvořit profil
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Ruční přidání */}
+              <div>
+                <h3 className="text-sm font-semibold text-white/80 mb-3">
+                  Přidat ručně
+                </h3>
+                <div className="flex flex-wrap items-center gap-2">
+                  <input
+                    value={newKey}
+                    onChange={(e) => setNewKey(e.target.value)}
+                    placeholder="identifikátor (donorKey)"
+                    className={`${inp} w-44`}
+                  />
+                  <input
+                    value={newDraft.name ?? ""}
+                    onChange={(e) =>
+                      setProfDraft((s) => ({
+                        ...s,
+                        __new__: { ...s.__new__, name: e.target.value },
+                      }))
+                    }
+                    placeholder="jméno"
+                    className={`${inp} w-36`}
+                  />
+                  <button
+                    onClick={() => newKey.trim() && saveProfile(newKey, newDraft)}
+                    disabled={!newKey.trim() || !newDraft.name?.trim()}
+                    className="px-3 py-1 rounded bg-white/15 text-white text-sm hover:bg-white/25 disabled:opacity-40"
+                  >
+                    Přidat
+                  </button>
+                </div>
+              </div>
             </div>
           );
         })()

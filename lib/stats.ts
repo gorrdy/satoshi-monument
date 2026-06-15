@@ -84,24 +84,45 @@ export interface WallEntry {
   items: WallItem[]; // jednotlivé příspěvky (od nejnovějšího) — veřejná data
 }
 
-export async function getWall(limit = 200): Promise<WallEntry[]> {
-  const rows = await prisma.donation.findMany({
-    where: { status: "confirmed", hiddenOnWall: false },
-    orderBy: { confirmedAt: "asc" },
-    select: {
-      id: true,
-      name: true,
-      currency: true,
-      amount: true,
-      amountBtc: true,
-      publicMessage: true,
-      imageUrl: true,
-      imageBg: true,
-      donorKey: true,
-      confirmedAt: true,
-      createdAt: true,
-    },
+export interface DonorProfileLite {
+  name: string;
+  imageUrl: string | null;
+  imageBg: string | null;
+}
+
+/** Profily identifikátorů → Map<donorKey, {name, logo}>. Přebíjí to, co zadá user. */
+export async function getDonorProfiles(): Promise<Map<string, DonorProfileLite>> {
+  const rows = await prisma.donorProfile.findMany({
+    select: { donorKey: true, name: true, imageUrl: true, imageBg: true },
   });
+  const m = new Map<string, DonorProfileLite>();
+  for (const r of rows) {
+    m.set(r.donorKey, { name: r.name, imageUrl: r.imageUrl, imageBg: r.imageBg });
+  }
+  return m;
+}
+
+export async function getWall(limit = 200): Promise<WallEntry[]> {
+  const [rows, profiles] = await Promise.all([
+    prisma.donation.findMany({
+      where: { status: "confirmed", hiddenOnWall: false },
+      orderBy: { confirmedAt: "asc" },
+      select: {
+        id: true,
+        name: true,
+        currency: true,
+        amount: true,
+        amountBtc: true,
+        publicMessage: true,
+        imageUrl: true,
+        imageBg: true,
+        donorKey: true,
+        confirmedAt: true,
+        createdAt: true,
+      },
+    }),
+    getDonorProfiles(),
+  ]);
 
   // Seskupení podle donorKey (kdo nemá klíč, stojí samostatně).
   type Row = (typeof rows)[number];
@@ -123,8 +144,21 @@ export async function getWall(limit = 200): Promise<WallEntry[]> {
     const latest = sorted[sorted.length - 1];
     const lastMsg = [...sorted].reverse().find((r) => r.publicMessage)?.publicMessage ?? null;
     const imgRow = [...sorted].reverse().find((r) => r.imageUrl);
-    const imageUrl = imgRow?.imageUrl ?? null;
-    const imageBg = imgRow?.imageBg ?? null;
+    let name = latest.name;
+    let imageUrl = imgRow?.imageUrl ?? null;
+    let imageBg = imgRow?.imageBg ?? null;
+
+    // Profil identifikátoru přebíjí jméno (vždy) i logo (pokud je nastavené).
+    if (key.startsWith("k:")) {
+      const prof = profiles.get(key.slice(2));
+      if (prof) {
+        name = prof.name;
+        if (prof.imageUrl) {
+          imageUrl = prof.imageUrl;
+          imageBg = prof.imageBg;
+        }
+      }
+    }
 
     const totalBtc = list.reduce((s, r) => s + (r.amountBtc ?? 0), 0);
     const currencies = new Set(list.map((r) => r.currency));
@@ -153,7 +187,7 @@ export async function getWall(limit = 200): Promise<WallEntry[]> {
 
     entries.push({
       id: publicGroupId(key),
-      name: latest.name,
+      name,
       currency,
       amount,
       amountBtc: totalBtc,
@@ -221,13 +255,21 @@ export async function getRecent(limit = 10): Promise<RecentDonation[]> {
     }
   }
 
+  // Profil identifikátoru přebíjí jméno (vždy) i logo (pokud je nastavené).
+  const profiles = await getDonorProfiles();
+
   return rows.map((r) => {
+    const prof = r.donorKey ? profiles.get(r.donorKey) : undefined;
     const fb = !r.imageUrl && r.donorKey ? logoByKey.get(r.donorKey) : undefined;
-    const imageUrl = r.imageUrl ?? fb?.imageUrl ?? null;
-    const imageBg = r.imageUrl ? r.imageBg ?? null : fb?.imageBg ?? null;
+    let imageUrl = r.imageUrl ?? fb?.imageUrl ?? null;
+    let imageBg = r.imageUrl ? r.imageBg ?? null : fb?.imageBg ?? null;
+    if (prof?.imageUrl) {
+      imageUrl = prof.imageUrl;
+      imageBg = prof.imageBg;
+    }
     return {
       id: publicGroupId(r.id),
-      name: r.name,
+      name: prof?.name ?? r.name,
       currency: r.currency,
       amount: r.amount,
       amountBtc: r.amountBtc ?? 0,
