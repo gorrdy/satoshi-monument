@@ -34,7 +34,7 @@ const MESSAGES = {
     "Malý sat, velká myšlenka",
     "Ať Satoshi stojí i v Praze",
     "Přidávám se k 21 metropolím",
-    "Decentralizace si zaslouží pomník",
+    "Decentralizace si zaslouží monument",
     "Za svobodu, za Bitcoin, za Prahu",
     "Každý sat se počítá",
     "Praha + Satoshi = ❤️",

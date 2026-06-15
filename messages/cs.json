@@ -4,7 +4,7 @@
     "description": "Přispějte na sochu Satoshiho Nakamota v Praze. Stejná, jaká stojí v Luganu, vznikne ve 21 metropolích světa. Cíl sbírky je 1 BTC.",
     "pravidlaDesc": "Co se stane s vybranými prostředky — když se cíl sbírky vybere, nevybere, i když se přečerpá. Transparentní pravidla sbírky na sochu Satoshiho Nakamota.",
     "pribehDesc": "Příběh sochy Satoshiho Nakamota v Praze — kdo byl Satoshi, proč Praha, komunitní sbírka a seznam všech přispěvatelů.",
-    "dalsiDesc": "Vizí nekončíme u jedné sochy: otevřená soutěž o původní český pomník Bitcoinu, open-source dar světu a prostor pro partnery."
+    "dalsiDesc": "Vizí nekončíme u jedné sochy: otevřená soutěž o původní český monument Bitcoinu, open-source dar světu a prostor pro partnery."
   },
   "nav": {
     "donate": "Přispět",
@@ -151,7 +151,7 @@
     "disclaimer": "Sbírka stále probíhá — tato stránka zatím není finální. Po instalaci sochy se promění v její trvalý web (dostupný i přes QR kód na podstavci).",
     "title": "Příběh Satoshi Monumentu v Praze",
     "s1h": "Proč Satoshi Nakamoto?",
-    "s1a": "Satoshi Nakamoto je pseudonym autora (nebo autorů) Bitcoinu. V roce 2008 zveřejnil whitepaper popisující peer-to-peer elektronický platební systém bez centrální autority, o rok později spustil síť a v lednu 2009 vytěžil první bitcoinový blok. Pak zmizel. Nikdo neví, kdo Satoshi doopravdy je — a možná je to tak správně. Bitcoin byl od začátku navržen tak, aby svého tvůrce nepotřeboval; aby fungoval sám, bez někoho, kdo by ho mohl zastavit, cenzurovat nebo zmanipulovat. Satoshiho anonymita je součástí myšlenky. A přesto — nebo právě proto — si zaslouží pomník. Ne aby byl oslaven jako hrdina, ale aby si každý, kdo kolem projde, mohl položit otázku: Kdo to byl? A co vlastně vytvořil?",
+    "s1a": "Satoshi Nakamoto je pseudonym autora (nebo autorů) Bitcoinu. V roce 2008 zveřejnil whitepaper popisující peer-to-peer elektronický platební systém bez centrální autority, o rok později spustil síť a v lednu 2009 vytěžil první bitcoinový blok. Pak zmizel. Nikdo neví, kdo Satoshi doopravdy je — a možná je to tak správně. Bitcoin byl od začátku navržen tak, aby svého tvůrce nepotřeboval; aby fungoval sám, bez někoho, kdo by ho mohl zastavit, cenzurovat nebo zmanipulovat. Satoshiho anonymita je součástí myšlenky. A přesto — nebo právě proto — si zaslouží monument. Ne aby byl oslaven jako hrdina, ale aby si každý, kdo kolem projde, mohl položit otázku: Kdo to byl? A co vlastně vytvořil?",
     "s2h": "Proč Praha?",
     "s2a": "Praha není jen město, které Bitcoin adoptovalo. Praha je město, které ho pomáhalo vytvořit. Vznikly tu:",
     "s2list": [
