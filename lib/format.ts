@@ -16,3 +16,11 @@ export function formatCzk(value: number, locale = "cs"): string {
 export function formatSats(btc: number): string {
   return new Intl.NumberFormat("cs-CZ").format(Math.round(btc * 1e8));
 }
+
+export function formatUsd(value: number, locale = "en"): string {
+  return new Intl.NumberFormat(locale === "cs" ? "cs-CZ" : "en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  }).format(Math.round(value));
+}

@@ -4,6 +4,8 @@ import { useLocale, useTranslations } from "next-intl";
 import { useCampaignStats } from "./StatsProvider";
 import Identicon from "./Identicon";
 import { formatSats, formatCzk } from "@/lib/format";
+import { formatBtcAsFiat } from "@/lib/fiat";
+import type { Stats } from "./ProgressBar";
 
 /** Lokalizovaný relativní čas: „před 5 min" / „5 min ago". */
 function timeAgo(iso: string, locale: string): string {
@@ -17,8 +19,17 @@ function timeAgo(iso: string, locale: string): string {
   return rtf.format(-Math.round(diff / 86400), "day");
 }
 
-function amountLabel(d: { currency: string; amount: number; amountBtc: number }) {
-  if (d.currency === "CZK") return `${formatCzk(d.amount)} Kč`;
+function amountLabel(
+  d: { currency: string; amount: number; amountBtc: number },
+  locale: string,
+  stats: Stats | null,
+) {
+  if (d.currency === "CZK") {
+    // EN: orientační $ ekvivalent (aktuálním kurzem); CS: původní Kč.
+    return locale === "en" && stats
+      ? formatBtcAsFiat(d.amountBtc, stats, locale)
+      : `${formatCzk(d.amount)} Kč`;
+  }
   return `${formatSats(d.amountBtc || d.amount)} sats`;
 }
 
@@ -29,7 +40,7 @@ function amountLabel(d: { currency: string; amount: number; amountBtc: number })
 export default function RecentDonations() {
   const t = useTranslations("recent");
   const locale = useLocale();
-  const { recent, pending } = useCampaignStats();
+  const { recent, pending, stats } = useCampaignStats();
 
   if ((!recent || recent.length === 0) && (!pending || pending.length === 0))
     return null;
@@ -85,7 +96,7 @@ export default function RecentDonations() {
               <div className="min-w-0 flex-1 leading-tight">
                 <span className="ui-display font-bold truncate">{d.name}</span>
                 <span className="ui-mono text-xs ui-accent font-bold ml-2">
-                  {amountLabel(d)}
+                  {amountLabel(d, locale, stats)}
                 </span>
                 <span
                   className={`ml-1.5 align-middle inline-block px-1.5 py-px rounded-[var(--radius-sm)] text-[10px] font-bold ${

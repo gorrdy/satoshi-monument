@@ -37,8 +37,8 @@
     "of": "of",
     "donors": "supporters",
     "rate": "rate",
-    "approxCzk": "≈ {czk} CZK",
-    "goalExplainer": "The goal is 1 BTC. If 2,000 people each send 50,000 sats — the statue is ours."
+    "goalExplainer": "The goal is 1 BTC. If 2,000 people each send 50,000 sats — the statue is ours.",
+    "approxFiat": "≈ {amount}"
   },
   "form": {
     "title": "Donate to the statue",
@@ -70,7 +70,8 @@
     "errorAmount": "Please enter a valid amount.",
     "errorGeneric": "Something went wrong. Please try again.",
     "errorBtcpay": "Could not open the payment gateway. Please try again later.",
-    "errorRateLimit": "Too many attempts. Please try again in an hour."
+    "errorRateLimit": "Too many attempts. Please try again in an hour.",
+    "approxUsdHint": "≈ {amount}"
   },
   "qr": {
     "title": "Scan the QR code in your banking app",
@@ -210,7 +211,8 @@
     "downloadImage": "Download status image",
     "repeatTitle": "Want a spot on the podium?",
     "repeatLead": "Contributions under the same identifier add up. Add another and climb the leaderboard.",
-    "repeatCta": "Contribute again"
+    "repeatCta": "Contribute again",
+    "approxUsd": "≈ {amount}"
   },
   "share": {
     "title": "Share the fundraiser",

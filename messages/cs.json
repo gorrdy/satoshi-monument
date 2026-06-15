@@ -37,8 +37,8 @@
     "of": "z",
     "donors": "přispěvatelů",
     "rate": "kurz",
-    "approxCzk": "≈ {czk} Kč",
-    "goalExplainer": "Cíl je 1 BTC. Stačí, aby 2 000 lidí poslalo 50 000 sats — a socha je naše."
+    "goalExplainer": "Cíl je 1 BTC. Stačí, aby 2 000 lidí poslalo 50 000 sats — a socha je naše.",
+    "approxFiat": "≈ {amount}"
   },
   "form": {
     "title": "Přispět na sochu",
@@ -70,7 +70,8 @@
     "errorAmount": "Zadej prosím platnou částku.",
     "errorGeneric": "Něco se nepovedlo. Zkus to prosím znovu.",
     "errorBtcpay": "Platební bránu se nepodařilo otevřít. Zkus to prosím později.",
-    "errorRateLimit": "Příliš mnoho pokusů. Zkus to prosím za hodinu."
+    "errorRateLimit": "Příliš mnoho pokusů. Zkus to prosím za hodinu.",
+    "approxUsdHint": "≈ {amount}"
   },
   "qr": {
     "title": "Naskenuj QR kód v bankovní aplikaci",
@@ -210,7 +211,8 @@
     "downloadImage": "Stáhnout obrázek se stavem",
     "repeatTitle": "Chceš na stupně vítězů?",
     "repeatLead": "Příspěvky na stejný identifikátor se sčítají. Přidej další a posuň se na leaderboardu výš.",
-    "repeatCta": "Přispět znovu"
+    "repeatCta": "Přispět znovu",
+    "approxUsd": "≈ {amount}"
   },
   "share": {
     "title": "Sdílej sbírku",

@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { formatBtc, formatCzk } from "@/lib/format";
+import { formatBtcAsFiat } from "@/lib/fiat";
+import { useCampaignStats } from "./StatsProvider";
 import Reveal from "./Reveal";
 import Identicon from "./Identicon";
 
@@ -68,6 +70,7 @@ export default function SupporterWall({
   const t = useTranslations("wall");
   const tc = useTranslations("common");
   const locale = useLocale();
+  const { stats } = useCampaignStats();
   const [expanded, setExpanded] = useState(false);
   const [query, setQuery] = useState("");
   const [detail, setDetail] = useState<WallEntry | null>(null);
@@ -330,7 +333,10 @@ export default function SupporterWall({
                         {formatBtc(it.amountBtc)} BTC
                         {it.currency === "CZK" && (
                           <span className="ui-muted font-normal">
-                            {" "}· {formatCzk(it.amount)} Kč
+                            {" "}·{" "}
+                            {locale === "en" && stats
+                              ? formatBtcAsFiat(it.amountBtc, stats, locale)
+                              : `${formatCzk(it.amount)} Kč`}
                           </span>
                         )}
                       </span>

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useLocaleSwitch } from "./I18nProvider";
-import { formatBtc, formatCzk } from "@/lib/format";
+import { formatBtc, formatCzk, formatUsd } from "@/lib/format";
 import SiteHeader from "./SiteHeader";
 import SiteFooter from "./SiteFooter";
 import ShareButtons from "./ShareButtons";
@@ -14,20 +14,39 @@ export default function ThankYouContent() {
   const { locale } = useLocaleSwitch();
   const params = useSearchParams();
   const [shareUrl, setShareUrl] = useState("https://satoshi.jednadvacet.org");
+  const [rates, setRates] = useState<{ czk: number; usd: number } | null>(null);
 
   useEffect(() => {
     // Sdílíme veřejnou hlavní stránku (ne /diky).
     setShareUrl(`${window.location.origin}/${locale}`);
   }, [locale]);
 
+  // Kurzy pro orientační $ ekvivalent (EN).
+  useEffect(() => {
+    if (locale !== "en") return;
+    fetch("/api/stats", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (d?.stats?.btcCzkRate && d?.stats?.btcUsdRate)
+          setRates({ czk: d.stats.btcCzkRate, usd: d.stats.btcUsdRate });
+      })
+      .catch(() => {});
+  }, [locale]);
+
   // Personalizace částkou z platby (?amt=&cur=).
   const amt = Number(params.get("amt"));
   const cur = params.get("cur");
-  const amountLabel =
-    Number.isFinite(amt) && amt > 0
-      ? cur === "czk"
-        ? `${formatCzk(amt)} Kč`
-        : `${formatBtc(amt)} BTC`
+  const validAmt = Number.isFinite(amt) && amt > 0;
+  const amountLabel = validAmt
+    ? cur === "czk"
+      ? `${formatCzk(amt)} Kč`
+      : `${formatBtc(amt)} BTC`
+    : null;
+
+  // EN: orientační USD ekvivalent zaplacené částky (aktuálním kurzem).
+  const usdLabel =
+    validAmt && locale === "en" && rates
+      ? formatUsd(cur === "czk" ? (amt / rates.czk) * rates.usd : amt * rates.usd, locale)
       : null;
 
   return (
@@ -42,6 +61,9 @@ export default function ThankYouContent() {
           {amountLabel && (
             <p className="ui-accent-box inline-block px-4 py-2 rounded-[var(--radius-sm)] font-bold mb-5">
               {t("amountThanks", { amount: amountLabel })}
+              {usdLabel && (
+                <span className="font-normal opacity-80"> · {t("approxUsd", { amount: usdLabel })}</span>
+              )}
             </p>
           )}
           <p className="text-lg ui-muted leading-relaxed mb-12">{t("lead")}</p>

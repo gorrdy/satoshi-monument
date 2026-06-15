@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
+import { fiatCode } from "@/lib/fiat";
+import { formatUsd } from "@/lib/format";
 import type { PaymentResult } from "./PaymentModal";
 
 type Method = "CZK" | "BTC";
@@ -116,8 +118,13 @@ export default function DonationForm({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   // Zvolená jednotka zobrazení u BTC platby (klik na štítek cyklí sats→BTC→CZK).
+  // "CZK" = sentinel pro lokální fiat (CZK v cs, USD v en).
   const [btcDisplay, setBtcDisplay] = useState<"sats" | "BTC" | "CZK">("sats");
   const [czkRate, setCzkRate] = useState<number | null>(null);
+  const [usdRate, setUsdRate] = useState<number | null>(null);
+  // Fiat dle locale: en → USD, cs → CZK. Jen orientační ekvivalent, ne platební měna.
+  const fc = fiatCode(locale); // "USD" | "CZK"
+  const fiatRate = locale === "en" ? usdRate : czkRate;
 
   // Předvyplnění (jen na klientu, ať nevznikne hydration mismatch).
   useEffect(() => {
@@ -133,6 +140,7 @@ export default function DonationForm({
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
         if (d?.stats?.btcCzkRate) setCzkRate(d.stats.btcCzkRate);
+        if (d?.stats?.btcUsdRate) setUsdRate(d.stats.btcUsdRate);
       })
       .catch(() => {});
   }, []);
@@ -145,29 +153,32 @@ export default function DonationForm({
   const unit =
     method !== "BTC"
       ? "CZK"
-      : btcDisplay === "CZK" && !czkRate
+      : btcDisplay === "CZK" && !fiatRate
         ? "sats"
         : btcDisplay;
 
-  // Hodnota v inputu (safeAmt je u BTC v sats).
+  // Hodnota v inputu (safeAmt je u BTC v sats). U BTC platby "CZK" = lokální fiat.
   const displayValue =
     method !== "BTC"
       ? amount
       : unit === "BTC"
         ? trimBtc(safeAmt / SATS_PER_BTC)
-        : unit === "CZK" && czkRate
-          ? String(Math.round((safeAmt / SATS_PER_BTC) * czkRate))
+        : unit === "CZK" && fiatRate
+          ? String(Math.round((safeAmt / SATS_PER_BTC) * fiatRate))
           : amount;
 
-  // Doména posuvníku v aktuální jednotce. Při zobrazení v CZK (i u BTC platby)
-  // respektuje limity bankovního převodu 250–1 000 000 Kč.
+  // Doména posuvníku v aktuální jednotce. CZK platba (bankovní převod) má limity
+  // 250–1 000 000 Kč; fiat-zobrazení u BTC platby se odvodí z rozsahu sats × kurz.
   const dom =
     method !== "BTC"
       ? { min: 250, max: 1_000_000 }
       : unit === "BTC"
         ? { min: RANGES.BTC.min / SATS_PER_BTC, max: RANGES.BTC.max / SATS_PER_BTC }
-        : unit === "CZK" && czkRate
-          ? { min: 250, max: 1_000_000 }
+        : unit === "CZK" && fiatRate
+          ? {
+              min: (RANGES.BTC.min / SATS_PER_BTC) * fiatRate,
+              max: (RANGES.BTC.max / SATS_PER_BTC) * fiatRate,
+            }
           : { min: RANGES.BTC.min, max: RANGES.BTC.max }; // sats
 
   // Aktuální hodnota přepočtená do jednotky posuvníku.
@@ -176,14 +187,14 @@ export default function DonationForm({
       ? safeAmt
       : unit === "BTC"
         ? safeAmt / SATS_PER_BTC
-        : unit === "CZK" && czkRate
-          ? (safeAmt / SATS_PER_BTC) * czkRate
+        : unit === "CZK" && fiatRate
+          ? (safeAmt / SATS_PER_BTC) * fiatRate
           : safeAmt; // sats
 
-  // Klik na štítek → cyklus sats → BTC → CZK (CZK jen když máme kurz).
+  // Klik na štítek → cyklus sats → BTC → fiat (fiat jen když máme kurz).
   const cycleUnit = () =>
     setBtcDisplay((u) =>
-      u === "sats" ? "BTC" : u === "BTC" ? (czkRate ? "CZK" : "sats") : "sats",
+      u === "sats" ? "BTC" : u === "BTC" ? (fiatRate ? "CZK" : "sats") : "sats",
     );
 
   // Zápis z inputu → ulož kanonicky v sats (u BTC).
@@ -198,8 +209,8 @@ export default function DonationForm({
       return;
     }
     if (unit === "BTC") setAmount(String(Math.round(n * SATS_PER_BTC)));
-    else if (unit === "CZK" && czkRate)
-      setAmount(String(Math.round((n / czkRate) * SATS_PER_BTC)));
+    else if (unit === "CZK" && fiatRate)
+      setAmount(String(Math.round((n / fiatRate) * SATS_PER_BTC)));
     else setAmount(String(Math.round(n))); // sats
   };
 
@@ -216,8 +227,8 @@ export default function DonationForm({
       setAmount(String(roundCzk(v)));
     } else if (unit === "BTC") {
       setAmount(String(roundSats(v * SATS_PER_BTC)));
-    } else if (unit === "CZK" && czkRate) {
-      setAmount(String(Math.round((roundCzk(v) / czkRate) * SATS_PER_BTC)));
+    } else if (unit === "CZK" && fiatRate) {
+      setAmount(String(Math.round((roundCzk(v) / fiatRate) * SATS_PER_BTC)));
     } else {
       setAmount(String(roundSats(v))); // sats
     }
@@ -268,13 +279,25 @@ export default function DonationForm({
     }
   };
 
+  // Jednotka v popisku: CZK platba vždy "CZK"; u BTC platby lokální fiat (fc).
+  const unitLabel = method !== "BTC" ? "CZK" : unit === "CZK" ? fc : unit;
+
   // Popisek meze — hodnota už je v jednotce posuvníku (dom).
   const boundLabel = (v: number) => {
     if (method !== "BTC") return `${v.toLocaleString("cs-CZ")} Kč`;
     if (unit === "BTC") return `${trimBtc(v)} BTC`;
-    if (unit === "CZK") return `${Math.round(v).toLocaleString("cs-CZ")} Kč`;
+    if (unit === "CZK")
+      return fc === "USD"
+        ? formatUsd(v, locale)
+        : `${Math.round(v).toLocaleString("cs-CZ")} Kč`;
     return `${v.toLocaleString("cs-CZ")} sats`;
   };
+
+  // EN nápověda u korunové platby: orientační $ ekvivalent zadané částky.
+  const czkUsdHint =
+    method === "CZK" && locale === "en" && usdRate && czkRate
+      ? formatUsd((safeAmt / czkRate) * usdRate, locale)
+      : null;
 
   return (
     <form
@@ -377,7 +400,7 @@ export default function DonationForm({
         {/* Částka — posuvník (log) + ruční zadání */}
         <div>
           <label htmlFor="don-amount" className="block ui-eyebrow ui-muted mb-1.5">
-            {t("amount")} · {unit === "CZK" ? "CZK" : unit}
+            {t("amount")} · {unitLabel}
           </label>
           <div className="relative">
             <input
@@ -391,10 +414,10 @@ export default function DonationForm({
               <button
                 type="button"
                 onClick={cycleUnit}
-                title="Přepnout jednotku (sats / BTC / CZK)"
+                title={`Přepnout jednotku (sats / BTC / ${fc})`}
                 className="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-xs ui-mono ui-border rounded-[var(--radius-sm)] ui-soft press"
               >
-                {unit} ⇅
+                {unitLabel} ⇅
               </button>
             ) : (
               <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm ui-mono ui-muted">
@@ -402,6 +425,11 @@ export default function DonationForm({
               </span>
             )}
           </div>
+          {czkUsdHint && (
+            <div className="ui-mono text-xs ui-muted mt-1.5">
+              {t("approxUsdHint", { amount: czkUsdHint })}
+            </div>
+          )}
           <input
             type="range"
             min={0}

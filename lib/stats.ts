@@ -29,6 +29,7 @@ export interface CampaignStats {
   btcCzkRate: number;
   btcUsdRate: number;
   raisedCzk: number;
+  raisedUsd: number;
 }
 
 export async function getStats(): Promise<CampaignStats> {
@@ -59,6 +60,7 @@ export async function getStats(): Promise<CampaignStats> {
     btcCzkRate,
     btcUsdRate,
     raisedCzk: raisedBtc * btcCzkRate,
+    raisedUsd: raisedBtc * btcUsdRate,
   };
 }
 
