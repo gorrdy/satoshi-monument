@@ -196,21 +196,46 @@ export async function getRecent(limit = 10): Promise<RecentDonation[]> {
       amountBtc: true,
       imageUrl: true,
       imageBg: true,
+      donorKey: true,
       confirmedAt: true,
       createdAt: true,
     },
   });
 
-  return rows.map((r) => ({
-    id: publicGroupId(r.id),
-    name: r.name,
-    currency: r.currency,
-    amount: r.amount,
-    amountBtc: r.amountBtc ?? 0,
-    createdAt: (r.confirmedAt ?? r.createdAt).toISOString(),
-    imageUrl: r.imageUrl ?? null,
-    imageBg: r.imageBg ?? null,
-  }));
+  // Logo se váže k identifikátoru: když tahle platba logo nemá, ale stejný
+  // donorKey ho má na jiné platbě, použijeme ho (stejně jako na zdi).
+  const needKeys = [
+    ...new Set(rows.filter((r) => !r.imageUrl && r.donorKey).map((r) => r.donorKey!)),
+  ];
+  const logoByKey = new Map<string, { imageUrl: string; imageBg: string | null }>();
+  if (needKeys.length) {
+    const logoRows = await prisma.donation.findMany({
+      where: { donorKey: { in: needKeys }, imageUrl: { not: null } },
+      orderBy: { createdAt: "desc" }, // nejnovější nastavené logo vyhrává
+      select: { donorKey: true, imageUrl: true, imageBg: true },
+    });
+    for (const lr of logoRows) {
+      if (lr.donorKey && lr.imageUrl && !logoByKey.has(lr.donorKey)) {
+        logoByKey.set(lr.donorKey, { imageUrl: lr.imageUrl, imageBg: lr.imageBg });
+      }
+    }
+  }
+
+  return rows.map((r) => {
+    const fb = !r.imageUrl && r.donorKey ? logoByKey.get(r.donorKey) : undefined;
+    const imageUrl = r.imageUrl ?? fb?.imageUrl ?? null;
+    const imageBg = r.imageUrl ? r.imageBg ?? null : fb?.imageBg ?? null;
+    return {
+      id: publicGroupId(r.id),
+      name: r.name,
+      currency: r.currency,
+      amount: r.amount,
+      amountBtc: r.amountBtc ?? 0,
+      createdAt: (r.confirmedAt ?? r.createdAt).toISOString(),
+      imageUrl,
+      imageBg,
+    };
+  });
 }
 
 export interface PendingDonation {
