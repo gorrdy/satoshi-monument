@@ -221,6 +221,7 @@
   },
   "recent": {
     "title": "Recent contributions",
-    "empty": "No contributions yet"
+    "empty": "No contributions yet",
+    "inProgress": "payment in progress"
   }
 }

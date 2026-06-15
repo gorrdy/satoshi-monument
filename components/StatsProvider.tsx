@@ -11,19 +11,21 @@ import {
 import { usePathname } from "next/navigation";
 import type { Stats } from "./ProgressBar";
 import type { WallEntry } from "./SupporterWall";
-import type { RecentDonation } from "@/lib/stats";
+import type { RecentDonation, PendingDonation } from "@/lib/stats";
 import { fireConfetti } from "@/lib/confetti";
 
 interface StatsValue {
   stats: Stats | null;
   wall: WallEntry[];
   recent: RecentDonation[];
+  pending: PendingDonation[];
 }
 
 const StatsContext = createContext<StatsValue>({
   stats: null,
   wall: [],
   recent: [],
+  pending: [],
 });
 
 /** Jeden zdroj dat sbírky pro celou stránku — místo 3 nezávislých fetchů. */
@@ -35,6 +37,7 @@ export default function StatsProvider({
   const [stats, setStats] = useState<Stats | null>(null);
   const [wall, setWall] = useState<WallEntry[]>([]);
   const [recent, setRecent] = useState<RecentDonation[]>([]);
+  const [pending, setPending] = useState<PendingDonation[]>([]);
   // Předchozí vybraná částka — nárůst = právě přišla nová platba → konfety.
   const prevRaised = useRef<number | null>(null);
   // Aktuální cesta v refu (refresh je stabilní callback) — v adminu konfety nechceme.
@@ -50,6 +53,7 @@ export default function StatsProvider({
         stats: Stats;
         wall: WallEntry[];
         recent: RecentDonation[];
+        pending: PendingDonation[];
       };
       const raised = data.stats?.raisedBtc ?? 0;
       // Při prvním načtení jen zapamatovat; potom oslavit každý nárůst.
@@ -66,6 +70,7 @@ export default function StatsProvider({
       setStats(data.stats);
       setWall(data.wall ?? []);
       setRecent(data.recent ?? []);
+      setPending(data.pending ?? []);
     } catch {}
   }, []);
 
@@ -90,7 +95,7 @@ export default function StatsProvider({
   }, [refresh]);
 
   return (
-    <StatsContext.Provider value={{ stats, wall, recent }}>
+    <StatsContext.Provider value={{ stats, wall, recent, pending }}>
       {children}
     </StatsContext.Provider>
   );

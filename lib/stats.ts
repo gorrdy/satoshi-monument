@@ -212,3 +212,27 @@ export async function getRecent(limit = 10): Promise<RecentDonation[]> {
     imageBg: r.imageBg ?? null,
   }));
 }
+
+export interface PendingDonation {
+  id: string; // solené veřejné id — nic citlivého
+  createdAt: string;
+}
+
+/**
+ * Probíhající (pending) platby pro teaser „právě probíhá".
+ * ZÁMĚRNĚ NEvrací jméno ani částku — klient ukáže jen rozmazaný placeholder.
+ * Jen platby z poslední ~20 min, ať „probíhá" odpovídá realitě (starší QR vyprší).
+ */
+export async function getPending(limit = 3): Promise<PendingDonation[]> {
+  const since = new Date(Date.now() - 20 * 60 * 1000);
+  const rows = await prisma.donation.findMany({
+    where: { status: "pending", hiddenOnWall: false, createdAt: { gt: since } },
+    orderBy: { createdAt: "desc" },
+    take: limit,
+    select: { id: true, createdAt: true },
+  });
+  return rows.map((r) => ({
+    id: publicGroupId(r.id),
+    createdAt: r.createdAt.toISOString(),
+  }));
+}

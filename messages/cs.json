@@ -221,6 +221,7 @@
   },
   "recent": {
     "title": "Poslední příspěvky",
-    "empty": "Zatím žádné příspěvky"
+    "empty": "Zatím žádné příspěvky",
+    "inProgress": "probíhá platba"
   }
 }

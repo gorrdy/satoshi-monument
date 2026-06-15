@@ -29,9 +29,10 @@ function amountLabel(d: { currency: string; amount: number; amountBtc: number })
 export default function RecentDonations() {
   const t = useTranslations("recent");
   const locale = useLocale();
-  const { recent } = useCampaignStats();
+  const { recent, pending } = useCampaignStats();
 
-  if (!recent || recent.length === 0) return null;
+  if ((!recent || recent.length === 0) && (!pending || pending.length === 0))
+    return null;
 
   const n = recent.length;
 
@@ -39,6 +40,26 @@ export default function RecentDonations() {
     <div className="mt-7">
       <h2 className="ui-eyebrow ui-muted mb-3">{t("title")}</h2>
       <ul className="space-y-2 max-w-md">
+        {/* Probíhající platby — bez reálných dat, jen rozmazaný placeholder */}
+        {pending.map((p) => (
+          <li key={p.id} className="animate-rise flex items-center gap-3">
+            <div className="w-8 h-8 shrink-0 rounded-[var(--radius-sm)] ui-border ui-soft animate-pulse" />
+            <div className="min-w-0 flex-1 flex items-center gap-2">
+              <span
+                aria-hidden
+                className="inline-block h-3 w-24 rounded bg-[var(--muted)]/40 blur-[3px] animate-pulse select-none"
+              />
+              <span
+                aria-hidden
+                className="inline-block h-3 w-12 rounded bg-[var(--accent)]/40 blur-[3px] animate-pulse select-none"
+              />
+            </div>
+            <span className="text-xs ui-accent shrink-0 inline-flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-pulse" />
+              {t("inProgress")}
+            </span>
+          </li>
+        ))}
         {recent.map((d, i) => {
           // 1. položka plné krytí, poslední ~10 % — lineárně mezi.
           const opacity = n > 1 ? 1 - (i / (n - 1)) * 0.9 : 1;
