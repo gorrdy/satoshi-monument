@@ -66,16 +66,25 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true, rejected: true });
   }
 
-  // Kolik reálně přišlo (počítá i pozdní / částečné platby).
-  const paid = invoiceId ? await getInvoiceBtcPaid(invoiceId) : 0;
+  // Kolik reálně přišlo (počítá i pozdní / částečné / přeplacené platby).
+  let paid = invoiceId ? await getInvoiceBtcPaid(invoiceId) : 0;
+  // V okamžiku settlementu může endpoint payment-methods chvíli vracet 0 →
+  // krátký retry, ať nezapíšeme jen požadovanou částku místo skutečné.
+  if (paid === 0 && isSettled && invoiceId) {
+    await new Promise((r) => setTimeout(r, 2000));
+    paid = await getInvoiceBtcPaid(invoiceId);
+  }
 
   if (isSettled) {
-    // Plně zaplaceno (i pozdě) → potvrdit skutečně přijatou částkou (fallback požadovaná).
+    // Plně zaplaceno / přeplaceno → započítat SKUTEČNĚ přijatou částku
+    // (víc i míň), ne požadovanou. Fallback na požadovanou jen když selže API.
+    const actual = paid > 0 ? paid : donation.amount;
     await prisma.donation.update({
       where: { id: donation.id },
       data: {
         status: "confirmed",
-        amountBtc: paid > 0 ? paid : donation.amount,
+        amount: actual, // BTC platba → amount je v BTC; admin ukáže reálnou částku
+        amountBtc: actual,
         confirmedAt: new Date(),
       },
     });
