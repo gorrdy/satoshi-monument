@@ -170,9 +170,10 @@ export default function SupporterWall({
         ? wall
         : wall.slice(0, TOP_N);
 
-  // pořadí na stupních: vlevo 2., uprostřed 1. (nejvyšší), vpravo 3.
-  const PODIUM_ORDER = ["md:order-2", "md:order-1", "md:order-3"];
-  const PODIUM_H = ["md:h-28", "md:h-20", "md:h-14"];
+  // pořadí na stupních: vlevo 2., uprostřed 1. (nejvyšší), vpravo 3. — i na mobilu.
+  const PODIUM_ORDER = ["order-2", "order-1", "order-3"];
+  // výška stupínku podle umístění (1. nejvyšší) — i na mobilu.
+  const PODIUM_H = ["h-20 sm:h-28", "h-14 sm:h-20", "h-10 sm:h-14"];
 
   return (
     <div className="w-full max-w-6xl mx-auto">
@@ -193,29 +194,65 @@ export default function SupporterWall({
         <p className="ui-muted py-10 text-center">{t("noMatch")}</p>
       ) : (
         <>
-          {/* Stupně vítězů (top 3) */}
+          {/* Stupně vítězů (top 3) — vodorovné stupínky i na mobilu */}
           {showPodium && (
-            <div className="flex flex-col md:flex-row md:items-end md:justify-center gap-5 md:gap-4 mb-12">
-              {top3.map((entry, place) => (
-                <div
-                  key={entry.id}
-                  className={`w-full md:w-[290px] flex flex-col ${PODIUM_ORDER[place]}`}
-                >
-                  {renderCard(entry, place * 80, "w-full")}
+            <div className="flex flex-row items-end justify-center gap-2 sm:gap-4 mb-12">
+              {top3.map((entry, place) => {
+                const multi =
+                  (entry.count ?? 1) > 1 && (entry.items?.length ?? 0) > 1;
+                return (
                   <div
-                    className={`mt-2 h-12 ${PODIUM_H[place]} rounded-b-[var(--radius-sm)] ui-border border-t-0 flex items-center justify-center`}
-                    style={{ background: MEDAL_COLOR[place] }}
-                    aria-hidden
+                    key={entry.id}
+                    className={`flex-1 min-w-0 max-w-[200px] sm:max-w-[290px] flex flex-col ${PODIUM_ORDER[place]}`}
                   >
-                    <span
-                      className="ui-display font-black text-3xl"
-                      style={{ color: "rgba(0,0,0,0.55)" }}
+                    {/* Kompaktní karta: medaile, avatar nahoře, jméno, částka */}
+                    <div className="ui-card relative overflow-hidden p-2.5 sm:p-4 flex flex-col items-center text-center">
+                      <span
+                        aria-hidden
+                        className="absolute left-0 right-0 top-0 h-1"
+                        style={{ background: MEDAL_COLOR[place] }}
+                      />
+                      <span className="text-2xl sm:text-4xl leading-none mt-1">
+                        {MEDALS[place]}
+                      </span>
+                      <div
+                        className="w-12 h-12 sm:w-16 sm:h-16 mt-2 overflow-hidden rounded-[var(--radius-sm)] ui-border"
+                        style={{ boxShadow: `0 0 0 2px ${MEDAL_COLOR[place]}` }}
+                        title={entry.name}
+                      >
+                        <Avatar entry={entry} />
+                      </div>
+                      <div className="ui-display font-bold text-sm sm:text-base truncate w-full mt-2">
+                        {entry.name}
+                      </div>
+                      <div className="ui-mono text-[11px] sm:text-xs ui-accent font-bold break-all">
+                        {amountLabel(entry)}
+                      </div>
+                      {multi && (
+                        <button
+                          onClick={() => setDetail(entry)}
+                          className="ui-link ui-eyebrow text-[10px] sm:text-xs mt-1"
+                        >
+                          {entry.count}× →
+                        </button>
+                      )}
+                    </div>
+                    {/* Stupínek */}
+                    <div
+                      className={`mt-2 ${PODIUM_H[place]} rounded-b-[var(--radius-sm)] ui-border border-t-0 flex items-center justify-center`}
+                      style={{ background: MEDAL_COLOR[place] }}
+                      aria-hidden
                     >
-                      {place + 1}
-                    </span>
+                      <span
+                        className="ui-display font-black text-2xl sm:text-3xl"
+                        style={{ color: "rgba(0,0,0,0.55)" }}
+                      >
+                        {place + 1}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
 
