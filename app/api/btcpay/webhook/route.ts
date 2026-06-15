@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { verifyWebhookSignature, getInvoiceBtcPaid } from "@/lib/btcpay";
+import {
+  verifyWebhookSignature,
+  getInvoiceBtcPaid,
+  getInvoiceBtcPaidConfirmed,
+} from "@/lib/btcpay";
 
 export const dynamic = "force-dynamic";
 
@@ -91,19 +95,22 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true, confirmed: true, paid });
   }
 
-  // isExpired: pokud něco reálně přišlo (částečná / pozdní platba), započítáme
-  // skutečnou částku; jinak prostě vyprší.
-  if (paid > 0) {
+  // isExpired: započítáme jen POTVRZENÉ platby (0-conf ignorujeme — mohly by být
+  // ještě nahrazené double-spendem). Plně & pozdě zaplacené řeší větev isSettled.
+  const confirmedPaid = invoiceId
+    ? await getInvoiceBtcPaidConfirmed(invoiceId)
+    : 0;
+  if (confirmedPaid > 0) {
     await prisma.donation.update({
       where: { id: donation.id },
       data: {
         status: "confirmed",
-        amount: paid,
-        amountBtc: paid,
+        amount: confirmedPaid,
+        amountBtc: confirmedPaid,
         confirmedAt: new Date(),
       },
     });
-    return NextResponse.json({ ok: true, confirmedPartial: true, paid });
+    return NextResponse.json({ ok: true, confirmedPartial: true, confirmedPaid });
   }
 
   await prisma.donation.update({

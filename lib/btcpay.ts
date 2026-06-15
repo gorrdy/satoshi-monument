@@ -131,6 +131,45 @@ export async function getInvoiceBtcPaid(invoiceId: string): Promise<number> {
 }
 
 /**
+ * Jako getInvoiceBtcPaid, ale počítá JEN potvrzené platby (status "Settled").
+ * Nepotvrzené (0-conf) platby ignoruje → ochrana proti započtení částky,
+ * která může být ještě nahrazena (double-spend / RBF).
+ */
+export async function getInvoiceBtcPaidConfirmed(
+  invoiceId: string,
+): Promise<number> {
+  assertConfigured();
+  try {
+    const res = await fetch(
+      `${BTCPAY_URL}/api/v1/stores/${STORE_ID}/invoices/${invoiceId}/payment-methods`,
+      {
+        headers: { Authorization: `token ${API_KEY}` },
+        signal: AbortSignal.timeout(10000),
+      },
+    );
+    if (!res.ok) return 0;
+    const pms = (await res.json()) as Array<{
+      cryptoCode?: string;
+      paymentMethod?: string;
+      payments?: Array<{ value?: string; status?: string }>;
+    }>;
+    let paid = 0;
+    for (const pm of pms) {
+      const code = (pm.cryptoCode ?? pm.paymentMethod ?? "").toUpperCase();
+      if (!code.includes("BTC")) continue;
+      for (const p of pm.payments ?? []) {
+        if ((p.status ?? "") !== "Settled") continue; // jen potvrzené
+        const v = Number(p.value ?? "0");
+        if (Number.isFinite(v)) paid += v;
+      }
+    }
+    return paid;
+  } catch {
+    return 0;
+  }
+}
+
+/**
  * Ověří HMAC-SHA256 podpis webhooku z hlavičky `BTCPay-Sig`.
  * Hlavička má tvar `sha256=<hex>`.
  */
