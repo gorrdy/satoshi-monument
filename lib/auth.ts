@@ -44,7 +44,7 @@ function isValidToken(token: string | undefined): boolean {
   return Number(exp) > Date.now();
 }
 
-function timingSafeEq(a: string, b: string): boolean {
+export function timingSafeEq(a: string, b: string): boolean {
   const ab = Buffer.from(a);
   const bb = Buffer.from(b);
   return ab.length === bb.length && crypto.timingSafeEqual(ab, bb);
