@@ -70,7 +70,8 @@ export async function fetchAndLocalize(url: string): Promise<string | null> {
  * Normalizace zadané imageUrl pro uložení:
  * - prázdné → null
  * - už lokální (/api/uploads/…) → beze změny
- * - externí http(s) → stáhnout a zmenšit na lokální webp; když to selže, ponechá se původní URL
+ * - externí http(s) → stáhnout a zmenšit na lokální webp; když to selže → null
+ *   (NEukládáme původní externí URL — nešel by přes ni leak/tracking na zdi)
  * - cokoli jiného → null
  */
 export async function resolveImageUrl(
@@ -80,8 +81,8 @@ export async function resolveImageUrl(
   if (!u) return null;
   if (/^\/api\/uploads\/[\w.-]+$/.test(u)) return u;
   if (/^https?:\/\//i.test(u)) {
-    const local = await fetchAndLocalize(u);
-    return local ?? u;
+    // Když se nepodaří stáhnout a zlokalizovat, obrázek zahodíme (ne fallback na externí URL).
+    return await fetchAndLocalize(u);
   }
   return null;
 }

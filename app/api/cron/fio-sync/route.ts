@@ -2,13 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { fetchNewFioTransactions } from "@/lib/fio";
 import { czkToBtc } from "@/lib/price";
+import { timingSafeEq } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
-  const key =
-    req.nextUrl.searchParams.get("key") ?? req.headers.get("x-cron-key");
-  if (!process.env.CRON_SECRET || key !== process.env.CRON_SECRET) {
+  // Secret jen z hlavičky (ne z ?key= — končil by v access logu) + konstantní porovnání.
+  const key = req.headers.get("x-cron-key") ?? "";
+  if (!process.env.CRON_SECRET || !timingSafeEq(key, process.env.CRON_SECRET)) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 

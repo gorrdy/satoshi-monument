@@ -2,15 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { sendDailyReport, type DailyReport } from "@/lib/mail";
 import { getStats } from "@/lib/stats";
+import { timingSafeEq } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
 const WINDOW_HOURS = 24;
 
 export async function GET(req: NextRequest) {
-  const key =
-    req.nextUrl.searchParams.get("key") ?? req.headers.get("x-cron-key");
-  if (!process.env.CRON_SECRET || key !== process.env.CRON_SECRET) {
+  // Secret jen z hlavičky (ne z ?key= — končil by v access logu) + konstantní porovnání.
+  const key = req.headers.get("x-cron-key") ?? "";
+  if (!process.env.CRON_SECRET || !timingSafeEq(key, process.env.CRON_SECRET)) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 

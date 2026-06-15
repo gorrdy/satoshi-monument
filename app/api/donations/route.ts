@@ -37,6 +37,12 @@ interface Body {
 }
 
 export async function POST(req: NextRequest) {
+  // Sanity limit velikosti těla (proti zneužití multi-MB payloadem).
+  const clen = Number(req.headers.get("content-length") ?? "0");
+  if (Number.isFinite(clen) && clen > 100_000) {
+    return NextResponse.json({ error: "payload_too_large" }, { status: 413 });
+  }
+
   let body: Body;
   try {
     body = (await req.json()) as Body;
@@ -44,14 +50,22 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "invalid_json" }, { status: 400 });
   }
 
-  const name = (body.name ?? "").trim().slice(0, 80) || "Anonym";
+  // Bezpečné přetypování — vstup z internetu může být cokoli (číslo/objekt/pole),
+  // jinak by .trim() na ne-stringu shodil handler (500).
+  const asStr = (v: unknown): string => (typeof v === "string" ? v : "");
+  const name = asStr(body.name).trim().slice(0, 80) || "Anonym";
   const currency = body.currency === "BTC" ? "BTC" : "CZK";
-  const amount = Number(body.amount);
-  const publicMessage = (body.publicMessage ?? "").trim().slice(0, 280) || null;
+  const amount =
+    typeof body.amount === "number"
+      ? body.amount
+      : typeof body.amount === "string"
+        ? Number(body.amount)
+        : NaN;
+  const publicMessage = asStr(body.publicMessage).trim().slice(0, 280) || null;
   const privateMessage =
-    (body.privateMessage ?? "").trim().slice(0, 1000) || null;
+    asStr(body.privateMessage).trim().slice(0, 1000) || null;
   // Párovací identifikátor: normalizovaný (trim + lowercase) pro spolehlivé párování.
-  const donorKey = normalizeDonorKey(body.donorKey);
+  const donorKey = normalizeDonorKey(asStr(body.donorKey));
   const locale = body.locale === "en" ? "en" : "cs";
 
   if (!Number.isFinite(amount) || amount <= 0) {
@@ -65,6 +79,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "invalid_amount" }, { status: 400 });
   }
 
+  try {
   // Vytvoříme záznam (pending) – ID použijeme pro orderId/variabilní symbol.
   const donation = await prisma.donation.create({
     data: {
@@ -150,4 +165,8 @@ export async function POST(req: NextRequest) {
     spayd,
     qrDataUrl,
   });
+  } catch (err) {
+    console.error("donation POST error:", err);
+    return NextResponse.json({ error: "server_error" }, { status: 500 });
+  }
 }
