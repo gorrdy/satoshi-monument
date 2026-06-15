@@ -56,10 +56,21 @@ export default function AdminPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState<string | null>(null);
-  const [filter, setFilter] = useState("pending");
+  // Záložka i filtr se pamatují mezi refreshi (localStorage).
+  const [filter, setFilter] = useState(() =>
+    typeof window !== "undefined"
+      ? localStorage.getItem("admin.filter") || "pending"
+      : "pending",
+  );
   const [view, setView] = useState<
     "payments" | "analytics" | "fiat" | "identity"
-  >("payments");
+  >(() => {
+    if (typeof window === "undefined") return "payments";
+    const v = localStorage.getItem("admin.view");
+    return v === "analytics" || v === "fiat" || v === "identity"
+      ? v
+      : "payments";
+  });
   const [fiatList, setFiatList] = useState<Donation[]>([]);
   const [btcRate, setBtcRate] = useState<number | null>(null);
   const [btcUsd, setBtcUsd] = useState<number | null>(null);
@@ -197,6 +208,14 @@ export default function AdminPage() {
     if (view === "fiat") loadFiat();
     if (view === "identity") loadProfiles();
   }, [view, loadFiat, loadProfiles]);
+
+  // Zapamatovat poslední zvolenou záložku a filtr.
+  useEffect(() => {
+    localStorage.setItem("admin.view", view);
+  }, [view]);
+  useEffect(() => {
+    localStorage.setItem("admin.filter", filter);
+  }, [filter]);
 
   const togglePurchased = async (d: Donation) => {
     setBusy("buy" + d.id);
