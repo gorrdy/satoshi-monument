@@ -83,7 +83,7 @@ export interface WallEntry {
   createdAt: string;
   imageUrl: string | null; // volitelné logo/obrázek (nastavuje admin)
   imageBg: string | null; // barva pozadí pod logem (hex)
-  items: WallItem[]; // jednotlivé příspěvky (od nejnovějšího) — veřejná data
+  items?: WallItem[]; // jednotlivé příspěvky — dotahují se lazy přes getWallItems()
 }
 
 export interface DonorProfileLite {
@@ -104,7 +104,7 @@ export async function getDonorProfiles(): Promise<Map<string, DonorProfileLite>>
   return m;
 }
 
-export async function getWall(limit = 200): Promise<WallEntry[]> {
+async function buildWallEntries(): Promise<WallEntry[]> {
   const [rows, profiles] = await Promise.all([
     prisma.donation.findMany({
       where: { status: "confirmed", hiddenOnWall: false },
@@ -204,7 +204,23 @@ export async function getWall(limit = 200): Promise<WallEntry[]> {
 
   // Řazení od největšího přispěvatele (dle BTC ekvivalentu).
   entries.sort((a, b) => b.amountBtc - a.amountBtc);
-  return entries.slice(0, limit);
+  return entries;
+}
+
+/**
+ * Veřejná zeď — VŠICHNI přispěvatelé, seřazení dle BTC ekvivalentu.
+ * Bez položkového rozpisu (`items`) — ten se dotahuje lazy přes getWallItems(),
+ * takže payload /api/stats zůstává malý i s rostoucím počtem dárců.
+ */
+export async function getWall(): Promise<WallEntry[]> {
+  const entries = await buildWallEntries();
+  return entries.map((e) => ({ ...e, items: undefined }));
+}
+
+/** Rozpis jednotlivých příspěvků jedné skupiny dle veřejného (soleného) id. */
+export async function getWallItems(id: string): Promise<WallItem[] | null> {
+  const entries = await buildWallEntries();
+  return entries.find((e) => e.id === id)?.items ?? null;
 }
 
 export interface RecentDonation {

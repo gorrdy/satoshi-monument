@@ -74,6 +74,8 @@ export default function SupporterWall({
   const [expanded, setExpanded] = useState(false);
   const [query, setQuery] = useState("");
   const [detail, setDetail] = useState<WallEntry | null>(null);
+  // Položky detailu se dotahují lazy (zeď samotná je neveze).
+  const [detailItems, setDetailItems] = useState<WallItem[] | null>(null);
 
   const fmtDate = (iso: string) =>
     new Date(iso).toLocaleDateString(locale === "en" ? "en-US" : "cs-CZ", {
@@ -92,6 +94,27 @@ export default function SupporterWall({
     return () => document.removeEventListener("keydown", onKey);
   }, [detail]);
 
+  // Lazy dotažení rozpisu příspěvků po otevření detailu.
+  useEffect(() => {
+    if (!detail) {
+      setDetailItems(null);
+      return;
+    }
+    let cancelled = false;
+    setDetailItems(null);
+    fetch(`/api/wall/items?id=${encodeURIComponent(detail.id)}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (!cancelled) setDetailItems(d?.items ?? []);
+      })
+      .catch(() => {
+        if (!cancelled) setDetailItems([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [detail]);
+
   const q = query.trim().toLowerCase();
   const filtered = q
     ? wall.filter((e) => e.name.toLowerCase().includes(q))
@@ -104,7 +127,7 @@ export default function SupporterWall({
     const rank = rankById.get(entry.id) ?? 99;
     const medal = rank < 3 ? rank : -1;
     const mColor = medal >= 0 ? MEDAL_COLOR[medal] : null;
-    const multi = (entry.count ?? 1) > 1 && (entry.items?.length ?? 0) > 1;
+    const multi = (entry.count ?? 1) > 1;
     return (
       <Reveal
         key={entry.id}
@@ -202,7 +225,7 @@ export default function SupporterWall({
             <div className="flex flex-row items-end justify-center gap-2 sm:gap-4 mb-12">
               {top3.map((entry, place) => {
                 const multi =
-                  (entry.count ?? 1) > 1 && (entry.items?.length ?? 0) > 1;
+                  (entry.count ?? 1) > 1;
                 return (
                   <div
                     key={entry.id}
@@ -326,7 +349,10 @@ export default function SupporterWall({
                 {t("allContributions")}
               </h3>
               <ul className="space-y-3 max-h-[55vh] overflow-y-auto">
-                {(detail.items ?? []).map((it, idx) => (
+                {detailItems === null && (
+                  <li className="ui-muted text-sm py-4 text-center">…</li>
+                )}
+                {(detailItems ?? []).map((it, idx) => (
                   <li key={idx} className="ui-soft ui-border rounded-[var(--radius-sm)] p-3">
                     <div className="flex items-baseline justify-between gap-2">
                       <span className="ui-mono font-bold ui-accent">
