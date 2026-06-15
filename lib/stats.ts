@@ -178,6 +178,8 @@ export interface RecentDonation {
   amount: number; // částka v původní měně
   amountBtc: number;
   createdAt: string; // čas potvrzení (ISO)
+  imageUrl: string | null; // volitelné logo/obrázek (nastavuje admin)
+  imageBg: string | null; // barva pozadí pod logem (hex)
 }
 
 /** Poslední potvrzené příspěvky (jednotlivé platby) pro „recent" feed. */
@@ -192,6 +194,8 @@ export async function getRecent(limit = 10): Promise<RecentDonation[]> {
       currency: true,
       amount: true,
       amountBtc: true,
+      imageUrl: true,
+      imageBg: true,
       confirmedAt: true,
       createdAt: true,
     },
@@ -204,5 +208,7 @@ export async function getRecent(limit = 10): Promise<RecentDonation[]> {
     amount: r.amount,
     amountBtc: r.amountBtc ?? 0,
     createdAt: (r.confirmedAt ?? r.createdAt).toISOString(),
+    imageUrl: r.imageUrl ?? null,
+    imageBg: r.imageBg ?? null,
   }));
 }

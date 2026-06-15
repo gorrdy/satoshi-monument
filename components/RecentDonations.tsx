@@ -49,7 +49,17 @@ export default function RecentDonations() {
               style={{ opacity }}
             >
               <div className="w-8 h-8 shrink-0 overflow-hidden rounded-[var(--radius-sm)] ui-border">
-                <Identicon seed={d.name} name={d.name} className="w-full h-full" />
+                {d.imageUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={d.imageUrl}
+                    alt={d.name}
+                    className="w-full h-full object-contain"
+                    style={{ background: d.imageBg || "#ffffff" }}
+                  />
+                ) : (
+                  <Identicon seed={d.name} name={d.name} className="w-full h-full" />
+                )}
               </div>
               <div className="min-w-0 flex-1 leading-tight">
                 <span className="ui-display font-bold truncate">{d.name}</span>
