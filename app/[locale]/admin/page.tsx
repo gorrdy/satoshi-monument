@@ -86,6 +86,7 @@ export default function AdminPage() {
   const [fio, setFio] = useState<FioPayment[]>([]);
   const [vsDraft, setVsDraft] = useState<Record<string, string>>({});
   const [counts, setCounts] = useState<Record<string, number>>({});
+  const [q, setQ] = useState(""); // hledání v platbách
   // Profily identifikátorů (kanonické jméno + logo)
   const [profiles, setProfiles] = useState<
     {
@@ -909,11 +910,38 @@ export default function AdminPage() {
         </div>
       )}
 
-      {donations.length === 0 ? (
-        <p className="text-white/40 py-8 text-center">Žádné záznamy.</p>
-      ) : (
-        <div className="space-y-3">
-          {donations.map((d) => (
+      <input
+        value={q}
+        onChange={(e) => setQ(e.target.value)}
+        placeholder="Hledat (jméno, vzkaz, faktura, identifikátor, částka)…"
+        className="w-full mb-4 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-white/30"
+      />
+      {(() => {
+        const needle = q.trim().toLowerCase();
+        const shown = needle
+          ? donations.filter((d) =>
+              [
+                d.name,
+                d.publicMessage,
+                d.privateMessage,
+                d.donorKey,
+                d.btcpayInvoiceId,
+                d.variableSymbol,
+                d.paymentRef,
+                String(d.amount),
+                d.amountBtc != null ? String(d.amountBtc) : "",
+              ]
+                .filter(Boolean)
+                .some((f) => String(f).toLowerCase().includes(needle)),
+            )
+          : donations;
+        return shown.length === 0 ? (
+          <p className="text-white/40 py-8 text-center">
+            {donations.length === 0 ? "Žádné záznamy." : "Nic neodpovídá hledání."}
+          </p>
+        ) : (
+          <div className="space-y-3">
+            {shown.map((d) => (
             <div
               key={d.id}
               className="rounded-xl bg-white/5 border border-white/10 p-4"
@@ -1137,9 +1165,10 @@ export default function AdminPage() {
                 )}
               </div>
             </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        );
+      })()}
       </>
       )}
     </div>
