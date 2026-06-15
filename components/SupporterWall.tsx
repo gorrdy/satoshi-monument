@@ -42,7 +42,7 @@ function Avatar({ entry }: { entry: WallEntry }) {
       <img
         src={entry.imageUrl}
         alt={entry.name}
-        className="w-full h-full object-contain"
+        className="w-full h-full object-contain p-0.5"
         style={{ background: entry.imageBg || "#ffffff" }}
       />
     );

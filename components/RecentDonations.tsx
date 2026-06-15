@@ -75,7 +75,7 @@ export default function RecentDonations() {
                   <img
                     src={d.imageUrl}
                     alt={d.name}
-                    className="w-full h-full object-contain"
+                    className="w-full h-full object-contain p-0.5"
                     style={{ background: d.imageBg || "#ffffff" }}
                   />
                 ) : (
