@@ -221,10 +221,11 @@ export interface PendingDonation {
 /**
  * Probíhající (pending) platby pro teaser „právě probíhá".
  * ZÁMĚRNĚ NEvrací jméno ani částku — klient ukáže jen rozmazaný placeholder.
- * Jen platby z poslední ~20 min, ať „probíhá" odpovídá realitě (starší QR vyprší).
+ * Jen platby z posledních ~3 min (čistě vizuální teaser „právě teď") — na pozadí
+ * se platba může spárovat/potvrdit i mnohem později, to tahle zkratka neovlivňuje.
  */
 export async function getPending(limit = 3): Promise<PendingDonation[]> {
-  const since = new Date(Date.now() - 20 * 60 * 1000);
+  const since = new Date(Date.now() - 3 * 60 * 1000);
   const rows = await prisma.donation.findMany({
     where: { status: "pending", hiddenOnWall: false, createdAt: { gt: since } },
     orderBy: { createdAt: "desc" },
