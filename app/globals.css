@@ -173,6 +173,16 @@ input[type="range"]:focus-visible {
   outline-offset: 2px;
 }
 
+button,
+[role="button"],
+summary {
+  cursor: pointer;
+}
+button:disabled,
+[role="button"][aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
 body {
   background-color: var(--bg);
   background-image: var(--bg-image, none);
