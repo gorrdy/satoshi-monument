@@ -82,7 +82,7 @@ export async function createInvoice(
 
 /** Detail invoice – použito pro načtení reálné BTC částky po settlement. */
 export async function getInvoicePaymentMethods(invoiceId: string): Promise<
-  Array<{ paymentMethod: string; amount: string; currency: string }>
+  Array<{ paymentMethodId: string; amount: string; currency: string }>
 > {
   assertConfigured();
   const res = await fetch(
@@ -94,7 +94,7 @@ export async function getInvoicePaymentMethods(invoiceId: string): Promise<
   );
   if (!res.ok) return [];
   return (await res.json()) as Array<{
-    paymentMethod: string;
+    paymentMethodId: string;
     amount: string;
     currency: string;
   }>;
@@ -113,13 +113,14 @@ export async function getInvoiceBtcPaid(invoiceId: string): Promise<number> {
     );
     if (!res.ok) return 0;
     const pms = (await res.json()) as Array<{
-      cryptoCode?: string;
-      paymentMethod?: string;
+      paymentMethodId?: string;
       paymentMethodPaid?: string;
     }>;
     let paid = 0;
     for (const pm of pms) {
-      const code = (pm.cryptoCode ?? pm.paymentMethod ?? "").toUpperCase();
+      // BTCPay Greenfield vrací paymentMethodId "BTC-CHAIN" / "BTC-LN" / "BTC-LNURL"
+      // (ne cryptoCode/paymentMethod).
+      const code = (pm.paymentMethodId ?? "").toUpperCase();
       if (!code.includes("BTC")) continue;
       const v = Number(pm.paymentMethodPaid ?? "0");
       if (Number.isFinite(v)) paid += v;
@@ -149,13 +150,12 @@ export async function getInvoiceBtcPaidConfirmed(
     );
     if (!res.ok) return 0;
     const pms = (await res.json()) as Array<{
-      cryptoCode?: string;
-      paymentMethod?: string;
+      paymentMethodId?: string;
       payments?: Array<{ value?: string; status?: string }>;
     }>;
     let paid = 0;
     for (const pm of pms) {
-      const code = (pm.cryptoCode ?? pm.paymentMethod ?? "").toUpperCase();
+      const code = (pm.paymentMethodId ?? "").toUpperCase();
       if (!code.includes("BTC")) continue;
       for (const p of pm.payments ?? []) {
         if ((p.status ?? "") !== "Settled") continue; // jen potvrzené
