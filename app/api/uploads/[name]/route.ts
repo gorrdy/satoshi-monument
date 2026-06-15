@@ -16,7 +16,8 @@ export async function GET(
     return new NextResponse("not found", { status: 404 });
   }
   try {
-    const buf = await readFile(path.join(process.cwd(), "uploads", name));
+    const dir = process.env.UPLOAD_DIR || path.join(process.cwd(), "uploads");
+    const buf = await readFile(path.join(dir, name));
     return new NextResponse(new Uint8Array(buf), {
       headers: {
         "Content-Type": "image/webp",
