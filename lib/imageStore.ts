@@ -1,4 +1,6 @@
 import { writeFile, mkdir } from "fs/promises";
+import { lookup } from "dns/promises";
+import net from "net";
 import path from "path";
 import crypto from "crypto";
 import sharp from "sharp";
@@ -25,45 +27,88 @@ export async function saveWebp(input: Buffer): Promise<string> {
   return `/api/uploads/${name}`;
 }
 
-/** Hrubá ochrana proti SSRF — blokace loopback/privátních/link-local adres. */
-function isPrivateHost(host: string): boolean {
-  const h = host.toLowerCase().replace(/^\[|\]$/g, "");
-  if (h === "localhost" || h.endsWith(".localhost") || h === "::1") return true;
-  const m = h.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
-  if (m) {
-    const a = Number(m[1]);
-    const b = Number(m[2]);
-    if (a === 0 || a === 127 || a === 10) return true;
-    if (a === 192 && b === 168) return true;
-    if (a === 172 && b >= 16 && b <= 31) return true;
-    if (a === 169 && b === 254) return true; // link-local / cloud metadata
+/** Je IP privátní/loopback/link-local/ULA? (IPv4 vč. non-canonical + IPv6) */
+function ipIsPrivate(ip: string): boolean {
+  const v4 = ip.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+  if (v4) {
+    const a = Number(v4[1]);
+    const b = Number(v4[2]);
+    return (
+      a === 0 ||
+      a === 10 ||
+      a === 127 ||
+      (a === 192 && b === 168) ||
+      (a === 172 && b >= 16 && b <= 31) ||
+      (a === 169 && b === 254) || // link-local / cloud metadata
+      (a === 100 && b >= 64 && b <= 127) // CGNAT
+    );
   }
+  const h = ip.toLowerCase();
+  if (h === "::1" || h === "::") return true;
+  if (h.startsWith("fe80")) return true; // link-local
+  if (h.startsWith("fc") || h.startsWith("fd")) return true; // ULA fc00::/7
+  if (h.startsWith("::ffff:")) return ipIsPrivate(h.slice(7)); // IPv4-mapped
   return false;
 }
 
-/** Stáhne externí obrázek a uloží jako malý lokální webp. null při chybě. */
+/**
+ * SSRF ochrana: hostname se RESOLVNE a zkontrolují se reálné IP (anti-rebind),
+ * + odmítnutí literálních privátních IP (vč. IPv6/non-canonical). Nelze-li
+ * resolvovat → odmítnout.
+ */
+async function hostResolvesPrivate(hostname: string): Promise<boolean> {
+  const bare = hostname.toLowerCase().replace(/^\[|\]$/g, "");
+  if (!bare || bare === "localhost" || bare.endsWith(".localhost")) return true;
+  if (net.isIP(bare)) return ipIsPrivate(bare);
+  try {
+    const addrs = await lookup(bare, { all: true });
+    return addrs.length === 0 || addrs.some((a) => ipIsPrivate(a.address));
+  } catch {
+    return true;
+  }
+}
+
+/**
+ * Stáhne externí obrázek a uloží jako malý lokální webp. null při chybě.
+ * Redirecty se sledují ručně a každý hop se znovu SSRF-validuje (proti
+ * přesměrování na interní adresu).
+ */
 export async function fetchAndLocalize(url: string): Promise<string | null> {
-  let u: URL;
+  let current: URL;
   try {
-    u = new URL(url);
+    current = new URL(url);
   } catch {
     return null;
   }
-  if (u.protocol !== "http:" && u.protocol !== "https:") return null;
-  if (isPrivateHost(u.hostname)) return null;
-  try {
-    const res = await fetch(u, {
-      signal: AbortSignal.timeout(10000),
-      redirect: "follow",
-    });
-    if (!res.ok) return null;
-    if (!(res.headers.get("content-type") || "").startsWith("image/")) return null;
-    const buf = Buffer.from(await res.arrayBuffer());
-    if (buf.length > MAX_FETCH_BYTES) return null;
-    return await saveWebp(buf);
-  } catch {
-    return null;
+  let res: Response | null = null;
+  for (let hop = 0; hop < 4; hop++) {
+    if (current.protocol !== "http:" && current.protocol !== "https:") return null;
+    if (await hostResolvesPrivate(current.hostname)) return null;
+    try {
+      res = await fetch(current, {
+        signal: AbortSignal.timeout(10000),
+        redirect: "manual",
+      });
+    } catch {
+      return null;
+    }
+    if (res.status >= 300 && res.status < 400) {
+      const loc = res.headers.get("location");
+      if (!loc) return null;
+      try {
+        current = new URL(loc, current);
+      } catch {
+        return null;
+      }
+      continue; // znovu zvaliduj cílový host
+    }
+    break;
   }
+  if (!res || !res.ok) return null;
+  if (!(res.headers.get("content-type") || "").startsWith("image/")) return null;
+  const buf = Buffer.from(await res.arrayBuffer());
+  if (buf.length > MAX_FETCH_BYTES) return null;
+  return await saveWebp(buf);
 }
 
 /**

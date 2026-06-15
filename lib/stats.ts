@@ -322,3 +322,29 @@ export async function getPending(limit = 3): Promise<PendingDonation[]> {
     createdAt: r.createdAt.toISOString(),
   }));
 }
+
+// ---- In-process cache složeného stavu pro /api/stats ----
+// Eliminuje recompute ze SQLite při každém pollu (klienti pollu á ~30 s).
+// Krátké TTL; data jsou stejně eventually-consistent. Každá instance vlastní cache.
+const BUNDLE_TTL_MS = 12_000;
+let _bundle: { at: number; data: Awaited<ReturnType<typeof buildStatsBundle>> } | null =
+  null;
+
+async function buildStatsBundle() {
+  const [stats, wall, recent, pending] = await Promise.all([
+    getStats(),
+    getWall(),
+    getRecent(10),
+    getPending(3),
+  ]);
+  return { stats, wall, recent, pending };
+}
+
+/** Složený stav pro /api/stats s krátkou in-process cache (anti-recompute). */
+export async function getStatsBundle() {
+  const now = Date.now();
+  if (_bundle && now - _bundle.at < BUNDLE_TTL_MS) return _bundle.data;
+  const data = await buildStatsBundle();
+  _bundle = { at: now, data };
+  return data;
+}

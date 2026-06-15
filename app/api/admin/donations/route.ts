@@ -75,6 +75,11 @@ export async function POST(req: NextRequest) {
   }
 
   if (action === "confirm") {
+    // Guard: už potvrzený dar znovu nepřepisujeme — re-confirm CZK by přepočítal
+    // amountBtc z původní user částky a přepsal reálně zreconciliovanou hodnotu (Fio).
+    if (donation.status === "confirmed") {
+      return NextResponse.json({ ok: true, alreadyConfirmed: true, donation });
+    }
     const amountBtc =
       donation.currency === "BTC"
         ? donation.amount
@@ -88,6 +93,12 @@ export async function POST(req: NextRequest) {
   }
 
   if (action === "reject") {
+    // Zamítnutí už potvrzeného daru odečte částku z totálu — zalogovat pro audit.
+    if (donation.status === "confirmed") {
+      console.warn(
+        `admin reject POTVRZENÉHO daru ${donation.id} (${donation.amountBtc} BTC) — odečte se z veřejného součtu.`,
+      );
+    }
     const updated = await prisma.donation.update({
       where: { id },
       data: { status: "rejected" },
