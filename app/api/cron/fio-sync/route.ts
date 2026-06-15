@@ -39,33 +39,32 @@ export async function GET(req: NextRequest) {
   let unmatchedCount = 0;
 
   for (const tx of credits) {
-    // Identifikátory pro párování: VS + případný kód SN-XXXX ze zprávy.
+    // Idempotence: už vyřízenou platbu (matched/ignored) nepřepočítáváme.
+    // (chrání proti dvojímu započtení při reprocessu / resetu kurzoru)
+    const existingFio = await prisma.fioPayment.findUnique({
+      where: { fioId: tx.id },
+      select: { status: true },
+    });
+    if (existingFio && existingFio.status !== "unmatched") continue;
+
+    // Párovací identifikátory: kód SN-XXXXX ze zprávy (preferovaný — větší prostor,
+    // řeší kolizi VS) a variabilní symbol jako fallback.
     const refMatch = tx.message?.toUpperCase().match(/SN-[0-9A-Z]{5}/);
     const ref = refMatch ? refMatch[0] : null;
-    const idOr = [
-      ...(tx.vs ? [{ variableSymbol: tx.vs }] : []),
-      ...(ref ? [{ paymentRef: ref }] : []),
-    ];
 
-    // 1) čekající (i už expirovaný — pozdní platba) dar se stejným VS/ref → potvrdíme.
-    let donation =
-      idOr.length > 0
-        ? await prisma.donation.findFirst({
-            where: {
-              status: { in: ["pending", "expired"] },
-              currency: "CZK",
-              OR: idOr,
-            },
-          })
-        : null;
-
-    // 2) už potvrzený dar se stejným VS/ref → platba je vyřízená (žádná akce, není „nepárovaná").
-    const alreadyConfirmed =
-      !donation && idOr.length > 0
-        ? await prisma.donation.findFirst({
-            where: { status: "confirmed", currency: "CZK", OR: idOr },
-          })
-        : null;
+    // „Vlastník" daru — primárně podle SN, pak podle VS; nejstarší (původní) shoda.
+    let owner = ref
+      ? await prisma.donation.findFirst({
+          where: { currency: "CZK", paymentRef: ref },
+          orderBy: { createdAt: "asc" },
+        })
+      : null;
+    if (!owner && tx.vs) {
+      owner = await prisma.donation.findFirst({
+        where: { currency: "CZK", variableSymbol: tx.vs },
+        orderBy: { createdAt: "asc" },
+      });
+    }
 
     const base = {
       fioId: tx.id,
@@ -77,11 +76,22 @@ export async function GET(req: NextRequest) {
       payerName: tx.payerName,
     };
 
-    if (donation) {
-      // Potvrdíme se SKUTEČNĚ přijatou částkou (přepočet na BTC ekvivalent).
-      const amountBtc = await czkToBtc(tx.amount);
+    if (!owner) {
+      unmatchedCount++;
+      await prisma.fioPayment.upsert({
+        where: { fioId: tx.id },
+        create: { ...base, status: "unmatched" },
+        update: {}, // existující (např. ignored) nepřepisujeme
+      });
+      continue;
+    }
+
+    const amountBtc = await czkToBtc(tx.amount);
+
+    if (owner.status === "pending" || owner.status === "expired") {
+      // První (nebo pozdní) platba → potvrdit původní dar skutečnou částkou.
       await prisma.donation.update({
-        where: { id: donation.id },
+        where: { id: owner.id },
         data: {
           status: "confirmed",
           amount: tx.amount,
@@ -89,27 +99,34 @@ export async function GET(req: NextRequest) {
           confirmedAt: new Date(),
         },
       });
-      confirmed.push({ id: donation.id, amount: tx.amount, vs: tx.vs });
-      // Audit: zaznamenáme platbu jako spárovanou.
+      confirmed.push({ id: owner.id, amount: tx.amount, vs: tx.vs });
       await prisma.fioPayment.upsert({
         where: { fioId: tx.id },
-        create: { ...base, status: "matched", donationId: donation.id },
-        update: { status: "matched", donationId: donation.id },
-      });
-    } else if (alreadyConfirmed) {
-      // Platba odpovídá už potvrzenému daru → vyřízená, bez upozornění.
-      await prisma.fioPayment.upsert({
-        where: { fioId: tx.id },
-        create: { ...base, status: "matched", donationId: alreadyConfirmed.id },
-        update: {},
+        create: { ...base, status: "matched", donationId: owner.id },
+        update: { status: "matched", donationId: owner.id },
       });
     } else {
-      unmatchedCount++;
-      // Uložíme nepárovanou platbu pro ruční přiřazení v adminu (bez přepisu vyřízených).
+      // Původní dar už potvrzený → OPAKOVANÁ platba se stejným VS/SN.
+      // Založíme nový potvrzený dar (dědí identifikátor/jméno) → sečte se na zdi.
+      const dup = await prisma.donation.create({
+        data: {
+          name: owner.name,
+          currency: "CZK",
+          amount: tx.amount,
+          amountBtc,
+          status: "confirmed",
+          confirmedAt: new Date(),
+          donorKey: owner.donorKey,
+          publicMessage: owner.publicMessage,
+          variableSymbol: owner.variableSymbol,
+          paymentRef: owner.paymentRef,
+        },
+      });
+      confirmed.push({ id: dup.id, amount: tx.amount, vs: tx.vs });
       await prisma.fioPayment.upsert({
         where: { fioId: tx.id },
-        create: { ...base, status: "unmatched" },
-        update: {}, // existující (např. ignored/matched) nepřepisujeme
+        create: { ...base, status: "matched", donationId: dup.id },
+        update: { status: "matched", donationId: dup.id },
       });
     }
   }
