@@ -30,7 +30,7 @@ export default function HomeContent() {
           className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-6xl h-[34rem] lg:h-[40rem] overflow-hidden rounded-[var(--radius)] pointer-events-none"
         >
           <Image
-            src="/socha-praha2.webp"
+            src="/socha-praha3.webp"
             alt={t("hero.imageCaption")}
             fill
             priority

@@ -41,7 +41,7 @@ export default function PribehContent() {
           <figure className="ui-card p-2 mb-10">
             <div className="relative aspect-[16/10] overflow-hidden ui-border rounded-[var(--radius-sm)]">
               <Image
-                src="/socha-praha2.webp"
+                src="/socha-praha3.webp"
                 alt="Satoshi Monument"
                 fill
                 sizes="(max-width: 768px) 100vw, 720px"
