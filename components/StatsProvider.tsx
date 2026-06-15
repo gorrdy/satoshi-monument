@@ -8,6 +8,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { usePathname } from "next/navigation";
 import type { Stats } from "./ProgressBar";
 import type { WallEntry } from "./SupporterWall";
 import type { RecentDonation } from "@/lib/stats";
@@ -36,6 +37,10 @@ export default function StatsProvider({
   const [recent, setRecent] = useState<RecentDonation[]>([]);
   // Předchozí vybraná částka — nárůst = právě přišla nová platba → konfety.
   const prevRaised = useRef<number | null>(null);
+  // Aktuální cesta v refu (refresh je stabilní callback) — v adminu konfety nechceme.
+  const pathname = usePathname();
+  const pathRef = useRef(pathname);
+  pathRef.current = pathname;
 
   const refresh = useCallback(async () => {
     try {
@@ -48,7 +53,13 @@ export default function StatsProvider({
       };
       const raised = data.stats?.raisedBtc ?? 0;
       // Při prvním načtení jen zapamatovat; potom oslavit každý nárůst.
-      if (prevRaised.current !== null && raised > prevRaised.current + 1e-9) {
+      // V admin části konfety nespouštíme.
+      const inAdmin = (pathRef.current ?? "").includes("/admin");
+      if (
+        !inAdmin &&
+        prevRaised.current !== null &&
+        raised > prevRaised.current + 1e-9
+      ) {
         fireConfetti();
       }
       prevRaised.current = raised;
