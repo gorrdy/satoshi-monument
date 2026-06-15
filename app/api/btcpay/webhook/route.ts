@@ -81,7 +81,13 @@ export async function POST(req: NextRequest) {
 
   if (isSettled) {
     // Plně zaplaceno / přeplaceno → započítat SKUTEČNĚ přijatou částku
-    // (víc i míň), ne požadovanou. Fallback na požadovanou jen když selže API.
+    // (víc i míň), ne požadovanou. Fallback na požadovanou jen když selže API
+    // (settled = BTCPay považuje za plně zaplacené), ale hlasitě zalogovat.
+    if (paid === 0) {
+      console.warn(
+        `BTCPay InvoiceSettled, ale getInvoiceBtcPaid=0 (API výpadek?) — confirm ${donation.id} na POŽADOVANOU částku ${donation.amount}; ověřit ručně.`,
+      );
+    }
     const actual = paid > 0 ? paid : donation.amount;
     await prisma.donation.update({
       where: { id: donation.id },
