@@ -15,9 +15,10 @@ export async function GET() {
     orderBy: { updatedAt: "desc" },
   });
 
-  // Identifikátory reálně použité na platbách (pro nabídku v adminu).
+  // Identifikátory s POTVRZENÝMI veřejnými platbami (profil ovlivní jen zeď/recent,
+  // kde se zobrazují jen confirmed — expired/rejected/hidden nemá smysl nabízet).
   const rows = await prisma.donation.findMany({
-    where: { donorKey: { not: null } },
+    where: { donorKey: { not: null }, status: "confirmed", hiddenOnWall: false },
     select: { donorKey: true, name: true, createdAt: true },
     orderBy: { createdAt: "desc" },
   });
