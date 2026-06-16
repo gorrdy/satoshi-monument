@@ -72,7 +72,13 @@
     "errorGeneric": "Něco se nepovedlo. Zkus to prosím znovu.",
     "errorBtcpay": "Platební bránu se nepodařilo otevřít. Zkus to prosím později.",
     "errorRateLimit": "Příliš mnoho pokusů. Zkus to prosím za hodinu.",
-    "approxUsdHint": "≈ {amount}"
+    "approxUsdHint": "≈ {amount}",
+    "groupToggle": "Přispívám jako skupina – přidat logo/fotku",
+    "groupHelp": "Název skupiny napiš do pole Jméno výše. Logo se zobrazí u příspěvku na zdi.",
+    "uploadLogo": "Nahrát logo",
+    "uploading": "Nahrávám…",
+    "use21Logo": "Jsme lokální skupina Jednadvacet (použít logo 21)",
+    "removeLogo": "Odebrat"
   },
   "qr": {
     "title": "Naskenuj QR kód v bankovní aplikaci",
