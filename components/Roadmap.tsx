@@ -10,6 +10,7 @@ interface Item {
   detail: string | null;
   dateLabel: string | null;
   status: string; // done | current | upcoming
+  linkUrl: string | null;
 }
 
 export default function Roadmap() {
@@ -24,6 +25,14 @@ export default function Roadmap() {
   }, []);
 
   if (items.length === 0) return null;
+
+  // Index bodu se stavem „current" (nebo -1).
+  const currentStatusIndex = items.findIndex((x) => x.status === "current");
+  // Index posledního „done" (nebo -1).
+  let lastDoneIndex = -1;
+  items.forEach((x, i) => {
+    if (x.status === "done") lastDoneIndex = i;
+  });
 
   return (
     <section id="roadmap" className="px-4 py-20 sm:py-24 ui-border-b">
@@ -41,38 +50,63 @@ export default function Roadmap() {
           {items.map((it, i) => {
             const done = it.status === "done";
             const current = it.status === "current";
-            const reached = done || current; // levý spojovací segment je „splněný"
             const isFirst = i === 0;
             const isLast = i === items.length - 1;
+            // Current marker je „mezi" předchozím a tímto bodem (na levém okraji slotu),
+            // pokud existuje předchozí bod. Když je current první, sedí v centru.
+            const currentBetween = current && i > 0;
+            // Oranžová čára končí u markeru:
+            //  - když existuje current: orange jen pro segmenty PŘED ním (i < current),
+            //    takže končí na levém okraji current slotu (= u markeru).
+            //  - jinak končí u posledního done bodu (jeho středu).
+            const fillRef = currentStatusIndex >= 0 ? currentStatusIndex : lastDoneIndex;
+            const leftAccent =
+              currentStatusIndex >= 0 ? i < fillRef : i <= fillRef;
+            const rightAccent = i < fillRef;
             return (
               <li
                 key={it.id}
                 className="relative flex flex-col items-center text-center flex-1 min-w-[130px] sm:min-w-0 px-2"
               >
-                {/* spojovací čára (za tečkou) */}
-                <span
-                  aria-hidden
-                  className="absolute top-[9px] h-0.5"
-                  style={{
-                    left: isFirst ? "50%" : 0,
-                    right: isLast ? "50%" : 0,
-                    background: reached ? "var(--accent)" : "var(--line)",
-                  }}
-                />
-                {/* tečka */}
-                <span
-                  aria-hidden
-                  className={`relative z-10 w-5 h-5 rounded-full border-2 ${
-                    current ? "animate-pulse" : ""
-                  }`}
-                  style={{
-                    background: reached ? "var(--accent)" : "var(--bg)",
-                    borderColor: reached ? "var(--accent)" : "var(--line)",
-                    boxShadow: current
-                      ? "0 0 0 4px color-mix(in srgb, var(--accent) 25%, transparent)"
-                      : undefined,
-                  }}
-                />
+                {/* spojovací čára — levá a pravá půlka zvlášť (za tečkou) */}
+                {!isFirst && (
+                  <span
+                    aria-hidden
+                    className="absolute top-[11px] left-0 w-1/2 h-0.5"
+                    style={{ background: leftAccent ? "var(--accent)" : "var(--line)" }}
+                  />
+                )}
+                {!isLast && (
+                  <span
+                    aria-hidden
+                    className="absolute top-[11px] right-0 w-1/2 h-0.5"
+                    style={{ background: rightAccent ? "var(--accent)" : "var(--line)" }}
+                  />
+                )}
+                {/* pohyblivý PRŮBĚŽNÝ bod (menší, pulzující) ve středu mezi předchozím
+                    a aktuálním milníkem (na levém okraji slotu). */}
+                {currentBetween && (
+                  <span
+                    aria-hidden
+                    className="absolute left-0 top-[11px] -translate-x-1/2 -translate-y-1/2 z-20 w-3.5 h-3.5 rounded-full animate-pulse"
+                    style={{
+                      background: "var(--accent)",
+                      boxShadow:
+                        "0 0 0 4px color-mix(in srgb, var(--accent) 25%, transparent)",
+                    }}
+                  />
+                )}
+                {/* MILNÍK — puntík vždy (na slotu), trochu větší. Done = plný, jinak obrys. */}
+                <span className="relative z-10 h-6 flex items-center justify-center">
+                  <span
+                    aria-hidden
+                    className="w-6 h-6 rounded-full border-2"
+                    style={{
+                      background: done ? "var(--accent)" : "var(--bg)",
+                      borderColor: "var(--accent)",
+                    }}
+                  />
+                </span>
                 {it.dateLabel && (
                   <div className="ui-eyebrow ui-muted mt-3">{it.dateLabel}</div>
                 )}
@@ -81,11 +115,22 @@ export default function Roadmap() {
                     current ? "ui-accent" : done ? "" : "ui-muted"
                   }`}
                 >
-                  {it.title}
+                  {it.linkUrl ? (
+                    <a
+                      href={it.linkUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-inherit hover:underline"
+                    >
+                      {it.title}{" "}
+                      <span aria-hidden className="ui-accent">
+                        ↗
+                      </span>
+                    </a>
+                  ) : (
+                    it.title
+                  )}
                 </div>
-                {current && (
-                  <div className="ui-eyebrow ui-accent mt-1">{t("now")}</div>
-                )}
                 {it.detail && (
                   <p className="text-xs ui-muted leading-relaxed mt-1">
                     {it.detail}

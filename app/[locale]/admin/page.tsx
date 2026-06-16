@@ -116,10 +116,14 @@ export default function AdminPage() {
     dateLabel: string | null;
     status: string;
     order: number;
+    linkUrl: string | null;
   };
   const [road, setRoad] = useState<RoadItem[]>([]);
   const [roadDraft, setRoadDraft] = useState<
-    Record<string, { title?: string; detail?: string; dateLabel?: string; status?: string }>
+    Record<
+      string,
+      { title?: string; detail?: string; dateLabel?: string; status?: string; linkUrl?: string }
+    >
   >({});
 
   const loadRoad = useCallback(async () => {
@@ -889,8 +893,15 @@ export default function AdminPage() {
               const detail = d.detail ?? it.detail ?? "";
               const dateLabel = d.dateLabel ?? it.dateLabel ?? "";
               const status = d.status ?? it.status;
+              const link = d.linkUrl ?? it.linkUrl ?? "";
               const set = (
-                patch: Partial<{ title: string; detail: string; dateLabel: string; status: string }>,
+                patch: Partial<{
+                  title: string;
+                  detail: string;
+                  dateLabel: string;
+                  status: string;
+                  linkUrl: string;
+                }>,
               ) => setRoadDraft((s) => ({ ...s, [it.id]: { ...s[it.id], ...patch } }));
               return (
                 <div
@@ -937,7 +948,10 @@ export default function AdminPage() {
                     </select>
                     <button
                       onClick={() =>
-                        roadAction({ action: "save", id: it.id, title, detail, dateLabel, status }, it.id)
+                        roadAction(
+                          { action: "save", id: it.id, title, detail, dateLabel, status, linkUrl: link },
+                          it.id,
+                        )
                       }
                       disabled={busy === "road" + it.id}
                       className="px-3 py-1 rounded bg-white/15 text-white text-sm hover:bg-white/25 disabled:opacity-40"
@@ -955,6 +969,12 @@ export default function AdminPage() {
                     value={detail}
                     onChange={(e) => set({ detail: e.target.value })}
                     placeholder="Popis (volitelné)"
+                    className="w-full bg-white/10 border border-white/10 rounded px-2 py-1 text-sm text-white placeholder:text-white/30"
+                  />
+                  <input
+                    value={link}
+                    onChange={(e) => set({ linkUrl: e.target.value })}
+                    placeholder="Odkaz (volitelné, https://… — proklik z názvu)"
                     className="w-full bg-white/10 border border-white/10 rounded px-2 py-1 text-sm text-white placeholder:text-white/30"
                   />
                 </div>

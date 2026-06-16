@@ -87,6 +87,7 @@ model RoadmapItem {
   detail    String? // volitelný popis
   dateLabel String? // přibližné datum/termín (volný text, např. „Q3 2026")
   status    String   @default("upcoming") // done | current | upcoming
+  linkUrl   String? // volitelný proklik (http/https)
   order     Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -39,6 +39,8 @@ export async function POST(req: NextRequest) {
     const id = String(body.id ?? "");
     if (!id) return NextResponse.json({ error: "missing_id" }, { status: 400 });
     const status = STATUSES.includes(body.status) ? body.status : "upcoming";
+    const rawLink = (body.linkUrl ?? "").toString().trim().slice(0, 500);
+    const linkUrl = /^https?:\/\//i.test(rawLink) ? rawLink : null;
     await prisma.roadmapItem.update({
       where: { id },
       data: {
@@ -46,6 +48,7 @@ export async function POST(req: NextRequest) {
         detail: (body.detail ?? "").toString().trim().slice(0, 500) || null,
         dateLabel: (body.dateLabel ?? "").toString().trim().slice(0, 60) || null,
         status,
+        linkUrl,
       },
     });
     return NextResponse.json({ ok: true });
