@@ -78,9 +78,15 @@ export default function SupporterWall({
   // Položky detailu se dotahují lazy (zeď samotná je neveze).
   const [detailItems, setDetailItems] = useState<WallItem[] | null>(null);
 
-  // Orientační fiat ekvivalent (Kč v cs, USD v en) aktuálním kurzem.
-  const fiatOf = (entry: WallEntry): string | null =>
-    stats ? `≈ ${formatBtcAsFiat(entry.amountBtc ?? entry.amount ?? 0, stats, locale)}` : null;
+  // Orientační fiat ekvivalent aktuálním kurzem: v en „$X" (vč. symbolu),
+  // v cs „X Kč" (formatCzk vrací jen číslo, proto dopisujeme Kč).
+  const fiatOf = (entry: WallEntry): string | null => {
+    if (!stats) return null;
+    const btc = entry.amountBtc ?? entry.amount ?? 0;
+    return locale === "en"
+      ? `≈ ${formatBtcAsFiat(btc, stats, locale)}`
+      : `≈ ${formatCzk(btc * stats.btcCzkRate, locale)} Kč`;
+  };
 
   // Poslední přispívající — jen u skupin (víc plateb) a když se liší od názvu skupiny.
   const lastContribOf = (entry: WallEntry): string | null =>

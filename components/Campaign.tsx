@@ -38,7 +38,7 @@ export default function Campaign() {
               <span className="ui-accent text-base leading-none">🏆</span>
               {t("wall.repeatHint")}
             </p>
-            <p className="flex items-start gap-2 ui-muted">
+            <p className="flex items-start gap-2 font-medium">
               <span className="ui-accent text-base leading-none">👥</span>
               <span>
                 {t("wall.groupHint")}{" "}
