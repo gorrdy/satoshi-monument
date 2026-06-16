@@ -42,6 +42,7 @@ interface Body {
   locale?: string; // pro redirect na děkovnou stránku
   imageUrl?: string; // logo skupiny (jen vlastní upload /api/uploads nebo logo 21)
   imageBg?: string; // barva pozadí pod logem (hex)
+  group?: boolean; // uživatel přispívá „jako skupina" → založit profil identifikátoru
 }
 
 // Veřejně smí přijít jen náš nahraný soubor nebo allowlistované logo Jednadvacet 21
@@ -84,6 +85,8 @@ export async function POST(req: NextRequest) {
   // Párovací identifikátor: normalizovaný (trim + lowercase) pro spolehlivé párování.
   const donorKey = normalizeDonorKey(asStr(body.donorKey));
   const locale = body.locale === "en" ? "en" : "cs";
+  const hasName = asStr(body.name).trim().length > 0;
+  const group = body.group === true;
   const imageUrl = safePublicImageUrl(body.imageUrl);
   const imageBg =
     imageUrl && /^#[0-9a-fA-F]{3,8}$/.test(asStr(body.imageBg).trim())
@@ -123,6 +126,21 @@ export async function POST(req: NextRequest) {
       status: "pending",
     },
   });
+
+  // Skupinový příspěvek → automaticky založ profil identifikátoru (kanonické jméno +
+  // logo na zdi/recent). Jen když je identifikátor i jméno a profil ještě NEEXISTUJE
+  // (update: {}) — kurátorovaný profil ani cizí submit s týmž identifikátorem ho nepřepíše.
+  if (group && donorKey && hasName) {
+    try {
+      await prisma.donorProfile.upsert({
+        where: { donorKey },
+        create: { donorKey, name, imageUrl, imageBg },
+        update: {},
+      });
+    } catch (e) {
+      console.error("auto-profil skupiny selhal:", e);
+    }
+  }
 
   if (currency === "BTC") {
     try {
