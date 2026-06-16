@@ -13,13 +13,16 @@ export async function GET(req: NextRequest) {
   }
 
   const status = req.nextUrl.searchParams.get("status"); // pending | confirmed | rejected | all
-  const where = status && status !== "all" ? { status } : {};
+  const currency = req.nextUrl.searchParams.get("currency"); // BTC | CZK (volitelné)
+  const where: { status?: string; currency?: string } = {};
+  if (status && status !== "all") where.status = status;
+  if (currency === "BTC" || currency === "CZK") where.currency = currency;
 
   const [donations, grouped] = await Promise.all([
     prisma.donation.findMany({
       where,
       orderBy: { createdAt: "desc" },
-      take: 500,
+      take: 2000, // ať se neořezávají starší dary (fiat checklist musí mít kompletní CZK)
     }),
     prisma.donation.groupBy({ by: ["status"], _count: { _all: true } }),
   ]);
