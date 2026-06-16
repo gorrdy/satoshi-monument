@@ -74,10 +74,10 @@
     "errorRateLimit": "Příliš mnoho pokusů. Zkus to prosím za hodinu.",
     "approxUsdHint": "≈ {amount}",
     "groupToggle": "Přispívám jako skupina – přidat logo/fotku",
-    "groupHelp": "Název skupiny napiš do pole Jméno výše. Logo se zobrazí u příspěvku na zdi.",
+    "groupHelp": "Název skupiny napiš do pole Jméno výše a vyplň společný identifikátor (např. jednadvacet-praha) — podle něj se příspěvky skupiny sčítají. Logo se zobrazí u příspěvku na zdi.",
     "uploadLogo": "Nahrát logo",
     "uploading": "Nahrávám…",
-    "use21Logo": "Jsme lokální skupina Jednadvacet (použít logo 21)",
+    "use21Logo": "Použít 21 logo",
     "removeLogo": "Odebrat"
   },
   "qr": {

@@ -74,10 +74,10 @@
     "errorRateLimit": "Too many attempts. Please try again in an hour.",
     "approxUsdHint": "≈ {amount}",
     "groupToggle": "Contributing as a group – add a logo/photo",
-    "groupHelp": "Enter the group name in the Name field above. The logo will appear next to your contribution on the wall.",
+    "groupHelp": "Enter the group name in the Name field above and fill in a shared identifier (e.g. jednadvacet-prague) — contributions are summed by it. The logo will appear next to your contribution on the wall.",
     "uploadLogo": "Upload logo",
     "uploading": "Uploading…",
-    "use21Logo": "We are a local Jednadvacet group (use the 21 logo)",
+    "use21Logo": "Use 21 logo",
     "removeLogo": "Remove"
   },
   "qr": {
