@@ -7,6 +7,7 @@ export interface RoadmapItemPublic {
   dateLabel: string | null;
   status: string; // done | current | upcoming
   linkUrl: string | null;
+  linkBlank: boolean;
 }
 
 /** Veřejná roadmapa, seřazená dle `order`. */
@@ -20,6 +21,7 @@ export async function getRoadmap(): Promise<RoadmapItemPublic[]> {
       dateLabel: true,
       status: true,
       linkUrl: true,
+      linkBlank: true,
     },
   });
 }
