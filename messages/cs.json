@@ -69,6 +69,8 @@
     "submitCzk": "Vygenerovat QR k platbě",
     "submitting": "Připravuji platbu…",
     "errorAmount": "Zadej prosím platnou částku.",
+    "errorMinBtc": "Minimální příspěvek v bitcoinu je {min} sats.",
+    "minBtcHint": "Minimální částka: {min} sats",
     "errorGeneric": "Něco se nepovedlo. Zkus to prosím znovu.",
     "errorBtcpay": "Platební bránu se nepodařilo otevřít. Zkus to prosím později.",
     "errorRateLimit": "Příliš mnoho pokusů. Zkus to prosím za hodinu.",

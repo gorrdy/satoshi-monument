@@ -69,6 +69,8 @@
     "submitCzk": "Generate payment QR",
     "submitting": "Preparing payment…",
     "errorAmount": "Please enter a valid amount.",
+    "errorMinBtc": "The minimum bitcoin contribution is {min} sats.",
+    "minBtcHint": "Minimum: {min} sats",
     "errorGeneric": "Something went wrong. Please try again.",
     "errorBtcpay": "Could not open the payment gateway. Please try again later.",
     "errorRateLimit": "Too many attempts. Please try again in an hour.",
