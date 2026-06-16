@@ -25,16 +25,13 @@ export default function Roadmap() {
 
   if (items.length === 0) return null;
 
-  // Index aktuálního bodu: „current", jinak poslední „done", jinak -1.
-  const currentIndex = (() => {
-    const c = items.findIndex((x) => x.status === "current");
-    if (c >= 0) return c;
-    let last = -1;
-    items.forEach((x, i) => {
-      if (x.status === "done") last = i;
-    });
-    return last;
-  })();
+  // Index bodu se stavem „current" (nebo -1).
+  const currentStatusIndex = items.findIndex((x) => x.status === "current");
+  // Index posledního „done" (nebo -1).
+  let lastDoneIndex = -1;
+  items.forEach((x, i) => {
+    if (x.status === "done") lastDoneIndex = i;
+  });
 
   return (
     <section id="roadmap" className="px-4 py-20 sm:py-24 ui-border-b">
@@ -54,10 +51,17 @@ export default function Roadmap() {
             const current = it.status === "current";
             const isFirst = i === 0;
             const isLast = i === items.length - 1;
-            // Oranžová čára vede od začátku po AKTUÁLNÍ bod a tam končí:
-            //  levá půlka u bodu i je oranžová, když i ≤ current; pravá, když i < current.
-            const leftAccent = i <= currentIndex;
-            const rightAccent = i < currentIndex;
+            // Current marker je „mezi" předchozím a tímto bodem (na levém okraji slotu),
+            // pokud existuje předchozí bod. Když je current první, sedí v centru.
+            const currentBetween = current && i > 0;
+            // Oranžová čára končí u markeru:
+            //  - když existuje current: orange jen pro segmenty PŘED ním (i < current),
+            //    takže končí na levém okraji current slotu (= u markeru).
+            //  - jinak končí u posledního done bodu (jeho středu).
+            const fillRef = currentStatusIndex >= 0 ? currentStatusIndex : lastDoneIndex;
+            const leftAccent =
+              currentStatusIndex >= 0 ? i < fillRef : i <= fillRef;
+            const rightAccent = i < fillRef;
             return (
               <li
                 key={it.id}
@@ -78,25 +82,37 @@ export default function Roadmap() {
                     style={{ background: rightAccent ? "var(--accent)" : "var(--line)" }}
                   />
                 )}
-                {/* tečka — done = velký plný kruh; not-done = menší oranžový */}
-                <span className="relative z-10 h-5 flex items-center justify-center">
+                {/* current marker = menší oranžový kruh ve STŘEDU mezi předchozím
+                    a tímto bodem (na levém okraji slotu), pulzující. */}
+                {currentBetween && (
                   <span
                     aria-hidden
-                    className={`rounded-full border-2 ${
-                      done ? "w-5 h-5" : "w-3 h-3"
-                    } ${current ? "animate-pulse" : ""}`}
+                    className="absolute left-0 top-[9px] -translate-x-1/2 -translate-y-1/2 z-20 w-3 h-3 rounded-full animate-pulse"
                     style={{
-                      background: done
-                        ? "var(--accent)"
-                        : current
-                          ? "var(--accent)"
-                          : "var(--bg)",
-                      borderColor: "var(--accent)",
-                      boxShadow: current
-                        ? "0 0 0 4px color-mix(in srgb, var(--accent) 25%, transparent)"
-                        : undefined,
+                      background: "var(--accent)",
+                      boxShadow:
+                        "0 0 0 4px color-mix(in srgb, var(--accent) 25%, transparent)",
                     }}
                   />
+                )}
+                {/* řádek tečky na lince (h-5 drží zarovnání popisků) */}
+                <span className="relative z-10 h-5 flex items-center justify-center">
+                  {!currentBetween && (
+                    <span
+                      aria-hidden
+                      className={`rounded-full border-2 ${
+                        done ? "w-5 h-5" : "w-3 h-3"
+                      } ${current ? "animate-pulse" : ""}`}
+                      style={{
+                        background:
+                          done || current ? "var(--accent)" : "var(--bg)",
+                        borderColor: "var(--accent)",
+                        boxShadow: current
+                          ? "0 0 0 4px color-mix(in srgb, var(--accent) 25%, transparent)"
+                          : undefined,
+                      }}
+                    />
+                  )}
                 </span>
                 {it.dateLabel && (
                   <div className="ui-eyebrow ui-muted mt-3">{it.dateLabel}</div>
