@@ -234,5 +234,11 @@
     "title": "Poslední příspěvky",
     "empty": "Zatím žádné příspěvky",
     "inProgress": "probíhá platba"
+  },
+  "roadmap": {
+    "eyebrow": "Roadmapa",
+    "title": "Kam směřujeme",
+    "subtitle": "Co už je hotové a co nás čeká.",
+    "now": "právě teď"
   }
 }

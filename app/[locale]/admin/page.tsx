@@ -63,11 +63,14 @@ export default function AdminPage() {
       : "pending",
   );
   const [view, setView] = useState<
-    "payments" | "analytics" | "fiat" | "identity"
+    "payments" | "analytics" | "fiat" | "identity" | "roadmap"
   >(() => {
     if (typeof window === "undefined") return "payments";
     const v = localStorage.getItem("admin.view");
-    return v === "analytics" || v === "fiat" || v === "identity"
+    return v === "analytics" ||
+      v === "fiat" ||
+      v === "identity" ||
+      v === "roadmap"
       ? v
       : "payments";
   });
@@ -104,6 +107,45 @@ export default function AdminPage() {
     Record<string, { name?: string; imageUrl?: string; imageBg?: string }>
   >({});
   const [newKey, setNewKey] = useState("");
+
+  // Roadmapa
+  type RoadItem = {
+    id: string;
+    title: string;
+    detail: string | null;
+    dateLabel: string | null;
+    status: string;
+    order: number;
+  };
+  const [road, setRoad] = useState<RoadItem[]>([]);
+  const [roadDraft, setRoadDraft] = useState<
+    Record<string, { title?: string; detail?: string; dateLabel?: string; status?: string }>
+  >({});
+
+  const loadRoad = useCallback(async () => {
+    const res = await fetch("/api/admin/roadmap", { cache: "no-store" });
+    if (!res.ok) return;
+    const data = (await res.json()) as { items: RoadItem[] };
+    setRoad(data.items);
+  }, []);
+
+  const roadAction = async (payload: Record<string, unknown>, busyKey: string) => {
+    setBusy("road" + busyKey);
+    await fetch("/api/admin/roadmap", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    setBusy(null);
+    if (payload.action === "save") {
+      setRoadDraft((s) => {
+        const c = { ...s };
+        delete c[payload.id as string];
+        return c;
+      });
+    }
+    loadRoad();
+  };
 
   const loadProfiles = useCallback(async () => {
     const res = await fetch("/api/admin/profiles", { cache: "no-store" });
@@ -228,7 +270,8 @@ export default function AdminPage() {
   useEffect(() => {
     if (view === "fiat") loadFiat();
     if (view === "identity") loadProfiles();
-  }, [view, loadFiat, loadProfiles]);
+    if (view === "roadmap") loadRoad();
+  }, [view, loadFiat, loadProfiles, loadRoad]);
 
   // Zapamatovat poslední zvolenou záložku a filtr.
   useEffect(() => {
@@ -410,6 +453,7 @@ export default function AdminPage() {
           { key: "payments", label: "Platby" },
           { key: "fiat", label: "Nákup BTC za fiat" },
           { key: "identity", label: "Identity" },
+          { key: "roadmap", label: "Roadmapa" },
           { key: "analytics", label: "Analytika" },
         ] as const).map((tb) => (
           <button
@@ -819,6 +863,105 @@ export default function AdminPage() {
             </div>
           );
         })()
+      ) : view === "roadmap" ? (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-sm text-white/60 max-w-2xl leading-relaxed">
+              Checkpointy sbírky. Stav: <strong>upcoming</strong> (čeká),{" "}
+              <strong>current</strong> (právě teď), <strong>done</strong>{" "}
+              (hotovo). Pořadí přesouvej šipkami.
+            </p>
+            <button
+              onClick={() => roadAction({ action: "add", title: "Nový bod" }, "add")}
+              disabled={busy === "roadadd"}
+              className="shrink-0 px-3 py-1.5 rounded bg-white/15 text-white text-sm hover:bg-white/25 disabled:opacity-40"
+            >
+              + Přidat bod
+            </button>
+          </div>
+          {road.length === 0 && (
+            <p className="text-white/40 text-sm">Zatím žádné body.</p>
+          )}
+          <div className="space-y-2">
+            {road.map((it, i) => {
+              const d = roadDraft[it.id] ?? {};
+              const title = d.title ?? it.title;
+              const detail = d.detail ?? it.detail ?? "";
+              const dateLabel = d.dateLabel ?? it.dateLabel ?? "";
+              const status = d.status ?? it.status;
+              const set = (
+                patch: Partial<{ title: string; detail: string; dateLabel: string; status: string }>,
+              ) => setRoadDraft((s) => ({ ...s, [it.id]: { ...s[it.id], ...patch } }));
+              return (
+                <div
+                  key={it.id}
+                  className="bg-white/5 border border-white/10 rounded-lg p-3 space-y-2"
+                >
+                  <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex flex-col">
+                      <button
+                        onClick={() => roadAction({ action: "move", id: it.id, dir: "up" }, it.id)}
+                        disabled={i === 0}
+                        className="text-white/50 hover:text-white disabled:opacity-20 leading-none"
+                      >
+                        ▲
+                      </button>
+                      <button
+                        onClick={() => roadAction({ action: "move", id: it.id, dir: "down" }, it.id)}
+                        disabled={i === road.length - 1}
+                        className="text-white/50 hover:text-white disabled:opacity-20 leading-none"
+                      >
+                        ▼
+                      </button>
+                    </div>
+                    <input
+                      value={dateLabel}
+                      onChange={(e) => set({ dateLabel: e.target.value })}
+                      placeholder="Termín (např. Q3 2026)"
+                      className="w-36 bg-white/10 border border-white/10 rounded px-2 py-1 text-sm text-white placeholder:text-white/30"
+                    />
+                    <input
+                      value={title}
+                      onChange={(e) => set({ title: e.target.value })}
+                      placeholder="Název"
+                      className="flex-1 min-w-[10rem] bg-white/10 border border-white/10 rounded px-2 py-1 text-sm text-white placeholder:text-white/30"
+                    />
+                    <select
+                      value={status}
+                      onChange={(e) => set({ status: e.target.value })}
+                      className="bg-white/10 border border-white/10 rounded px-2 py-1 text-sm text-white"
+                    >
+                      <option value="upcoming">upcoming</option>
+                      <option value="current">current</option>
+                      <option value="done">done</option>
+                    </select>
+                    <button
+                      onClick={() =>
+                        roadAction({ action: "save", id: it.id, title, detail, dateLabel, status }, it.id)
+                      }
+                      disabled={busy === "road" + it.id}
+                      className="px-3 py-1 rounded bg-white/15 text-white text-sm hover:bg-white/25 disabled:opacity-40"
+                    >
+                      Uložit
+                    </button>
+                    <button
+                      onClick={() => roadAction({ action: "delete", id: it.id }, it.id)}
+                      className="px-3 py-1 rounded text-red-300 text-sm hover:bg-red-500/15"
+                    >
+                      Smazat
+                    </button>
+                  </div>
+                  <input
+                    value={detail}
+                    onChange={(e) => set({ detail: e.target.value })}
+                    placeholder="Popis (volitelné)"
+                    className="w-full bg-white/10 border border-white/10 rounded px-2 py-1 text-sm text-white placeholder:text-white/30"
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </div>
       ) : (
       <>
       <div className="flex flex-wrap gap-2 mb-6">
