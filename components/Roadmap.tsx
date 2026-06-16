@@ -35,53 +35,67 @@ export default function Roadmap() {
         <p className="ui-muted mt-2">{t("subtitle")}</p>
       </Reveal>
 
-      <ol className="max-w-2xl mx-auto relative ml-2">
-        {items.map((it) => {
-          const done = it.status === "done";
-          const current = it.status === "current";
-          return (
-            <li
-              key={it.id}
-              className="relative pl-8 pb-8 last:pb-0 border-l-2"
-              style={{
-                borderColor: done ? "var(--accent)" : "var(--line)",
-              }}
-            >
-              {/* tečka */}
-              <span
-                aria-hidden
-                className={`absolute -left-[9px] top-0 w-4 h-4 rounded-full border-2 ${
-                  current ? "animate-pulse" : ""
-                }`}
-                style={{
-                  background: done || current ? "var(--accent)" : "var(--bg)",
-                  borderColor: done || current ? "var(--accent)" : "var(--line)",
-                  boxShadow: current ? "0 0 0 4px color-mix(in srgb, var(--accent) 25%, transparent)" : undefined,
-                }}
-              />
-              {it.dateLabel && (
-                <div className="ui-eyebrow ui-muted mb-0.5">{it.dateLabel}</div>
-              )}
-              <div
-                className={`ui-display font-bold leading-tight ${
-                  current ? "ui-accent" : done ? "" : "ui-muted"
-                }`}
+      {/* Vodorovná timeline; na mobilu se vodorovně scrolluje */}
+      <div className="overflow-x-auto pb-2 -mx-4 px-4">
+        <ol className="flex min-w-max sm:min-w-0 sm:max-w-5xl mx-auto">
+          {items.map((it, i) => {
+            const done = it.status === "done";
+            const current = it.status === "current";
+            const reached = done || current; // levý spojovací segment je „splněný"
+            const isFirst = i === 0;
+            const isLast = i === items.length - 1;
+            return (
+              <li
+                key={it.id}
+                className="relative flex flex-col items-center text-center flex-1 min-w-[130px] sm:min-w-0 px-2"
               >
-                {it.title}
-                {done && <span className="ml-2 ui-accent">✓</span>}
-                {current && (
-                  <span className="ml-2 ui-eyebrow ui-accent align-middle">
-                    {t("now")}
-                  </span>
+                {/* spojovací čára (za tečkou) */}
+                <span
+                  aria-hidden
+                  className="absolute top-[9px] h-0.5"
+                  style={{
+                    left: isFirst ? "50%" : 0,
+                    right: isLast ? "50%" : 0,
+                    background: reached ? "var(--accent)" : "var(--line)",
+                  }}
+                />
+                {/* tečka */}
+                <span
+                  aria-hidden
+                  className={`relative z-10 w-5 h-5 rounded-full border-2 ${
+                    current ? "animate-pulse" : ""
+                  }`}
+                  style={{
+                    background: reached ? "var(--accent)" : "var(--bg)",
+                    borderColor: reached ? "var(--accent)" : "var(--line)",
+                    boxShadow: current
+                      ? "0 0 0 4px color-mix(in srgb, var(--accent) 25%, transparent)"
+                      : undefined,
+                  }}
+                />
+                {it.dateLabel && (
+                  <div className="ui-eyebrow ui-muted mt-3">{it.dateLabel}</div>
                 )}
-              </div>
-              {it.detail && (
-                <p className="text-sm ui-muted leading-relaxed mt-1">{it.detail}</p>
-              )}
-            </li>
-          );
-        })}
-      </ol>
+                <div
+                  className={`ui-display font-bold leading-tight mt-1 text-sm sm:text-base ${
+                    current ? "ui-accent" : done ? "" : "ui-muted"
+                  }`}
+                >
+                  {it.title}
+                </div>
+                {current && (
+                  <div className="ui-eyebrow ui-accent mt-1">{t("now")}</div>
+                )}
+                {it.detail && (
+                  <p className="text-xs ui-muted leading-relaxed mt-1">
+                    {it.detail}
+                  </p>
+                )}
+              </li>
+            );
+          })}
+        </ol>
+      </div>
     </section>
   );
 }
