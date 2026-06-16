@@ -21,7 +21,7 @@ export default function Avatar({
       <img
         src={imageUrl}
         alt={name}
-        className="w-full h-full object-contain p-0.5"
+        className="w-full h-full object-contain"
         style={{ background: imageBg || "#ffffff" }}
       />
     );

@@ -530,7 +530,7 @@ export default function DonationForm({
                     <img
                       src={imageUrl}
                       alt=""
-                      className="w-full h-full object-contain p-0.5"
+                      className="w-full h-full object-contain"
                     />
                   ) : (
                     <span className="ui-muted text-xl">🏢</span>

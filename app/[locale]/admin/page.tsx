@@ -721,7 +721,7 @@ export default function AdminPage() {
                             <img
                               src={imageUrl}
                               alt=""
-                              className="w-full h-full object-contain p-0.5"
+                              className="w-full h-full object-contain"
                             />
                           ) : null}
                         </div>
