@@ -71,7 +71,13 @@
     "errorGeneric": "Something went wrong. Please try again.",
     "errorBtcpay": "Could not open the payment gateway. Please try again later.",
     "errorRateLimit": "Too many attempts. Please try again in an hour.",
-    "approxUsdHint": "≈ {amount}"
+    "approxUsdHint": "≈ {amount}",
+    "groupToggle": "Contributing as a group – add a logo/photo",
+    "groupHelp": "Enter the group name in the Name field above. The logo will appear next to your contribution on the wall.",
+    "uploadLogo": "Upload logo",
+    "uploading": "Uploading…",
+    "use21Logo": "We are a local Jednadvacet group (use the 21 logo)",
+    "removeLogo": "Remove"
   },
   "qr": {
     "title": "Scan the QR code in your banking app",

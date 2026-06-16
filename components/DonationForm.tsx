@@ -122,6 +122,33 @@ export default function DonationForm({
   const [btcDisplay, setBtcDisplay] = useState<"sats" | "BTC" | "CZK">("sats");
   const [czkRate, setCzkRate] = useState<number | null>(null);
   const [usdRate, setUsdRate] = useState<number | null>(null);
+  // Skupinový režim: volitelné logo/fotka skupiny (checkbox → upload + logo 21).
+  const [groupMode, setGroupMode] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [imageBg, setImageBg] = useState<string>("#ffffff");
+  const [uploadingImg, setUploadingImg] = useState(false);
+
+  const onPickImage = async (file: File) => {
+    setUploadingImg(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const r = await fetch("/api/upload", { method: "POST", body: fd });
+      if (r.ok) {
+        const d = (await r.json()) as { url?: string };
+        if (d.url) {
+          setImageUrl(d.url);
+          setImageBg("#ffffff");
+        }
+      }
+    } finally {
+      setUploadingImg(false);
+    }
+  };
+  const use21Logo = () => {
+    setImageUrl("/partners/jednadvacet-21.webp");
+    setImageBg("#000000");
+  };
   // Fiat dle locale: en → USD, cs → CZK. Jen orientační ekvivalent, ne platební měna.
   const fc = fiatCode(locale); // "USD" | "CZK"
   const fiatRate = locale === "en" ? usdRate : czkRate;
@@ -255,6 +282,8 @@ export default function DonationForm({
           privateMessage,
           donorKey,
           locale,
+          imageUrl: groupMode ? (imageUrl ?? undefined) : undefined,
+          imageBg: groupMode && imageUrl ? imageBg : undefined,
         }),
       });
       if (!res.ok) {
@@ -395,6 +424,72 @@ export default function DonationForm({
             placeholder={t("namePlaceholder")}
             maxLength={80}
           />
+        </div>
+
+        {/* Skupina: volitelné logo/fotka */}
+        <div>
+          <label className="flex items-center gap-2 text-sm cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={groupMode}
+              onChange={(e) => setGroupMode(e.target.checked)}
+              className="accent-[var(--accent)]"
+            />
+            {t("groupToggle")}
+          </label>
+          {groupMode && (
+            <div className="mt-3 ui-soft ui-border rounded-[var(--radius-sm)] p-3 space-y-3">
+              <p className="text-xs ui-muted leading-snug">{t("groupHelp")}</p>
+              <div className="flex items-center gap-3">
+                <div
+                  className="w-14 h-14 shrink-0 overflow-hidden rounded-[var(--radius-sm)] ui-border flex items-center justify-center"
+                  style={{ background: imageUrl ? imageBg : "transparent" }}
+                >
+                  {imageUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={imageUrl}
+                      alt=""
+                      className="w-full h-full object-contain p-0.5"
+                    />
+                  ) : (
+                    <span className="ui-muted text-xl">🏢</span>
+                  )}
+                </div>
+                <div className="flex flex-col gap-1.5 items-start">
+                  <label className="ui-btn press px-3 py-1.5 text-sm cursor-pointer">
+                    {uploadingImg ? t("uploading") : t("uploadLogo")}
+                    <input
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp,image/gif"
+                      className="hidden"
+                      onChange={(e) => {
+                        const f = e.target.files?.[0];
+                        e.target.value = "";
+                        if (f) onPickImage(f);
+                      }}
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={use21Logo}
+                    className="ui-link ui-eyebrow text-left"
+                  >
+                    {t("use21Logo")}
+                  </button>
+                  {imageUrl && (
+                    <button
+                      type="button"
+                      onClick={() => setImageUrl(null)}
+                      className="ui-link ui-eyebrow text-left ui-muted"
+                    >
+                      {t("removeLogo")}
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Částka — posuvník (log) + ruční zadání */}

@@ -34,6 +34,17 @@ interface Body {
   privateMessage?: string;
   donorKey?: string; // identifikátor pro párování plateb
   locale?: string; // pro redirect na děkovnou stránku
+  imageUrl?: string; // logo skupiny (jen vlastní upload /api/uploads nebo logo 21)
+  imageBg?: string; // barva pozadí pod logem (hex)
+}
+
+// Veřejně smí přijít jen náš nahraný soubor nebo allowlistované logo Jednadvacet 21
+// (žádné externí URL — proti SSRF/tracking/zneužití zdi).
+function safePublicImageUrl(raw: unknown): string | null {
+  const u = (typeof raw === "string" ? raw : "").trim();
+  if (/^\/api\/uploads\/[a-f0-9]{16}\.webp$/.test(u)) return u;
+  if (u === "/partners/jednadvacet-21.webp") return u;
+  return null;
 }
 
 export async function POST(req: NextRequest) {
@@ -67,6 +78,11 @@ export async function POST(req: NextRequest) {
   // Párovací identifikátor: normalizovaný (trim + lowercase) pro spolehlivé párování.
   const donorKey = normalizeDonorKey(asStr(body.donorKey));
   const locale = body.locale === "en" ? "en" : "cs";
+  const imageUrl = safePublicImageUrl(body.imageUrl);
+  const imageBg =
+    imageUrl && /^#[0-9a-fA-F]{3,8}$/.test(asStr(body.imageBg).trim())
+      ? asStr(body.imageBg).trim()
+      : null;
 
   if (!Number.isFinite(amount) || amount <= 0) {
     return NextResponse.json({ error: "invalid_amount" }, { status: 400 });
@@ -89,6 +105,8 @@ export async function POST(req: NextRequest) {
       publicMessage,
       privateMessage,
       donorKey,
+      imageUrl,
+      imageBg,
       status: "pending",
     },
   });
