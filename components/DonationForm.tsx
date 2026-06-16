@@ -9,6 +9,9 @@ import type { PaymentResult } from "./PaymentModal";
 type Method = "CZK" | "BTC";
 
 const SATS_PER_BTC = 100_000_000;
+// Dolní mez BTC příspěvku (musí odpovídat MIN_SATS na serveru). Pod ní BTCPay
+// invoice odmítne (dust limit) → raději srozumitelná hláška místo „bránu se nepodařilo otevřít".
+const MIN_SATS = 1000;
 // BTC se ve formuláři zadává v satoshi; na BTC se převede až při odeslání.
 const RANGES: Record<Method, { min: number; max: number }> = {
   CZK: { min: 250, max: 1_000_000 },
@@ -196,6 +199,9 @@ export default function DonationForm({
           ? String(Math.round((safeAmt / SATS_PER_BTC) * fiatRate))
           : amount;
 
+  // Formátované minimum v sats (pro hlášku i hint).
+  const minSatsLabel = MIN_SATS.toLocaleString(locale === "en" ? "en-US" : "cs-CZ");
+
   // Doména posuvníku v aktuální jednotce. CZK platba (bankovní převod) má limity
   // 250–1 000 000 Kč; fiat-zobrazení u BTC platby se odvodí z rozsahu sats × kurz.
   const dom =
@@ -270,6 +276,11 @@ export default function DonationForm({
       setError(t("errorAmount"));
       return;
     }
+    // amtNum je u BTC v sats → ověřit dolní mez ještě před voláním API.
+    if (method === "BTC" && amtNum < MIN_SATS) {
+      setError(t("errorMinBtc", { min: minSatsLabel }));
+      return;
+    }
     setLoading(true);
     try {
       const res = await fetch("/api/donations", {
@@ -293,11 +304,13 @@ export default function DonationForm({
         setError(
           res.status === 429
             ? t("errorRateLimit")
-            : data.error === "btcpay_failed"
-              ? t("errorBtcpay")
-              : data.error === "invalid_amount"
-                ? t("errorAmount")
-                : t("errorGeneric"),
+            : data.error === "amount_too_low"
+              ? t("errorMinBtc", { min: minSatsLabel })
+              : data.error === "btcpay_failed"
+                ? t("errorBtcpay")
+                : data.error === "invalid_amount"
+                  ? t("errorAmount")
+                  : t("errorGeneric"),
         );
         return;
       }
@@ -461,6 +474,11 @@ export default function DonationForm({
               {t("approxUsdHint", { amount: czkUsdHint })}
             </div>
           )}
+          {method === "BTC" && (
+            <div className="ui-mono text-xs ui-muted mt-1.5">
+              {t("minBtcHint", { min: minSatsLabel })}
+            </div>
+          )}
           <input
             type="range"
             min={0}
@@ -530,7 +548,7 @@ export default function DonationForm({
                     <img
                       src={imageUrl}
                       alt=""
-                      className="w-full h-full object-contain p-0.5"
+                      className="w-full h-full object-contain"
                     />
                   ) : (
                     <span className="ui-muted text-xl">🏢</span>

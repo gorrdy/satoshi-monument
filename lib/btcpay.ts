@@ -80,6 +80,30 @@ export async function createInvoice(
   return { id: data.id, checkoutLink: data.checkoutLink, status: data.status };
 }
 
+/** Stav invoice (New / Processing / Settled / Expired / Invalid). null při chybě API. */
+export async function getInvoiceStatus(
+  invoiceId: string,
+): Promise<{ status: string; additionalStatus?: string } | null> {
+  assertConfigured();
+  try {
+    const res = await fetch(
+      `${BTCPAY_URL}/api/v1/stores/${STORE_ID}/invoices/${invoiceId}`,
+      {
+        headers: { Authorization: `token ${API_KEY}` },
+        signal: AbortSignal.timeout(10000),
+      },
+    );
+    if (!res.ok) return null;
+    const d = (await res.json()) as {
+      status?: string;
+      additionalStatus?: string;
+    };
+    return { status: d.status ?? "", additionalStatus: d.additionalStatus };
+  } catch {
+    return null;
+  }
+}
+
 /** Detail invoice – použito pro načtení reálné BTC částky po settlement. */
 export async function getInvoicePaymentMethods(invoiceId: string): Promise<
   Array<{ paymentMethodId: string; amount: string; currency: string }>

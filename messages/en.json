@@ -69,6 +69,8 @@
     "submitCzk": "Generate payment QR",
     "submitting": "Preparing payment…",
     "errorAmount": "Please enter a valid amount.",
+    "errorMinBtc": "The minimum bitcoin contribution is {min} sats.",
+    "minBtcHint": "Minimum: {min} sats",
     "errorGeneric": "Something went wrong. Please try again.",
     "errorBtcpay": "Could not open the payment gateway. Please try again later.",
     "errorRateLimit": "Too many attempts. Please try again in an hour.",
@@ -112,8 +114,9 @@
     "allContributions": "All contributions",
     "contribution": "contribution",
     "repeatHint": "You can contribute repeatedly — payments under the same identifier add up and move you higher on the podium.",
-    "groupHint": "Want to contribute as a group (company, local community)? Write to us at",
-    "lastContributor": "latest"
+    "groupHint": "Contributing as a group (company, local community)? Right in the form, tick “Contributing as a group” and add your own logo and name.",
+    "lastContributor": "latest",
+    "groupHintCta": "Go to the form →"
   },
   "about": {
     "title": "About the project",

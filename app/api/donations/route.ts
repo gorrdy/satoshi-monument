@@ -10,6 +10,12 @@ export const dynamic = "force-dynamic";
 
 const MAX_CZK = 5_000_000; // horní strop fiat příspěvku (sanity limit)
 const MAX_BTC = 21; // horní strop BTC příspěvku (sanity limit)
+// Dolní mez BTC: BTCPay odmítne invoice pod dust limitem (~80 sats, kolísá) hláškou
+// „amount below accepted value" → 1000 sats je bezpečně nad ním a pořád dovolí
+// symbolické částky (2100 sats apod.). Bez toho lidé ručně zadají 1/21/50 sats
+// a dostanou matoucí „bránu se nepodařilo otevřít".
+const MIN_SATS = 1000;
+const MIN_BTC = MIN_SATS / 100_000_000;
 
 const BANK_ACCOUNT = process.env.BANK_ACCOUNT ?? "";
 const BANK_CODE = process.env.BANK_CODE ?? "";
@@ -87,12 +93,19 @@ export async function POST(req: NextRequest) {
   if (!Number.isFinite(amount) || amount <= 0) {
     return NextResponse.json({ error: "invalid_amount" }, { status: 400 });
   }
-  // Min není vymáhán (jen mez slideru); server hlídá jen horní strop (sanity).
   if (currency === "CZK" && amount > MAX_CZK) {
     return NextResponse.json({ error: "invalid_amount" }, { status: 400 });
   }
   if (currency === "BTC" && amount > MAX_BTC) {
     return NextResponse.json({ error: "invalid_amount" }, { status: 400 });
+  }
+  // Dolní mez jen u BTC (BTCPay dust limit). CZK jde přes bankovní převod — drobné
+  // částky se v pohodě spárují, takže tam minimum nevymáháme.
+  if (currency === "BTC" && amount < MIN_BTC) {
+    return NextResponse.json(
+      { error: "amount_too_low", minSats: MIN_SATS },
+      { status: 400 },
+    );
   }
 
   try {

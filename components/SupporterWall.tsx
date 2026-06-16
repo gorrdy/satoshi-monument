@@ -248,8 +248,7 @@ export default function SupporterWall({
           {showPodium && (
             <div className="flex flex-row items-end justify-center gap-2 sm:gap-4 mb-12">
               {top3.map((entry, place) => {
-                const multi =
-                  (entry.count ?? 1) > 1;
+                const multi = (entry.count ?? 1) > 1;
                 return (
                   <div
                     key={entry.id}

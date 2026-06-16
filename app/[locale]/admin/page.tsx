@@ -256,15 +256,15 @@ export default function AdminPage() {
 
   // Checklist nákupu BTC za fiat: potvrzené CZK platby (nejstarší první).
   const loadFiat = useCallback(async () => {
-    const res = await fetch("/api/admin/donations?status=confirmed", {
-      cache: "no-store",
-    });
+    // Jen potvrzené CZK (kompletní, bez ořezu) — kvůli správnému součtu „zbývá nakoupit".
+    const res = await fetch(
+      "/api/admin/donations?status=confirmed&currency=CZK",
+      { cache: "no-store" },
+    );
     if (!res.ok) return;
     const data = (await res.json()) as { donations: Donation[] };
     setFiatList(
-      data.donations
-        .filter((d) => d.currency === "CZK")
-        .sort((a, b) => a.createdAt.localeCompare(b.createdAt)),
+      data.donations.sort((a, b) => a.createdAt.localeCompare(b.createdAt)),
     );
     // Aktuální kurz BTC/CZK pro výpočet short pozice.
     try {
@@ -721,7 +721,7 @@ export default function AdminPage() {
                             <img
                               src={imageUrl}
                               alt=""
-                              className="w-full h-full object-contain p-0.5"
+                              className="w-full h-full object-contain"
                             />
                           ) : null}
                         </div>

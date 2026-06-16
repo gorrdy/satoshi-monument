@@ -43,12 +43,11 @@ export default function Campaign() {
               <span>
                 {t("wall.groupHint")}{" "}
                 <a
-                  href="mailto:monument@jednadvacet.org"
-                  className="font-medium underline underline-offset-2 transition-opacity hover:opacity-70"
+                  href="#donate"
+                  className="font-medium underline underline-offset-2 transition-opacity hover:opacity-70 whitespace-nowrap"
                 >
-                  monument@jednadvacet.org
+                  {t("wall.groupHintCta")}
                 </a>
-                .
               </span>
             </p>
           </div>

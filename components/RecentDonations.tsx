@@ -5,6 +5,7 @@ import { useCampaignStats } from "./StatsProvider";
 import Avatar from "./Avatar";
 import { formatSats, formatCzk } from "@/lib/format";
 import { formatFiat } from "@/lib/fiat";
+import { tierEmoji } from "@/lib/tier";
 import { timeAgo } from "@/lib/time";
 import type { Stats } from "./ProgressBar";
 
@@ -41,7 +42,7 @@ export default function RecentDonations() {
       <h2 className="ui-eyebrow ui-muted mb-3">{t("title")}</h2>
       <ul className="space-y-2 max-w-md">
         {/* Probíhající platby — bez reálných dat, jen rozmazaný placeholder */}
-        {pending.map((p) => (
+        {pending.slice(0, 3).map((p) => (
           <li key={p.id} className="animate-rise flex items-center gap-3">
             <div className="w-8 h-8 shrink-0 rounded-[var(--radius-sm)] ui-border ui-soft animate-pulse" />
             <div className="min-w-0 flex-1 flex items-center gap-2">
@@ -81,6 +82,7 @@ export default function RecentDonations() {
                 <span className="ui-display font-bold truncate">{d.name}</span>
                 <span className="ui-mono text-xs ui-accent font-bold ml-2">
                   {amountLabel(d, locale, stats)}
+                  {tierEmoji(d.amountBtc) && <span> {tierEmoji(d.amountBtc)}</span>}
                 </span>
                 <span
                   className={`ml-1.5 align-middle inline-block px-1.5 py-px rounded-[var(--radius-sm)] text-[10px] font-bold ${
