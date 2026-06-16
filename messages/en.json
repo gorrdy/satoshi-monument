@@ -209,15 +209,8 @@
     "shareTitle": "Help spread the word",
     "shareLead": "This fundraiser runs on community. Tell your friends and it'll happen sooner. Share:",
     "shareText": "I just contributed to the statue of Satoshi Nakamoto in Prague. Join in and be part of history! 🟠⚡",
-    "x": "Share on X",
-    "telegram": "Share on Telegram",
-    "whatsapp": "Share on WhatsApp",
-    "facebook": "Share on Facebook",
-    "copy": "Copy link",
-    "copied": "Link copied",
     "back": "Back to home",
     "amountThanks": "Thank you for your {amount} contribution! 🙌",
-    "downloadImage": "Download status image",
     "repeatTitle": "Want a spot on the podium?",
     "repeatLead": "Contributions under the same identifier add up. Add another and climb the leaderboard.",
     "repeatCta": "Contribute again",
@@ -226,19 +219,15 @@
   "share": {
     "title": "Share the fundraiser",
     "lead": "Help build the statue sooner — share the live status with your friends.",
-    "download": "Status image",
-    "copy": "Copy link",
-    "copied": "Copied"
+    "download": "Status image"
   },
   "recent": {
     "title": "Recent contributions",
-    "empty": "No contributions yet",
     "inProgress": "payment in progress"
   },
   "roadmap": {
     "eyebrow": "Roadmap",
     "title": "Where we are heading",
-    "subtitle": "What is done and what lies ahead.",
-    "now": "now"
+    "subtitle": "What is done and what lies ahead."
   }
 }

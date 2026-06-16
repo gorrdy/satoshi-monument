@@ -2,22 +2,11 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { useCampaignStats } from "./StatsProvider";
-import Identicon from "./Identicon";
+import Avatar from "./Avatar";
 import { formatSats, formatCzk } from "@/lib/format";
-import { formatBtcAsFiat } from "@/lib/fiat";
+import { formatFiat } from "@/lib/fiat";
+import { timeAgo } from "@/lib/time";
 import type { Stats } from "./ProgressBar";
-
-/** Lokalizovaný relativní čas: „před 5 min" / „5 min ago". */
-function timeAgo(iso: string, locale: string): string {
-  const diff = (Date.now() - new Date(iso).getTime()) / 1000;
-  const rtf = new Intl.RelativeTimeFormat(locale === "en" ? "en" : "cs", {
-    numeric: "auto",
-  });
-  if (diff < 60) return rtf.format(-Math.round(diff), "second");
-  if (diff < 3600) return rtf.format(-Math.round(diff / 60), "minute");
-  if (diff < 86400) return rtf.format(-Math.round(diff / 3600), "hour");
-  return rtf.format(-Math.round(diff / 86400), "day");
-}
 
 function amountLabel(
   d: { currency: string; amount: number; amountBtc: number },
@@ -27,7 +16,7 @@ function amountLabel(
   if (d.currency === "CZK") {
     // EN: orientační $ ekvivalent (aktuálním kurzem); CS: původní Kč.
     return locale === "en" && stats
-      ? formatBtcAsFiat(d.amountBtc, stats, locale)
+      ? formatFiat(d.amountBtc, stats, locale)
       : `${formatCzk(d.amount)} Kč`;
   }
   return `${formatSats(d.amountBtc || d.amount)} sats`;
@@ -81,17 +70,12 @@ export default function RecentDonations() {
               style={{ opacity }}
             >
               <div className="w-8 h-8 shrink-0 overflow-hidden rounded-[var(--radius-sm)] ui-border">
-                {d.imageUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={d.imageUrl}
-                    alt={d.name}
-                    className="w-full h-full object-contain p-0.5"
-                    style={{ background: d.imageBg || "#ffffff" }}
-                  />
-                ) : (
-                  <Identicon seed={d.name} name={d.name} className="w-full h-full" />
-                )}
+                <Avatar
+                  imageUrl={d.imageUrl}
+                  imageBg={d.imageBg}
+                  seed={d.name}
+                  name={d.name}
+                />
               </div>
               <div className="min-w-0 flex-1 leading-tight">
                 <span className="ui-display font-bold truncate">{d.name}</span>

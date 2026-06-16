@@ -209,15 +209,8 @@
     "shareTitle": "Pomoz to rozšířit",
     "shareLead": "Sbírka stojí na komunitě. Když dáš vědět svým známým a kamarádům, socha vznikne dřív. Sdílej:",
     "shareText": "Právě jsem přispěl na sochu Satoshiho Nakamota v Praze. Přidej se a buď součástí historie! 🟠⚡",
-    "x": "Sdílet na X",
-    "telegram": "Sdílet na Telegramu",
-    "whatsapp": "Sdílet na WhatsAppu",
-    "facebook": "Sdílet na Facebooku",
-    "copy": "Kopírovat odkaz",
-    "copied": "Odkaz zkopírován",
     "back": "Zpět na hlavní stránku",
     "amountThanks": "Děkujeme za tvůj příspěvek {amount}! 🙌",
-    "downloadImage": "Stáhnout obrázek se stavem",
     "repeatTitle": "Chceš na stupně vítězů?",
     "repeatLead": "Příspěvky na stejný identifikátor se sčítají. Přidej další a posuň se na leaderboardu výš.",
     "repeatCta": "Přispět znovu",
@@ -226,19 +219,15 @@
   "share": {
     "title": "Sdílej sbírku",
     "lead": "Pomoz sochu postavit dřív — sdílej aktuální stav mezi přátele.",
-    "download": "Obrázek se stavem",
-    "copy": "Kopírovat odkaz",
-    "copied": "Zkopírováno"
+    "download": "Obrázek se stavem"
   },
   "recent": {
     "title": "Poslední příspěvky",
-    "empty": "Zatím žádné příspěvky",
     "inProgress": "probíhá platba"
   },
   "roadmap": {
     "eyebrow": "Roadmapa",
     "title": "Kam směřujeme",
-    "subtitle": "Co už je hotové a co nás čeká.",
-    "now": "právě teď"
+    "subtitle": "Co už je hotové a co nás čeká."
   }
 }

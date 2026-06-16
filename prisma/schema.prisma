@@ -34,6 +34,8 @@ model Donation {
 
   @@index([status])
   @@index([createdAt])
+  // Pokrývá filtr+řazení veřejných dotazů (zeď/recent/pending).
+  @@index([status, hiddenOnWall, confirmedAt])
 }
 
 // Profil identifikátoru (donorKey): jedno kanonické jméno + logo, které přebíjí
