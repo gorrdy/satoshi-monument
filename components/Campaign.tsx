@@ -19,6 +19,9 @@ export default function Campaign() {
           <p className="mt-6 ui-border-t pt-5 text-center text-sm ui-muted">
             <span className="ui-accent">⚡</span> {t("progress.goalExplainer")}
           </p>
+          <p className="mt-2 text-center text-sm ui-muted max-w-2xl mx-auto leading-relaxed">
+            {t("progress.overflowNote")}
+          </p>
         </div>
       </section>
 
@@ -30,10 +33,25 @@ export default function Campaign() {
             {t("wall.title")}
           </h2>
           <p className="ui-muted mt-2">{t("wall.subtitle")}</p>
-          <p className="ui-accent-box inline-flex items-center gap-2 px-4 py-2.5 mt-5 text-sm font-medium rounded-[var(--radius-sm)] text-left">
-            <span className="ui-accent text-base leading-none">🏆</span>
-            {t("wall.repeatHint")}
-          </p>
+          <div className="ui-accent-box px-4 py-3 mt-5 text-sm rounded-[var(--radius-sm)] text-left max-w-xl mx-auto space-y-2">
+            <p className="flex items-start gap-2 font-medium">
+              <span className="ui-accent text-base leading-none">🏆</span>
+              {t("wall.repeatHint")}
+            </p>
+            <p className="flex items-start gap-2 font-medium">
+              <span className="ui-accent text-base leading-none">👥</span>
+              <span>
+                {t("wall.groupHint")}{" "}
+                <a
+                  href="mailto:monument@jednadvacet.org"
+                  className="ui-link font-medium"
+                >
+                  monument@jednadvacet.org
+                </a>
+                .
+              </span>
+            </p>
+          </div>
         </Reveal>
 
         {/* Princip sčítání — schované pod rozbalovátkem, ať to nepřebíjí zeď */}

@@ -25,6 +25,7 @@ export interface WallItem {
 export interface WallEntry {
   id: string;
   name: string;
+  lastContributor?: string | null;
   currency: string;
   amount: number;
   amountBtc: number | null;
@@ -76,6 +77,24 @@ export default function SupporterWall({
   const [detail, setDetail] = useState<WallEntry | null>(null);
   // Položky detailu se dotahují lazy (zeď samotná je neveze).
   const [detailItems, setDetailItems] = useState<WallItem[] | null>(null);
+
+  // Orientační fiat ekvivalent aktuálním kurzem: v en „$X" (vč. symbolu),
+  // v cs „X Kč" (formatCzk vrací jen číslo, proto dopisujeme Kč).
+  const fiatOf = (entry: WallEntry): string | null => {
+    if (!stats) return null;
+    const btc = entry.amountBtc ?? entry.amount ?? 0;
+    return locale === "en"
+      ? `≈ ${formatBtcAsFiat(btc, stats, locale)}`
+      : `≈ ${formatCzk(btc * stats.btcCzkRate, locale)} Kč`;
+  };
+
+  // Poslední přispívající — jen u skupin (víc plateb) a když se liší od názvu skupiny.
+  const lastContribOf = (entry: WallEntry): string | null =>
+    (entry.count ?? 1) > 1 &&
+    entry.lastContributor &&
+    entry.lastContributor !== entry.name
+      ? entry.lastContributor
+      : null;
 
   const fmtDate = (iso: string) =>
     new Date(iso).toLocaleDateString(locale === "en" ? "en-US" : "cs-CZ", {
@@ -132,11 +151,9 @@ export default function SupporterWall({
       <Reveal
         key={entry.id}
         delay={delay}
-        className={`ui-card p-5 ${widthClass} flex flex-col ${
-          medal >= 0 ? "relative overflow-hidden" : ""
-        }`}
+        className={`ui-card p-5 ${widthClass} flex flex-col relative overflow-hidden`}
       >
-        {medal >= 0 && (
+        {medal >= 0 ? (
           <>
             <span
               aria-hidden
@@ -147,8 +164,13 @@ export default function SupporterWall({
               {MEDALS[medal]}
             </span>
           </>
+        ) : (
+          // Pořadí (mimo top 3) — diskrétní odznak v rohu.
+          <span className="absolute top-2.5 right-3 ui-mono text-sm font-bold ui-muted">
+            #{rank + 1}
+          </span>
         )}
-        <div className={`flex items-center gap-3 mb-2 ${medal >= 0 ? "pr-12" : ""}`}>
+        <div className="flex items-center gap-3 mb-2 pr-12">
           <div
             className="w-10 h-10 shrink-0 overflow-hidden rounded-[var(--radius-sm)] ui-border"
             style={mColor ? { boxShadow: `0 0 0 2px ${mColor}` } : undefined}
@@ -164,6 +186,14 @@ export default function SupporterWall({
                 <span className="ui-muted font-normal"> · {entry.count}×</span>
               ) : null}
             </div>
+            {fiatOf(entry) && (
+              <div className="ui-mono text-[11px] ui-muted">{fiatOf(entry)}</div>
+            )}
+            {lastContribOf(entry) && (
+              <div className="text-[11px] ui-muted truncate">
+                {t("lastContributor")}: {lastContribOf(entry)}
+              </div>
+            )}
           </div>
         </div>
         {entry.publicMessage && (
@@ -251,9 +281,19 @@ export default function SupporterWall({
                       <div className="ui-display font-bold text-sm sm:text-base truncate w-full mt-2">
                         {entry.name}
                       </div>
-                      <div className="ui-mono text-[11px] sm:text-xs ui-accent font-bold break-all">
+                      {lastContribOf(entry) && (
+                        <div className="text-[10px] sm:text-[11px] ui-muted truncate w-full">
+                          {t("lastContributor")}: {lastContribOf(entry)}
+                        </div>
+                      )}
+                      <div className="ui-mono text-[11px] sm:text-xs ui-accent font-bold break-all mt-0.5">
                         {amountLabel(entry)}
                       </div>
+                      {fiatOf(entry) && (
+                        <div className="ui-mono text-[10px] sm:text-[11px] ui-muted">
+                          {fiatOf(entry)}
+                        </div>
+                      )}
                       {multi && (
                         <button
                           onClick={() => setDetail(entry)}
