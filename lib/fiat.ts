@@ -19,13 +19,13 @@ export function fiatRate(rates: RatesLike, locale: string): number {
   return locale === "en" ? rates.btcUsdRate : rates.btcCzkRate;
 }
 
-/** Naformátuje BTC částku jako fiat ekvivalent dle locale. */
-export function formatBtcAsFiat(
-  btc: number,
-  rates: RatesLike,
-  locale: string,
-): string {
+/**
+ * BTC částka → kompletní fiat řetězec vč. měny dle locale:
+ *   en → „$1,234"   ·   cs → „1 234 Kč"
+ * Jedno místo pro přepočet i jednotku (dřív se „Kč"/„$" řešilo ručně na více místech).
+ */
+export function formatFiat(btc: number, rates: RatesLike, locale: string): string {
   return locale === "en"
     ? formatUsd(btc * rates.btcUsdRate, locale)
-    : formatCzk(btc * rates.btcCzkRate, locale);
+    : `${formatCzk(btc * rates.btcCzkRate, locale)} Kč`;
 }

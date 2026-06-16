@@ -1,7 +1,8 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { formatBtc, formatCzk, formatUsd } from "@/lib/format";
+import { formatBtc } from "@/lib/format";
+import { formatFiat } from "@/lib/fiat";
 import CountUp from "./CountUp";
 
 export interface Stats {
@@ -34,12 +35,7 @@ export default function ProgressBar({ stats }: { stats: Stats | null }) {
           </div>
           {stats && (
             <div className="text-sm ui-muted mt-2 ui-mono">
-              {t("approxFiat", {
-                amount:
-                  locale === "en"
-                    ? formatUsd(stats.raisedUsd, locale)
-                    : `${formatCzk(stats.raisedCzk, locale)} Kč`,
-              })}
+              {t("approxFiat", { amount: formatFiat(raisedBtc, stats, locale) })}
             </div>
           )}
         </div>

@@ -210,19 +210,31 @@ async function buildWallEntries(): Promise<WallEntry[]> {
   return entries;
 }
 
+// Krátká in-process cache sestavených skupin — sdílí getWall() i getWallItems(),
+// takže detail (/api/wall/items) nepřepočítává všechny skupiny zvlášť.
+const WALL_TTL_MS = 12_000;
+let _wallEntries: { at: number; data: WallEntry[] } | null = null;
+async function getCachedWallEntries(): Promise<WallEntry[]> {
+  const now = Date.now();
+  if (_wallEntries && now - _wallEntries.at < WALL_TTL_MS) return _wallEntries.data;
+  const data = await buildWallEntries();
+  _wallEntries = { at: now, data };
+  return data;
+}
+
 /**
  * Veřejná zeď — VŠICHNI přispěvatelé, seřazení dle BTC ekvivalentu.
  * Bez položkového rozpisu (`items`) — ten se dotahuje lazy přes getWallItems(),
  * takže payload /api/stats zůstává malý i s rostoucím počtem dárců.
  */
 export async function getWall(): Promise<WallEntry[]> {
-  const entries = await buildWallEntries();
+  const entries = await getCachedWallEntries();
   return entries.map((e) => ({ ...e, items: undefined }));
 }
 
 /** Rozpis jednotlivých příspěvků jedné skupiny dle veřejného (soleného) id. */
 export async function getWallItems(id: string): Promise<WallItem[] | null> {
-  const entries = await buildWallEntries();
+  const entries = await getCachedWallEntries();
   return entries.find((e) => e.id === id)?.items ?? null;
 }
 

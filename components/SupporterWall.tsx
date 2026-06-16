@@ -3,10 +3,10 @@
 import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { formatBtc, formatCzk } from "@/lib/format";
-import { formatBtcAsFiat } from "@/lib/fiat";
+import { formatFiat } from "@/lib/fiat";
 import { useCampaignStats } from "./StatsProvider";
 import Reveal from "./Reveal";
-import Identicon from "./Identicon";
+import Avatar from "./Avatar";
 
 const TOP_N = 12;
 
@@ -37,21 +37,15 @@ export interface WallEntry {
   items?: WallItem[];
 }
 
-/** Avatar přispěvatele: vlastní obrázek (logo), jinak generativní identicon. */
-function Avatar({ entry }: { entry: WallEntry }) {
-  if (entry.imageUrl) {
-    // eslint-disable-next-line @next/next/no-img-element
-    return (
-      <img
-        src={entry.imageUrl}
-        alt={entry.name}
-        className="w-full h-full object-contain p-0.5"
-        style={{ background: entry.imageBg || "#ffffff" }}
-      />
-    );
-  }
+/** Avatar přispěvatele — tenký wrapper nad sdíleným <Avatar> (seed = veřejné id/jméno). */
+function EntryAvatar({ entry }: { entry: WallEntry }) {
   return (
-    <Identicon seed={entry.id || entry.name} name={entry.name} className="w-full h-full" />
+    <Avatar
+      imageUrl={entry.imageUrl}
+      imageBg={entry.imageBg}
+      seed={entry.id || entry.name}
+      name={entry.name}
+    />
   );
 }
 
@@ -78,15 +72,11 @@ export default function SupporterWall({
   // Položky detailu se dotahují lazy (zeď samotná je neveze).
   const [detailItems, setDetailItems] = useState<WallItem[] | null>(null);
 
-  // Orientační fiat ekvivalent aktuálním kurzem: v en „$X" (vč. symbolu),
-  // v cs „X Kč" (formatCzk vrací jen číslo, proto dopisujeme Kč).
-  const fiatOf = (entry: WallEntry): string | null => {
-    if (!stats) return null;
-    const btc = entry.amountBtc ?? entry.amount ?? 0;
-    return locale === "en"
-      ? `≈ ${formatBtcAsFiat(btc, stats, locale)}`
-      : `≈ ${formatCzk(btc * stats.btcCzkRate, locale)} Kč`;
-  };
+  // Orientační fiat ekvivalent aktuálním kurzem (en „$X" / cs „X Kč").
+  const fiatOf = (entry: WallEntry): string | null =>
+    stats
+      ? `≈ ${formatFiat(entry.amountBtc ?? entry.amount ?? 0, stats, locale)}`
+      : null;
 
   // Poslední přispívající — jen u skupin (víc plateb) a když se liší od názvu skupiny.
   const lastContribOf = (entry: WallEntry): string | null =>
@@ -176,7 +166,7 @@ export default function SupporterWall({
             style={mColor ? { boxShadow: `0 0 0 2px ${mColor}` } : undefined}
             title={entry.name}
           >
-            <Avatar entry={entry} />
+            <EntryAvatar entry={entry} />
           </div>
           <div className="min-w-0 flex-1">
             <div className="ui-display font-bold truncate">{entry.name}</div>
@@ -286,7 +276,7 @@ export default function SupporterWall({
                         style={{ boxShadow: `0 0 0 2px ${MEDAL_COLOR[place]}` }}
                         title={entry.name}
                       >
-                        <Avatar entry={entry} />
+                        <EntryAvatar entry={entry} />
                       </div>
                       <div className="ui-display font-bold text-sm sm:text-base truncate w-full mt-2">
                         {entry.name}
@@ -379,7 +369,7 @@ export default function SupporterWall({
 
               <div className="flex items-center gap-3 mb-1 pr-8">
                 <div className="w-10 h-10 shrink-0 overflow-hidden rounded-[var(--radius-sm)] ui-border">
-                  <Avatar entry={detail} />
+                  <EntryAvatar entry={detail} />
                 </div>
                 <div className="min-w-0">
                   <div className="ui-display font-bold truncate">{detail.name}</div>
@@ -406,7 +396,7 @@ export default function SupporterWall({
                           <span className="ui-muted font-normal">
                             {" "}·{" "}
                             {locale === "en" && stats
-                              ? formatBtcAsFiat(it.amountBtc, stats, locale)
+                              ? formatFiat(it.amountBtc, stats, locale)
                               : `${formatCzk(it.amount)} Kč`}
                           </span>
                         )}
