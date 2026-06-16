@@ -112,8 +112,9 @@
     "allContributions": "Všechny příspěvky",
     "contribution": "příspěvek",
     "repeatHint": "Přispívat můžeš i opakovaně — platby na stejný identifikátor se sčítají a posouvají tě výš na stupně vítězů.",
-    "groupHint": "Chcete přispívat jako skupina (firma, místní komunita)? Napište nám na",
-    "lastContributor": "naposledy"
+    "groupHint": "Přispíváte jako skupina (firma, místní komunita)? Přímo ve formuláři zaškrtněte „Přispívám jako skupina“ a přidejte vlastní logo i název.",
+    "lastContributor": "naposledy",
+    "groupHintCta": "Přejít na formulář →"
   },
   "about": {
     "title": "O projektu",
