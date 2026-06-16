@@ -42,7 +42,7 @@ export default function RecentDonations() {
       <h2 className="ui-eyebrow ui-muted mb-3">{t("title")}</h2>
       <ul className="space-y-2 max-w-md">
         {/* Probíhající platby — bez reálných dat, jen rozmazaný placeholder */}
-        {pending.map((p) => (
+        {pending.slice(0, 3).map((p) => (
           <li key={p.id} className="animate-rise flex items-center gap-3">
             <div className="w-8 h-8 shrink-0 rounded-[var(--radius-sm)] ui-border ui-soft animate-pulse" />
             <div className="min-w-0 flex-1 flex items-center gap-2">
