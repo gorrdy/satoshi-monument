@@ -295,6 +295,7 @@ export default function DonationForm({
           privateMessage,
           donorKey,
           locale,
+          group: groupMode,
           imageUrl: groupMode ? (imageUrl ?? undefined) : undefined,
           imageBg: groupMode && imageUrl ? imageBg : undefined,
         }),
