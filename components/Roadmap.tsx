@@ -10,6 +10,7 @@ interface Item {
   detail: string | null;
   dateLabel: string | null;
   status: string; // done | current | upcoming
+  linkUrl: string | null;
 }
 
 export default function Roadmap() {
@@ -71,23 +72,23 @@ export default function Roadmap() {
                 {!isFirst && (
                   <span
                     aria-hidden
-                    className="absolute top-[9px] left-0 w-1/2 h-0.5"
+                    className="absolute top-[11px] left-0 w-1/2 h-0.5"
                     style={{ background: leftAccent ? "var(--accent)" : "var(--line)" }}
                   />
                 )}
                 {!isLast && (
                   <span
                     aria-hidden
-                    className="absolute top-[9px] right-0 w-1/2 h-0.5"
+                    className="absolute top-[11px] right-0 w-1/2 h-0.5"
                     style={{ background: rightAccent ? "var(--accent)" : "var(--line)" }}
                   />
                 )}
-                {/* current marker = menší oranžový kruh ve STŘEDU mezi předchozím
-                    a tímto bodem (na levém okraji slotu), pulzující. */}
+                {/* pohyblivý PRŮBĚŽNÝ bod (menší, pulzující) ve středu mezi předchozím
+                    a aktuálním milníkem (na levém okraji slotu). */}
                 {currentBetween && (
                   <span
                     aria-hidden
-                    className="absolute left-0 top-[9px] -translate-x-1/2 -translate-y-1/2 z-20 w-3 h-3 rounded-full animate-pulse"
+                    className="absolute left-0 top-[11px] -translate-x-1/2 -translate-y-1/2 z-20 w-3.5 h-3.5 rounded-full animate-pulse"
                     style={{
                       background: "var(--accent)",
                       boxShadow:
@@ -95,24 +96,16 @@ export default function Roadmap() {
                     }}
                   />
                 )}
-                {/* řádek tečky na lince (h-5 drží zarovnání popisků) */}
-                <span className="relative z-10 h-5 flex items-center justify-center">
-                  {!currentBetween && (
-                    <span
-                      aria-hidden
-                      className={`rounded-full border-2 ${
-                        done ? "w-5 h-5" : "w-3 h-3"
-                      } ${current ? "animate-pulse" : ""}`}
-                      style={{
-                        background:
-                          done || current ? "var(--accent)" : "var(--bg)",
-                        borderColor: "var(--accent)",
-                        boxShadow: current
-                          ? "0 0 0 4px color-mix(in srgb, var(--accent) 25%, transparent)"
-                          : undefined,
-                      }}
-                    />
-                  )}
+                {/* MILNÍK — puntík vždy (na slotu), trochu větší. Done = plný, jinak obrys. */}
+                <span className="relative z-10 h-6 flex items-center justify-center">
+                  <span
+                    aria-hidden
+                    className="w-6 h-6 rounded-full border-2"
+                    style={{
+                      background: done ? "var(--accent)" : "var(--bg)",
+                      borderColor: "var(--accent)",
+                    }}
+                  />
                 </span>
                 {it.dateLabel && (
                   <div className="ui-eyebrow ui-muted mt-3">{it.dateLabel}</div>
@@ -122,7 +115,21 @@ export default function Roadmap() {
                     current ? "ui-accent" : done ? "" : "ui-muted"
                   }`}
                 >
-                  {it.title}
+                  {it.linkUrl ? (
+                    <a
+                      href={it.linkUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-inherit hover:underline"
+                    >
+                      {it.title}{" "}
+                      <span aria-hidden className="ui-accent">
+                        ↗
+                      </span>
+                    </a>
+                  ) : (
+                    it.title
+                  )}
                 </div>
                 {current && (
                   <div className="ui-eyebrow ui-accent mt-1">{t("now")}</div>
