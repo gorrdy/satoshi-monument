@@ -232,7 +232,8 @@ export default function SupporterWall({
   // pořadí na stupních: vlevo 2., uprostřed 1. (nejvyšší), vpravo 3. — i na mobilu.
   const PODIUM_ORDER = ["order-2", "order-1", "order-3"];
   // výška stupínku podle umístění (1. nejvyšší) — i na mobilu.
-  const PODIUM_H = ["h-20 sm:h-28", "h-14 sm:h-20", "h-10 sm:h-14"];
+  // 1. místo (zlatá) plná výška; 2. a 3. stejně vysoké ≈ polovina zlaté.
+  const PODIUM_H = ["h-20 sm:h-28", "h-10 sm:h-14", "h-10 sm:h-14"];
 
   return (
     <div className="w-full max-w-6xl mx-auto">
