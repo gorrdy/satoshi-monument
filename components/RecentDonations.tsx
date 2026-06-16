@@ -5,6 +5,7 @@ import { useCampaignStats } from "./StatsProvider";
 import Avatar from "./Avatar";
 import { formatSats, formatCzk } from "@/lib/format";
 import { formatFiat } from "@/lib/fiat";
+import { tierEmoji } from "@/lib/tier";
 import { timeAgo } from "@/lib/time";
 import type { Stats } from "./ProgressBar";
 
@@ -81,6 +82,7 @@ export default function RecentDonations() {
                 <span className="ui-display font-bold truncate">{d.name}</span>
                 <span className="ui-mono text-xs ui-accent font-bold ml-2">
                   {amountLabel(d, locale, stats)}
+                  {tierEmoji(d.amountBtc) && <span> {tierEmoji(d.amountBtc)}</span>}
                 </span>
                 <span
                   className={`ml-1.5 align-middle inline-block px-1.5 py-px rounded-[var(--radius-sm)] text-[10px] font-bold ${
