@@ -131,9 +131,6 @@ export default function Roadmap() {
                     it.title
                   )}
                 </div>
-                {current && (
-                  <div className="ui-eyebrow ui-accent mt-1">{t("now")}</div>
-                )}
                 {it.detail && (
                   <p className="text-xs ui-muted leading-relaxed mt-1">
                     {it.detail}
