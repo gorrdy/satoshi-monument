@@ -73,12 +73,39 @@ export async function GET(req: NextRequest) {
     where: { status: "confirmed", confirmedAt: { gte: since } },
   });
 
+  // Denní řada potvrzených příspěvků: počet + objem (sats) dle confirmedAt.
+  const confirmedDonations = await prisma.donation.findMany({
+    where: { status: "confirmed", confirmedAt: { gte: since } },
+    select: { confirmedAt: true, amountBtc: true },
+  });
+  const donMap = new Map<string, { count: number; sats: number }>();
+  for (let i = days - 1; i >= 0; i--) {
+    donMap.set(dayKey(new Date(Date.now() - i * 24 * 3600 * 1000)), {
+      count: 0,
+      sats: 0,
+    });
+  }
+  for (const dn of confirmedDonations) {
+    if (!dn.confirmedAt) continue;
+    const slot = donMap.get(dayKey(dn.confirmedAt));
+    if (slot) {
+      slot.count++;
+      slot.sats += Math.round((dn.amountBtc ?? 0) * 1e8);
+    }
+  }
+  const donationsPerDay = [...donMap.entries()].map(([day, s]) => ({
+    day,
+    count: s.count,
+    sats: s.sats,
+  }));
+
   return NextResponse.json({
     days,
     humanViews: human.length,
     botViews: bots.length,
     uniqueVisitors,
     perDay,
+    donationsPerDay,
     topReferrers,
     device: countBy(human, "device"),
     locale: countBy(human, "locale"),

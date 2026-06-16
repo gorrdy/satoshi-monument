@@ -8,6 +8,7 @@ interface Analytics {
   botViews: number;
   uniqueVisitors: number;
   perDay: { day: string; views: number; bots: number }[];
+  donationsPerDay: { day: string; count: number; sats: number }[];
   topReferrers: { referrer: string; count: number }[];
   device: Record<string, number>;
   locale: Record<string, number>;
@@ -19,6 +20,12 @@ const RANGES = [7, 30, 90];
 function pct(part: number, whole: number): string {
   if (!whole) return "0 %";
   return ((part / whole) * 100).toFixed(1) + " %";
+}
+
+function fmtSats(s: number): string {
+  if (s >= 1_000_000) return (s / 1_000_000).toFixed(s >= 10_000_000 ? 0 : 1) + "M";
+  if (s >= 1_000) return Math.round(s / 1_000) + "k";
+  return String(s);
 }
 
 export default function AdminAnalytics() {
@@ -41,6 +48,20 @@ export default function AdminAnalytics() {
 
   const maxDay = Math.max(1, ...(data?.perDay.map((p) => p.views) ?? [1]));
   const maxRef = Math.max(1, ...(data?.topReferrers.map((r) => r.count) ?? [1]));
+
+  // Dvouosý graf příspěvků: sloupce = počet (levá osa), čára = objem v sats (pravá osa).
+  const dpd = data?.donationsPerDay ?? [];
+  const maxCount = Math.max(1, ...dpd.map((p) => p.count));
+  const maxSats = Math.max(1, ...dpd.map((p) => p.sats));
+  const volPoints = dpd
+    .map((p, i) => {
+      const x = dpd.length > 1 ? (i / (dpd.length - 1)) * 100 : 50;
+      const y = 100 - (p.sats / maxSats) * 100;
+      return `${x},${y}`;
+    })
+    .join(" ");
+  const totalCount = dpd.reduce((s, p) => s + p.count, 0);
+  const totalSats = dpd.reduce((s, p) => s + p.sats, 0);
 
   const Kpi = ({ label, value, hint }: { label: string; value: string; hint?: string }) => (
     <div className="rounded-xl bg-white/5 border border-white/10 p-4">
@@ -129,6 +150,65 @@ export default function AdminAnalytics() {
                   title={`${p.day}: ${p.views} návštěv${p.bots ? ` (+${p.bots} botů)` : ""}`}
                 />
               ))}
+            </div>
+          </div>
+
+          {/* Příspěvky po dnech — dvouosý: počet (sloupce) + objem v sats (čára) */}
+          <div className="rounded-xl bg-white/5 border border-white/10 p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="text-xs uppercase tracking-wider text-white/50">
+                Příspěvky po dnech
+              </div>
+              <div className="flex items-center gap-3 text-[11px] text-white/50">
+                <span className="inline-flex items-center gap-1">
+                  <span className="w-2.5 h-2.5 rounded-sm bg-white/30" /> počet
+                </span>
+                <span className="inline-flex items-center gap-1">
+                  <span className="w-3 h-[2px] bg-accent" /> objem (sats)
+                </span>
+              </div>
+            </div>
+            <div className="relative h-40">
+              <div className="absolute left-0 -top-0.5 text-[10px] text-white/40">
+                {maxCount}
+              </div>
+              <div className="absolute right-0 -top-0.5 text-[10px] text-accent">
+                {fmtSats(maxSats)}
+              </div>
+              {/* sloupce: počet */}
+              <div className="absolute inset-0 flex items-end gap-[2px]">
+                {dpd.map((p) => (
+                  <div
+                    key={p.day}
+                    className="flex-1 bg-white/25 hover:bg-white/40 rounded-t transition-colors"
+                    style={{ height: `${p.count ? Math.max(2, (p.count / maxCount) * 100) : 0}%` }}
+                    title={`${p.day}: ${p.count} příspěvků · ${fmtSats(p.sats)} sats`}
+                  />
+                ))}
+              </div>
+              {/* čára: objem */}
+              <svg
+                className="absolute inset-0 w-full h-full"
+                viewBox="0 0 100 100"
+                preserveAspectRatio="none"
+                aria-hidden
+              >
+                <polyline
+                  points={volPoints}
+                  fill="none"
+                  stroke="var(--accent)"
+                  strokeWidth="1.5"
+                  vectorEffect="non-scaling-stroke"
+                />
+              </svg>
+            </div>
+            <div className="flex justify-between text-[10px] text-white/40 mt-1">
+              <span>{dpd[0]?.day}</span>
+              <span>{dpd[dpd.length - 1]?.day}</span>
+            </div>
+            <div className="text-[11px] text-white/50 mt-2">
+              Za období: <strong>{totalCount}</strong> příspěvků ·{" "}
+              <strong>{fmtSats(totalSats)}</strong> sats
             </div>
           </div>
 
