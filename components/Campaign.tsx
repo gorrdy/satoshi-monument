@@ -44,7 +44,7 @@ export default function Campaign() {
                 {t("wall.groupHint")}{" "}
                 <a
                   href="mailto:monument@jednadvacet.org"
-                  className="ui-link font-medium"
+                  className="font-medium underline underline-offset-2 transition-opacity hover:opacity-70"
                 >
                   monument@jednadvacet.org
                 </a>
