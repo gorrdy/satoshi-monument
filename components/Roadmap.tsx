@@ -52,7 +52,6 @@ export default function Roadmap() {
           {items.map((it, i) => {
             const done = it.status === "done";
             const current = it.status === "current";
-            const reached = done || current;
             const isFirst = i === 0;
             const isLast = i === items.length - 1;
             // Oranžová čára vede od začátku po AKTUÁLNÍ bod a tam končí:
@@ -79,20 +78,26 @@ export default function Roadmap() {
                     style={{ background: rightAccent ? "var(--accent)" : "var(--line)" }}
                   />
                 )}
-                {/* tečka */}
-                <span
-                  aria-hidden
-                  className={`relative z-10 w-5 h-5 rounded-full border-2 ${
-                    current ? "animate-pulse" : ""
-                  }`}
-                  style={{
-                    background: reached ? "var(--accent)" : "var(--bg)",
-                    borderColor: reached ? "var(--accent)" : "var(--line)",
-                    boxShadow: current
-                      ? "0 0 0 4px color-mix(in srgb, var(--accent) 25%, transparent)"
-                      : undefined,
-                  }}
-                />
+                {/* tečka — done = velký plný kruh; not-done = menší oranžový */}
+                <span className="relative z-10 h-5 flex items-center justify-center">
+                  <span
+                    aria-hidden
+                    className={`rounded-full border-2 ${
+                      done ? "w-5 h-5" : "w-3 h-3"
+                    } ${current ? "animate-pulse" : ""}`}
+                    style={{
+                      background: done
+                        ? "var(--accent)"
+                        : current
+                          ? "var(--accent)"
+                          : "var(--bg)",
+                      borderColor: "var(--accent)",
+                      boxShadow: current
+                        ? "0 0 0 4px color-mix(in srgb, var(--accent) 25%, transparent)"
+                        : undefined,
+                    }}
+                  />
+                </span>
                 {it.dateLabel && (
                   <div className="ui-eyebrow ui-muted mt-3">{it.dateLabel}</div>
                 )}
