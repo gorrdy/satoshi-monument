@@ -25,6 +25,17 @@ export default function Roadmap() {
 
   if (items.length === 0) return null;
 
+  // Index aktuálního bodu: „current", jinak poslední „done", jinak -1.
+  const currentIndex = (() => {
+    const c = items.findIndex((x) => x.status === "current");
+    if (c >= 0) return c;
+    let last = -1;
+    items.forEach((x, i) => {
+      if (x.status === "done") last = i;
+    });
+    return last;
+  })();
+
   return (
     <section id="roadmap" className="px-4 py-20 sm:py-24 ui-border-b">
       <Reveal className="max-w-2xl mx-auto text-center mb-10">
@@ -41,24 +52,33 @@ export default function Roadmap() {
           {items.map((it, i) => {
             const done = it.status === "done";
             const current = it.status === "current";
-            const reached = done || current; // levý spojovací segment je „splněný"
+            const reached = done || current;
             const isFirst = i === 0;
             const isLast = i === items.length - 1;
+            // Oranžová čára vede od začátku po AKTUÁLNÍ bod a tam končí:
+            //  levá půlka u bodu i je oranžová, když i ≤ current; pravá, když i < current.
+            const leftAccent = i <= currentIndex;
+            const rightAccent = i < currentIndex;
             return (
               <li
                 key={it.id}
                 className="relative flex flex-col items-center text-center flex-1 min-w-[130px] sm:min-w-0 px-2"
               >
-                {/* spojovací čára (za tečkou) */}
-                <span
-                  aria-hidden
-                  className="absolute top-[9px] h-0.5"
-                  style={{
-                    left: isFirst ? "50%" : 0,
-                    right: isLast ? "50%" : 0,
-                    background: reached ? "var(--accent)" : "var(--line)",
-                  }}
-                />
+                {/* spojovací čára — levá a pravá půlka zvlášť (za tečkou) */}
+                {!isFirst && (
+                  <span
+                    aria-hidden
+                    className="absolute top-[9px] left-0 w-1/2 h-0.5"
+                    style={{ background: leftAccent ? "var(--accent)" : "var(--line)" }}
+                  />
+                )}
+                {!isLast && (
+                  <span
+                    aria-hidden
+                    className="absolute top-[9px] right-0 w-1/2 h-0.5"
+                    style={{ background: rightAccent ? "var(--accent)" : "var(--line)" }}
+                  />
+                )}
                 {/* tečka */}
                 <span
                   aria-hidden
