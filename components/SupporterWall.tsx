@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { formatBtc, formatCzk } from "@/lib/format";
 import { formatFiat } from "@/lib/fiat";
-import { tierEmoji, tierGlow } from "@/lib/tier";
 import { useCampaignStats } from "./StatsProvider";
 import Reveal from "./Reveal";
 import Avatar from "./Avatar";
@@ -138,14 +137,11 @@ export default function SupporterWall({
     const medal = rank < 3 ? rank : -1;
     const mColor = medal >= 0 ? MEDAL_COLOR[medal] : null;
     const multi = (entry.count ?? 1) > 1;
-    const glow = tierGlow(entry.amountBtc ?? entry.amount);
-    const badge = tierEmoji(entry.amountBtc ?? entry.amount);
     return (
       <Reveal
         key={entry.id}
         delay={delay}
         className={`ui-card p-5 ${widthClass} flex flex-col relative overflow-hidden`}
-        style={glow ? { boxShadow: glow } : undefined}
       >
         {medal >= 0 ? (
           <>
@@ -176,7 +172,6 @@ export default function SupporterWall({
             <div className="ui-display font-bold truncate">{entry.name}</div>
             <div className="ui-mono text-xs ui-accent font-bold">
               {amountLabel(entry)}
-              {badge && <span title="velký příspěvek"> {badge}</span>}
               {entry.count && entry.count > 1 ? (
                 <span className="ui-muted font-normal"> · {entry.count}×</span>
               ) : null}
@@ -254,8 +249,6 @@ export default function SupporterWall({
             <div className="flex flex-row items-end justify-center gap-2 sm:gap-4 mb-12">
               {top3.map((entry, place) => {
                 const multi = (entry.count ?? 1) > 1;
-                const glow = tierGlow(entry.amountBtc ?? entry.amount);
-                const badge = tierEmoji(entry.amountBtc ?? entry.amount);
                 return (
                   <div
                     key={entry.id}
@@ -268,7 +261,6 @@ export default function SupporterWall({
                       }`}
                       onClick={multi ? () => setDetail(entry) : undefined}
                       title={multi ? t("showAll") : undefined}
-                      style={glow ? { boxShadow: glow } : undefined}
                     >
                       <span
                         aria-hidden
@@ -297,7 +289,6 @@ export default function SupporterWall({
                       )}
                       <div className="ui-mono text-[11px] sm:text-xs ui-accent font-bold break-all mt-0.5">
                         {amountLabel(entry)}
-                        {badge && <span title="velký příspěvek"> {badge}</span>}
                         {multi && (
                           <span className="ui-muted font-normal"> · {entry.count}×</span>
                         )}
