@@ -8,7 +8,6 @@ interface Analytics {
   botViews: number;
   uniqueVisitors: number;
   perDay: { day: string; views: number; bots: number }[];
-  donationsPerDay: { day: string; count: number; sats: number }[];
   topReferrers: { referrer: string; count: number }[];
   device: Record<string, number>;
   locale: Record<string, number>;
@@ -28,10 +27,18 @@ function fmtSats(s: number): string {
   return String(s);
 }
 
+interface DonBuckets {
+  hours: number;
+  buckets: { t: string; count: number; sats: number }[];
+}
+
 export default function AdminAnalytics() {
   const [days, setDays] = useState(30);
   const [data, setData] = useState<Analytics | null>(null);
   const [loading, setLoading] = useState(true);
+  // Příspěvky po 15 min — vlastní okno (hodiny): 24 / 48 / 168.
+  const [donHours, setDonHours] = useState(24);
+  const [don, setDon] = useState<DonBuckets | null>(null);
 
   const load = useCallback(async (d: number) => {
     setLoading(true);
@@ -46,11 +53,19 @@ export default function AdminAnalytics() {
     load(days);
   }, [days, load]);
 
+  // Bucketovaná řada příspěvků (15 min) dle zvoleného okna.
+  useEffect(() => {
+    fetch(`/api/admin/analytics/donations?hours=${donHours}`, { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => setDon(d as DonBuckets))
+      .catch(() => {});
+  }, [donHours]);
+
   const maxDay = Math.max(1, ...(data?.perDay.map((p) => p.views) ?? [1]));
   const maxRef = Math.max(1, ...(data?.topReferrers.map((r) => r.count) ?? [1]));
 
   // Dvouosý graf příspěvků: sloupce = počet (levá osa), čára = objem v sats (pravá osa).
-  const dpd = data?.donationsPerDay ?? [];
+  const dpd = don?.buckets ?? [];
   const maxCount = Math.max(1, ...dpd.map((p) => p.count));
   const maxSats = Math.max(1, ...dpd.map((p) => p.sats));
   const volPoints = dpd
@@ -62,6 +77,15 @@ export default function AdminAnalytics() {
     .join(" ");
   const totalCount = dpd.reduce((s, p) => s + p.count, 0);
   const totalSats = dpd.reduce((s, p) => s + p.sats, 0);
+  const fmtT = (iso?: string) =>
+    iso
+      ? new Date(iso).toLocaleString("cs-CZ", {
+          day: "numeric",
+          month: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        })
+      : "";
 
   const Kpi = ({ label, value, hint }: { label: string; value: string; hint?: string }) => (
     <div className="rounded-xl bg-white/5 border border-white/10 p-4">
@@ -155,17 +179,38 @@ export default function AdminAnalytics() {
 
           {/* Příspěvky po dnech — dvouosý: počet (sloupce) + objem v sats (čára) */}
           <div className="rounded-xl bg-white/5 border border-white/10 p-4">
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between mb-3 gap-2 flex-wrap">
               <div className="text-xs uppercase tracking-wider text-white/50">
-                Příspěvky po dnech
+                Příspěvky po čtvrthodinách
               </div>
-              <div className="flex items-center gap-3 text-[11px] text-white/50">
-                <span className="inline-flex items-center gap-1">
-                  <span className="w-2.5 h-2.5 rounded-sm bg-white/30" /> počet
-                </span>
-                <span className="inline-flex items-center gap-1">
-                  <span className="w-3 h-[2px] bg-accent" /> objem (sats)
-                </span>
+              <div className="flex items-center gap-3 flex-wrap">
+                <div className="flex gap-1">
+                  {([
+                    [24, "24 h"],
+                    [48, "48 h"],
+                    [168, "7 dní"],
+                  ] as const).map(([h, lbl]) => (
+                    <button
+                      key={h}
+                      onClick={() => setDonHours(h)}
+                      className={`px-2 py-0.5 rounded text-xs ${
+                        donHours === h
+                          ? "bg-white/15 text-white"
+                          : "text-white/50 hover:text-white"
+                      }`}
+                    >
+                      {lbl}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex items-center gap-3 text-[11px] text-white/50">
+                  <span className="inline-flex items-center gap-1">
+                    <span className="w-2.5 h-2.5 rounded-sm bg-white/30" /> počet
+                  </span>
+                  <span className="inline-flex items-center gap-1">
+                    <span className="w-3 h-[2px] bg-accent" /> objem (sats)
+                  </span>
+                </div>
               </div>
             </div>
             <div className="relative h-40">
@@ -179,10 +224,10 @@ export default function AdminAnalytics() {
               <div className="absolute inset-0 flex items-end gap-[2px]">
                 {dpd.map((p) => (
                   <div
-                    key={p.day}
+                    key={p.t}
                     className="flex-1 bg-white/25 hover:bg-white/40 rounded-t transition-colors"
                     style={{ height: `${p.count ? Math.max(2, (p.count / maxCount) * 100) : 0}%` }}
-                    title={`${p.day}: ${p.count} příspěvků · ${fmtSats(p.sats)} sats`}
+                    title={`${fmtT(p.t)}: ${p.count} příspěvků · ${fmtSats(p.sats)} sats`}
                   />
                 ))}
               </div>
@@ -203,8 +248,8 @@ export default function AdminAnalytics() {
               </svg>
             </div>
             <div className="flex justify-between text-[10px] text-white/40 mt-1">
-              <span>{dpd[0]?.day}</span>
-              <span>{dpd[dpd.length - 1]?.day}</span>
+              <span>{fmtT(dpd[0]?.t)}</span>
+              <span>{fmtT(dpd[dpd.length - 1]?.t)}</span>
             </div>
             <div className="text-[11px] text-white/50 mt-2">
               Za období: <strong>{totalCount}</strong> příspěvků ·{" "}
