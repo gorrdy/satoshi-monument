@@ -148,6 +148,8 @@ export default function DonationForm({
   const use21Logo = () => {
     setImageUrl("/partners/jednadvacet-21.webp");
     setImageBg("#000000");
+    // Předvyplň šablonu identifikátoru lokální skupiny (přepíše si „mesto").
+    setDonorKey((k) => (k.trim() ? k : "jednadvacet-mesto"));
   };
   // Fiat dle locale: en → USD, cs → CZK. Jen orientační ekvivalent, ne platební měna.
   const fc = fiatCode(locale); // "USD" | "CZK"
