@@ -216,6 +216,9 @@ export default function SupporterWall({
   // Stupně vítězů jen ve výchozím pohledu (ne při hledání) a když je aspoň 3 přispěvatelé.
   const showPodium = !q && wall.length >= 3;
   const top3 = showPodium ? wall.slice(0, 3) : [];
+  // Když má „posledního přispívajícího" aspoň jeden z top 3, rezervujeme ten řádek
+  // u všech tří → karty mají stejnou výšku (jinak by nižší příčka mohla „přerůst").
+  const top3HasLast = top3.some((e) => lastContribOf(e));
   const gridList = q
     ? filtered
     : showPodium
@@ -229,7 +232,8 @@ export default function SupporterWall({
   // pořadí na stupních: vlevo 2., uprostřed 1. (nejvyšší), vpravo 3. — i na mobilu.
   const PODIUM_ORDER = ["order-2", "order-1", "order-3"];
   // výška stupínku podle umístění (1. nejvyšší) — i na mobilu.
-  const PODIUM_H = ["h-20 sm:h-28", "h-14 sm:h-20", "h-10 sm:h-14"];
+  // 1. místo (zlatá) plná výška; 2. a 3. stejně vysoké ≈ polovina zlaté.
+  const PODIUM_H = ["h-20 sm:h-28", "h-10 sm:h-14", "h-10 sm:h-14"];
 
   return (
     <div className="w-full max-w-6xl mx-auto">
@@ -261,8 +265,14 @@ export default function SupporterWall({
                     key={entry.id}
                     className={`flex-1 min-w-0 max-w-[200px] sm:max-w-[290px] flex flex-col ${PODIUM_ORDER[place]}`}
                   >
-                    {/* Kompaktní karta: medaile, avatar nahoře, jméno, částka */}
-                    <div className="ui-card relative overflow-hidden p-2.5 sm:p-4 flex flex-col items-center text-center">
+                    {/* Kompaktní karta — jednotná výška (medaile, avatar, jméno, částka, fiat) */}
+                    <div
+                      className={`ui-card relative overflow-hidden p-2.5 sm:p-4 flex flex-col items-center text-center ${
+                        multi ? "cursor-pointer press" : ""
+                      }`}
+                      onClick={multi ? () => setDetail(entry) : undefined}
+                      title={multi ? t("showAll") : undefined}
+                    >
                       <span
                         aria-hidden
                         className="absolute left-0 right-0 top-0 h-1"
@@ -281,27 +291,22 @@ export default function SupporterWall({
                       <div className="ui-display font-bold text-sm sm:text-base truncate w-full mt-2">
                         {entry.name}
                       </div>
-                      {lastContribOf(entry) && (
+                      {top3HasLast && (
                         <div className="text-[10px] sm:text-[11px] ui-muted truncate w-full">
-                          {t("lastContributor")}: {lastContribOf(entry)}
+                          {lastContribOf(entry)
+                            ? `${t("lastContributor")}: ${lastContribOf(entry)}`
+                            : " "}
                         </div>
                       )}
                       <div className="ui-mono text-[11px] sm:text-xs ui-accent font-bold break-all mt-0.5">
                         {amountLabel(entry)}
+                        {multi && (
+                          <span className="ui-muted font-normal"> · {entry.count}×</span>
+                        )}
                       </div>
-                      {fiatOf(entry) && (
-                        <div className="ui-mono text-[10px] sm:text-[11px] ui-muted">
-                          {fiatOf(entry)}
-                        </div>
-                      )}
-                      {multi && (
-                        <button
-                          onClick={() => setDetail(entry)}
-                          className="ui-link ui-eyebrow text-[10px] sm:text-xs mt-1"
-                        >
-                          {entry.count}× →
-                        </button>
-                      )}
+                      <div className="ui-mono text-[10px] sm:text-[11px] ui-muted">
+                        {fiatOf(entry) ?? " "}
+                      </div>
                     </div>
                     {/* Stupínek */}
                     <div

@@ -49,6 +49,7 @@ export async function POST(req: NextRequest) {
         dateLabel: (body.dateLabel ?? "").toString().trim().slice(0, 60) || null,
         status,
         linkUrl,
+        linkBlank: body.linkBlank !== false, // default true
       },
     });
     return NextResponse.json({ ok: true });

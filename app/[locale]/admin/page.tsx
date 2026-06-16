@@ -117,12 +117,20 @@ export default function AdminPage() {
     status: string;
     order: number;
     linkUrl: string | null;
+    linkBlank: boolean;
   };
   const [road, setRoad] = useState<RoadItem[]>([]);
   const [roadDraft, setRoadDraft] = useState<
     Record<
       string,
-      { title?: string; detail?: string; dateLabel?: string; status?: string; linkUrl?: string }
+      {
+        title?: string;
+        detail?: string;
+        dateLabel?: string;
+        status?: string;
+        linkUrl?: string;
+        linkBlank?: boolean;
+      }
     >
   >({});
 
@@ -894,6 +902,7 @@ export default function AdminPage() {
               const dateLabel = d.dateLabel ?? it.dateLabel ?? "";
               const status = d.status ?? it.status;
               const link = d.linkUrl ?? it.linkUrl ?? "";
+              const blank = d.linkBlank ?? it.linkBlank ?? true;
               const set = (
                 patch: Partial<{
                   title: string;
@@ -901,6 +910,7 @@ export default function AdminPage() {
                   dateLabel: string;
                   status: string;
                   linkUrl: string;
+                  linkBlank: boolean;
                 }>,
               ) => setRoadDraft((s) => ({ ...s, [it.id]: { ...s[it.id], ...patch } }));
               return (
@@ -949,7 +959,16 @@ export default function AdminPage() {
                     <button
                       onClick={() =>
                         roadAction(
-                          { action: "save", id: it.id, title, detail, dateLabel, status, linkUrl: link },
+                          {
+                            action: "save",
+                            id: it.id,
+                            title,
+                            detail,
+                            dateLabel,
+                            status,
+                            linkUrl: link,
+                            linkBlank: blank,
+                          },
                           it.id,
                         )
                       }
@@ -971,12 +990,23 @@ export default function AdminPage() {
                     placeholder="Popis (volitelné)"
                     className="w-full bg-white/10 border border-white/10 rounded px-2 py-1 text-sm text-white placeholder:text-white/30"
                   />
-                  <input
-                    value={link}
-                    onChange={(e) => set({ linkUrl: e.target.value })}
-                    placeholder="Odkaz (volitelné, https://… — proklik z názvu)"
-                    className="w-full bg-white/10 border border-white/10 rounded px-2 py-1 text-sm text-white placeholder:text-white/30"
-                  />
+                  <div className="flex flex-wrap items-center gap-2">
+                    <input
+                      value={link}
+                      onChange={(e) => set({ linkUrl: e.target.value })}
+                      placeholder="Odkaz (volitelné, https://… — proklik z názvu)"
+                      className="flex-1 min-w-[12rem] bg-white/10 border border-white/10 rounded px-2 py-1 text-sm text-white placeholder:text-white/30"
+                    />
+                    <label className="flex items-center gap-1.5 text-xs text-white/60 cursor-pointer select-none shrink-0">
+                      <input
+                        type="checkbox"
+                        checked={blank}
+                        onChange={(e) => set({ linkBlank: e.target.checked })}
+                        className="accent-[var(--accent)]"
+                      />
+                      otevřít v novém okně
+                    </label>
+                  </div>
                 </div>
               );
             })}

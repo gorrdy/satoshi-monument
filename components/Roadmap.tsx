@@ -11,6 +11,7 @@ interface Item {
   dateLabel: string | null;
   status: string; // done | current | upcoming
   linkUrl: string | null;
+  linkBlank: boolean;
 }
 
 export default function Roadmap() {
@@ -118,14 +119,19 @@ export default function Roadmap() {
                   {it.linkUrl ? (
                     <a
                       href={it.linkUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      target={it.linkBlank ? "_blank" : undefined}
+                      rel={it.linkBlank ? "noopener noreferrer" : undefined}
                       className="text-inherit hover:underline"
                     >
-                      {it.title}{" "}
-                      <span aria-hidden className="ui-accent">
-                        ↗
-                      </span>
+                      {it.title}
+                      {it.linkBlank && (
+                        <>
+                          {" "}
+                          <span aria-hidden className="ui-accent">
+                            ↗
+                          </span>
+                        </>
+                      )}
                     </a>
                   ) : (
                     it.title
