@@ -79,3 +79,17 @@ model FioPayment {
 
   @@index([status])
 }
+
+// Roadmapa / checkpointy sbírky (admin je spravuje, veřejně se zobrazují).
+model RoadmapItem {
+  id        String   @id @default(cuid())
+  title     String
+  detail    String? // volitelný popis
+  dateLabel String? // přibližné datum/termín (volný text, např. „Q3 2026")
+  status    String   @default("upcoming") // done | current | upcoming
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([order])
+}

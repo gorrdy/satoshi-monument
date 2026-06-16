@@ -6,6 +6,7 @@ import { useLocaleSwitch } from "@/components/I18nProvider";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import Campaign from "@/components/Campaign";
+import Roadmap from "@/components/Roadmap";
 import DonationWidget from "@/components/DonationWidget";
 import InstallationsCarousel from "@/components/InstallationsCarousel";
 import HeroStats from "@/components/HeroStats";
@@ -97,6 +98,9 @@ export default function HomeContent() {
 
       {/* Sbírka (progress) a zeď přispěvatelů */}
       <Campaign />
+
+      {/* Roadmapa / kde aktuálně jsme */}
+      <Roadmap />
 
       {/* Metropole, kde socha už stojí */}
       <section id="cities" className="px-4 py-20 sm:py-24 ui-border-b">

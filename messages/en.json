@@ -234,5 +234,11 @@
     "title": "Recent contributions",
     "empty": "No contributions yet",
     "inProgress": "payment in progress"
+  },
+  "roadmap": {
+    "eyebrow": "Roadmap",
+    "title": "Where we are heading",
+    "subtitle": "What is done and what lies ahead.",
+    "now": "now"
   }
 }
