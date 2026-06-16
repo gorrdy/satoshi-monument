@@ -38,7 +38,8 @@
     "donors": "přispěvatelů",
     "rate": "kurz",
     "goalExplainer": "Cíl je 1 BTC. Stačí, aby 2 000 lidí poslalo 50 000 sats — a socha je naše.",
-    "approxFiat": "≈ {amount}"
+    "approxFiat": "≈ {amount}",
+    "overflowNote": "Vybíráme i nad rámec cíle — přebytek pokryje poplatky, clo, dopravu a instalaci. Překročení nevadí a přispívat jde i po dosažení cíle."
   },
   "form": {
     "title": "Přispět na sochu",
@@ -104,7 +105,9 @@
     "showAll": "Zobrazit všechny příspěvky",
     "allContributions": "Všechny příspěvky",
     "contribution": "příspěvek",
-    "repeatHint": "Přispívat můžeš i opakovaně — platby na stejný identifikátor se sčítají a posouvají tě výš na stupně vítězů."
+    "repeatHint": "Přispívat můžeš i opakovaně — platby na stejný identifikátor se sčítají a posouvají tě výš na stupně vítězů.",
+    "groupHint": "Chcete přispívat jako skupina (firma, místní komunita)? Napište nám na",
+    "lastContributor": "naposledy"
   },
   "about": {
     "title": "O projektu",

@@ -38,7 +38,8 @@
     "donors": "supporters",
     "rate": "rate",
     "goalExplainer": "The goal is 1 BTC. If 2,000 people each send 50,000 sats — the statue is ours.",
-    "approxFiat": "≈ {amount}"
+    "approxFiat": "≈ {amount}",
+    "overflowNote": "We welcome contributions beyond the goal — the surplus covers fees, customs, shipping and installation. Going over is fine, and you can keep contributing even after the goal is reached."
   },
   "form": {
     "title": "Donate to the statue",
@@ -104,7 +105,9 @@
     "showAll": "Show all contributions",
     "allContributions": "All contributions",
     "contribution": "contribution",
-    "repeatHint": "You can contribute repeatedly — payments under the same identifier add up and move you higher on the podium."
+    "repeatHint": "You can contribute repeatedly — payments under the same identifier add up and move you higher on the podium.",
+    "groupHint": "Want to contribute as a group (company, local community)? Write to us at",
+    "lastContributor": "latest"
   },
   "about": {
     "title": "About the project",

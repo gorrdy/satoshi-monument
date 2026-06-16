@@ -74,7 +74,8 @@ export interface WallItem {
 
 export interface WallEntry {
   id: string;
-  name: string;
+  name: string; // zobrazené jméno skupiny (profil nebo poslední zadané)
+  lastContributor: string | null; // poslední přispívající (raw jméno poslední platby)
   currency: string; // "BTC" | "CZK" | "MIX"
   amount: number; // zobrazená částka v dané měně (u MIX = BTC ekvivalent)
   amountBtc: number; // celkový BTC ekvivalent (pro řazení)
@@ -190,6 +191,8 @@ async function buildWallEntries(): Promise<WallEntry[]> {
     entries.push({
       id: publicGroupId(key),
       name,
+      // poslední přispívající = raw jméno poslední platby (užitečné u skupin/profilů)
+      lastContributor: latest.name,
       currency,
       amount,
       amountBtc: totalBtc,
