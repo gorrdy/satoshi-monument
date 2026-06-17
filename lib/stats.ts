@@ -149,13 +149,15 @@ async function buildWallEntries(): Promise<WallEntry[]> {
   const entries: WallEntry[] = [];
   for (const [key, list] of groups) {
     // Řazení podle času ODESLÁNÍ (createdAt) → na zdi se ukáže POSLEDNÍ zadané
-    // jméno/nickname, poslední neprázdný vzkaz a poslední nastavené logo.
+    // jméno/nickname a poslední neprázdný vzkaz. Logo se naopak bere z PRVNÍ platby,
+    // která ho nastavila — pozdější dárce pod stejným identifikátorem už avatar
+    // skupiny nepřebije (profil identifikátoru má i tak přednost, viz níže).
     const sorted = [...list].sort(
       (a, b) => a.createdAt.getTime() - b.createdAt.getTime(),
     );
     const latest = sorted[sorted.length - 1];
     const lastMsg = [...sorted].reverse().find((r) => r.publicMessage)?.publicMessage ?? null;
-    const imgRow = [...sorted].reverse().find((r) => r.imageUrl);
+    const imgRow = sorted.find((r) => r.imageUrl); // první nastavené logo vyhrává
     let name = latest.name;
     let imageUrl = imgRow?.imageUrl ?? null;
     let imageBg = imgRow?.imageBg ?? null;
@@ -300,7 +302,7 @@ export async function getRecent(limit = 10): Promise<RecentDonation[]> {
   if (needKeys.length) {
     const logoRows = await prisma.donation.findMany({
       where: { donorKey: { in: needKeys }, imageUrl: { not: null } },
-      orderBy: { createdAt: "desc" }, // nejnovější nastavené logo vyhrává
+      orderBy: { createdAt: "asc" }, // první nastavené logo vyhrává (nejde přebít pozdějším darem)
       select: { donorKey: true, imageUrl: true, imageBg: true },
     });
     for (const lr of logoRows) {

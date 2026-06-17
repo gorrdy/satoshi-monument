@@ -30,8 +30,9 @@ export default function ProgressBar({ stats }: { stats: Stats | null }) {
   const threshold = goalReached && goalBtc > 0 ? (1 / goalBtc) * 100 : 100; // poloha 1 BTC na lajně
   const basePct = Math.min(percent, threshold);
   const overPct = Math.max(0, percent - threshold);
-  // Část „nad 1 BTC" zelenou — u sbírek intuitivní „bonus/v plusu", kontrast s oranžovou.
-  const OVER_BG = "#22c55e";
+  // Část „nad 1 BTC" střídavým šrafovaným vzorem (accent-2) — odliší i v tématu, kde accent==accent-2.
+  const OVER_BG =
+    "repeating-linear-gradient(45deg, var(--accent-2), var(--accent-2) 7px, color-mix(in srgb, var(--accent-2) 60%, #000) 7px, color-mix(in srgb, var(--accent-2) 60%, #000) 14px)";
 
   return (
     <div className="w-full">
@@ -51,31 +52,41 @@ export default function ProgressBar({ stats }: { stats: Stats | null }) {
         <div className="text-right">
           <div className="ui-eyebrow ui-muted mb-1">{t("goal")}</div>
           <div className="ui-mono text-2xl font-bold">{formatBtc(goalBtc)} BTC</div>
+          {goalReached && (
+            <a
+              href={`/${locale}/pravidla#vic`}
+              className="ui-eyebrow ui-link inline-block mt-1"
+            >
+              {t("whyExtended", { goal: formatBtc(goalBtc) })} →
+            </a>
+          )}
         </div>
       </div>
 
-      <div className="relative h-8 w-full ui-border ui-soft overflow-hidden rounded-[var(--radius-sm)]">
-        {/* základ: 0 → 1 BTC */}
-        <div
-          className="absolute inset-y-0 left-0 transition-[width] duration-1000 ease-out"
-          style={{ width: `${Math.max(2, basePct)}%`, background: "var(--accent)" }}
-        />
-        {/* nad 1 BTC (šrafovaně, na náklady) */}
-        {overPct > 0 && (
+      <div className="relative">
+        <div className="relative h-8 w-full ui-border ui-soft overflow-hidden rounded-[var(--radius-sm)]">
+          {/* základ: 0 → 1 BTC */}
           <div
-            className="absolute inset-y-0 transition-[width] duration-1000 ease-out"
-            style={{ left: `${threshold}%`, width: `${overPct}%`, background: OVER_BG }}
-            title={t("overLabel")}
+            className="absolute inset-y-0 left-0 transition-[width] duration-1000 ease-out"
+            style={{ width: `${Math.max(2, basePct)}%`, background: "var(--accent)" }}
           />
-        )}
-        {/* značka hranice 1 BTC */}
-        {goalReached && (
-          <div
-            aria-hidden
-            className="absolute inset-y-0"
-            style={{ left: `${threshold}%`, width: "2px", background: "rgba(0,0,0,0.5)" }}
-          />
-        )}
+          {/* nad 1 BTC (šrafovaně, na náklady) */}
+          {overPct > 0 && (
+            <div
+              className="absolute inset-y-0 transition-[width] duration-1000 ease-out"
+              style={{ left: `${threshold}%`, width: `${overPct}%`, background: OVER_BG }}
+              title={t("overLabel")}
+            />
+          )}
+          {/* značka hranice 1 BTC */}
+          {goalReached && (
+            <div
+              aria-hidden
+              className="absolute inset-y-0"
+              style={{ left: `${threshold}%`, width: "2px", background: "rgba(0,0,0,0.5)" }}
+            />
+          )}
+        </div>
       </div>
       {goalReached && (
         <div className="flex items-center gap-4 mt-2 ui-mono text-[11px] ui-muted">

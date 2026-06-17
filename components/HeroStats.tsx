@@ -1,12 +1,13 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { formatBtc } from "@/lib/format";
 import { useCampaignStats } from "./StatsProvider";
 
 /** Kompaktní stav sbírky do hero (sociální důkaz + cíl). Živá data + reakce na platbu. */
 export default function HeroStats() {
   const t = useTranslations("progress");
+  const locale = useLocale();
   const { stats } = useCampaignStats();
 
   const pct = stats?.percent ?? 0;
@@ -16,7 +17,9 @@ export default function HeroStats() {
   const threshold = goalReached && goalBtc > 0 ? (1 / goalBtc) * 100 : 100;
   const basePct = Math.min(pct, threshold);
   const overPct = Math.max(0, pct - threshold);
-  const OVER_BG = "#22c55e"; // zelená pro část „nad 1 BTC"
+  // Část „nad 1 BTC" střídavým šrafovaným vzorem (accent-2).
+  const OVER_BG =
+    "repeating-linear-gradient(45deg, var(--accent-2), var(--accent-2) 5px, color-mix(in srgb, var(--accent-2) 60%, #000) 5px, color-mix(in srgb, var(--accent-2) 60%, #000) 10px)";
 
   return (
     <div className="max-w-md">
@@ -27,26 +30,36 @@ export default function HeroStats() {
         <span className="ui-muted">
           · {stats?.donorCount ?? 0} {t("donors")}
         </span>
-      </div>
-      <div className="relative h-1.5 w-full ui-soft rounded-full overflow-hidden">
-        <div
-          className="absolute inset-y-0 left-0 transition-[width] duration-700"
-          style={{ width: `${Math.max(2, basePct)}%`, background: "var(--accent)" }}
-        />
-        {overPct > 0 && (
-          <div
-            className="absolute inset-y-0 transition-[width] duration-700"
-            style={{ left: `${threshold}%`, width: `${overPct}%`, background: OVER_BG }}
-            title={t("overLabel")}
-          />
-        )}
         {goalReached && (
-          <div
-            aria-hidden
-            className="absolute inset-y-0"
-            style={{ left: `${threshold}%`, width: "1.5px", background: "rgba(0,0,0,0.5)" }}
-          />
+          <a
+            href={`/${locale}/pravidla#vic`}
+            className="ui-link underline underline-offset-2"
+          >
+            {t("whyExtended", { goal: formatBtc(goalBtc) })} →
+          </a>
         )}
+      </div>
+      <div className="relative">
+        <div className="relative h-1.5 w-full ui-soft rounded-full overflow-hidden">
+          <div
+            className="absolute inset-y-0 left-0 transition-[width] duration-700"
+            style={{ width: `${Math.max(2, basePct)}%`, background: "var(--accent)" }}
+          />
+          {overPct > 0 && (
+            <div
+              className="absolute inset-y-0 transition-[width] duration-700"
+              style={{ left: `${threshold}%`, width: `${overPct}%`, background: OVER_BG }}
+              title={t("overLabel")}
+            />
+          )}
+          {goalReached && (
+            <div
+              aria-hidden
+              className="absolute inset-y-0"
+              style={{ left: `${threshold}%`, width: "1.5px", background: "rgba(0,0,0,0.5)" }}
+            />
+          )}
+        </div>
       </div>
     </div>
   );
