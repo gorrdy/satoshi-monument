@@ -55,13 +55,13 @@ export default function Varianta2Content() {
 
           <Section h={t("s4h")}>
             <p>{t("s4a")}</p>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-3">
+            <div className="flex flex-wrap justify-center gap-3 mt-3">
               <a
                 href="https://2bminer.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 title="2Bminer"
-                className="flex items-center justify-center ui-soft ui-border rounded-[var(--radius-sm)] p-5 h-24 hover:brightness-110 transition cursor-pointer select-none"
+                className="flex items-center justify-center ui-soft ui-border rounded-[var(--radius-sm)] p-5 h-24 basis-[calc(50%-0.375rem)] sm:basis-[calc(20%-0.6rem)] shrink-0 hover:brightness-110 transition cursor-pointer select-none"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -76,7 +76,7 @@ export default function Varianta2Content() {
                 target="_blank"
                 rel="noopener noreferrer"
                 title="GENERAL BYTES"
-                className="flex items-center justify-center overflow-hidden ui-border rounded-[var(--radius-sm)] h-24 hover:brightness-110 transition cursor-pointer select-none"
+                className="flex items-center justify-center overflow-hidden ui-border rounded-[var(--radius-sm)] h-24 basis-[calc(50%-0.375rem)] sm:basis-[calc(20%-0.6rem)] shrink-0 hover:brightness-110 transition cursor-pointer select-none"
                 style={{ background: "#1f57a0" }}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -92,7 +92,7 @@ export default function Varianta2Content() {
                 target="_blank"
                 rel="noopener noreferrer"
                 title="Jednadvacet"
-                className="flex items-center justify-center ui-soft ui-border rounded-[var(--radius-sm)] p-5 h-24 hover:brightness-110 transition cursor-pointer select-none"
+                className="flex items-center justify-center ui-soft ui-border rounded-[var(--radius-sm)] p-5 h-24 basis-[calc(50%-0.375rem)] sm:basis-[calc(20%-0.6rem)] shrink-0 hover:brightness-110 transition cursor-pointer select-none"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -107,7 +107,7 @@ export default function Varianta2Content() {
                 target="_blank"
                 rel="noopener noreferrer"
                 title="Confirmo"
-                className="flex items-center justify-center overflow-hidden ui-border rounded-[var(--radius-sm)] h-24 px-5 hover:brightness-110 transition cursor-pointer select-none"
+                className="flex items-center justify-center overflow-hidden ui-border rounded-[var(--radius-sm)] h-24 px-5 basis-[calc(50%-0.375rem)] sm:basis-[calc(20%-0.6rem)] shrink-0 hover:brightness-110 transition cursor-pointer select-none"
                 style={{ background: "#3a1f7d" }}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -116,6 +116,21 @@ export default function Varianta2Content() {
                   alt="Confirmo"
                   draggable={false}
                   className="max-h-8 w-auto max-w-full object-contain pointer-events-none select-none"
+                />
+              </a>
+              <a
+                href="https://braiins.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Braiins"
+                className="flex items-center justify-center ui-soft ui-border rounded-[var(--radius-sm)] p-5 h-24 basis-[calc(50%-0.375rem)] sm:basis-[calc(20%-0.6rem)] shrink-0 hover:brightness-110 transition cursor-pointer select-none"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/partners/braiins.svg"
+                  alt="Braiins"
+                  draggable={false}
+                  className="max-h-7 w-auto max-w-full object-contain pointer-events-none select-none"
                 />
               </a>
             </div>
