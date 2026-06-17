@@ -16,7 +16,9 @@ export default function HeroStats() {
   const threshold = goalReached && goalBtc > 0 ? (1 / goalBtc) * 100 : 100;
   const basePct = Math.min(pct, threshold);
   const overPct = Math.max(0, pct - threshold);
-  const OVER_BG = "#22c55e"; // zelená pro část „nad 1 BTC"
+  // Část „nad 1 BTC" střídavým šrafovaným vzorem (accent-2).
+  const OVER_BG =
+    "repeating-linear-gradient(45deg, var(--accent-2), var(--accent-2) 5px, color-mix(in srgb, var(--accent-2) 60%, #000) 5px, color-mix(in srgb, var(--accent-2) 60%, #000) 10px)";
 
   return (
     <div className="max-w-md">

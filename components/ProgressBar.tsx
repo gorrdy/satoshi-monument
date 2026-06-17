@@ -30,8 +30,9 @@ export default function ProgressBar({ stats }: { stats: Stats | null }) {
   const threshold = goalReached && goalBtc > 0 ? (1 / goalBtc) * 100 : 100; // poloha 1 BTC na lajně
   const basePct = Math.min(percent, threshold);
   const overPct = Math.max(0, percent - threshold);
-  // Část „nad 1 BTC" zelenou — u sbírek intuitivní „bonus/v plusu", kontrast s oranžovou.
-  const OVER_BG = "#22c55e";
+  // Část „nad 1 BTC" střídavým šrafovaným vzorem (accent-2) — odliší i v tématu, kde accent==accent-2.
+  const OVER_BG =
+    "repeating-linear-gradient(45deg, var(--accent-2), var(--accent-2) 7px, color-mix(in srgb, var(--accent-2) 60%, #000) 7px, color-mix(in srgb, var(--accent-2) 60%, #000) 14px)";
 
   return (
     <div className="w-full">
