@@ -1,13 +1,31 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import SiteHeader from "./SiteHeader";
 import SiteFooter from "./SiteFooter";
 import BackLink from "./BackLink";
 
+const AUSTRIA_URL =
+  "https://pay.bitcoin-austria.at/apps/3B9v3QzPu9S3xyXFxZHmKgjmhWt9/crowdfund";
+
 export default function PravidlaContent() {
   const t = useTranslations("pravidla");
+  const locale = useLocale();
   const items = (t.raw("moreItems") as string[]) ?? [];
+
+  const link = (href: string, external = false) =>
+    (chunks: React.ReactNode) => (
+      <a
+        href={href}
+        {...(external
+          ? { target: "_blank", rel: "noopener noreferrer" }
+          : {})}
+        className="ui-accent font-medium underline underline-offset-2 hover:opacity-80"
+      >
+        {chunks}
+        {external ? " ↗" : " →"}
+      </a>
+    );
 
   return (
     <>
@@ -29,29 +47,36 @@ export default function PravidlaContent() {
               <p className="ui-muted leading-relaxed">{t("okBody")}</p>
             </section>
 
+            <section id="vic" className="ui-card p-6 scroll-mt-24">
+              <h2 className="ui-display text-2xl font-bold mb-2 ui-accent">
+                {t("moreTitle")}
+              </h2>
+              <div className="ui-muted leading-relaxed space-y-3">
+                <p>{t("moreP1")}</p>
+                <p>{t.rich("moreP2", { at: link(AUSTRIA_URL, true) })}</p>
+                <p>{t("moreP3")}</p>
+                <p>{t("moreItemsIntro")}</p>
+                {items.length > 0 && (
+                  <ul className="space-y-1.5">
+                    {items.map((it, i) => (
+                      <li key={i} className="flex gap-2">
+                        <span className="ui-accent">→</span>
+                        <span>{it}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <p>{t("moreP4")}</p>
+                <p>{t.rich("moreP5", { vic: link(`/${locale}/dalsi`) })}</p>
+                <p>{t("moreP6")}</p>
+              </div>
+            </section>
+
             <section className="ui-card p-6">
               <h2 className="ui-display text-2xl font-bold mb-2 ui-accent">
                 {t("noTitle")}
               </h2>
               <p className="ui-muted leading-relaxed">{t("noBody")}</p>
-            </section>
-
-            <section id="vic" className="ui-card p-6 scroll-mt-24">
-              <h2 className="ui-display text-2xl font-bold mb-2 ui-accent">
-                {t("moreTitle")}
-              </h2>
-              <p className="ui-muted leading-relaxed mb-3">{t("moreBody")}</p>
-              {items.length > 0 && (
-                <ul className="space-y-1.5 mb-3">
-                  {items.map((it, i) => (
-                    <li key={i} className="flex gap-2 ui-muted">
-                      <span className="ui-accent">→</span>
-                      <span>{it}</span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-              <p className="text-sm ui-muted">{t("moreNote")}</p>
             </section>
           </div>
 
