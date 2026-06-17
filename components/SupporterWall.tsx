@@ -15,6 +15,7 @@ const MEDALS = ["🥇", "🥈", "🥉"];
 const MEDAL_COLOR = ["#f5b50a", "#b8c0c9", "#cd7f32"];
 
 export interface WallItem {
+  name: string;
   amount: number;
   currency: string;
   amountBtc: number;
@@ -26,6 +27,7 @@ export interface WallEntry {
   id: string;
   name: string;
   lastContributor?: string | null;
+  searchNames?: string[];
   currency: string;
   amount: number;
   amountBtc: number | null;
@@ -124,9 +126,17 @@ export default function SupporterWall({
     };
   }, [detail]);
 
-  const q = query.trim().toLowerCase();
+  // Hledání ignoruje diakritiku i velikost písmen.
+  const fold = (s: string) =>
+    s.normalize("NFKD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  const q = fold(query.trim());
+  // Hledá ve zobrazeném jméně i v reálných jménech přispěvatelů (skrytých za identitou).
   const filtered = q
-    ? wall.filter((e) => e.name.toLowerCase().includes(q))
+    ? wall.filter(
+        (e) =>
+          fold(e.name).includes(q) ||
+          (e.searchNames ?? []).some((n) => fold(n).includes(q)),
+      )
     : wall;
   // Pořadí v plném (seřazeném) seznamu → medaile zůstanou na skutečné top 3 i při hledání.
   const rankById = new Map(wall.map((e, i) => [e.id, i]));
@@ -388,6 +398,11 @@ export default function SupporterWall({
                 )}
                 {(detailItems ?? []).map((it, idx) => (
                   <li key={idx} className="ui-soft ui-border rounded-[var(--radius-sm)] p-3">
+                    {it.name && (
+                      <div className="ui-display font-bold text-sm truncate mb-1">
+                        {it.name}
+                      </div>
+                    )}
                     <div className="flex items-baseline justify-between gap-2">
                       <span className="ui-mono font-bold ui-accent">
                         {formatBtc(it.amountBtc)} BTC
