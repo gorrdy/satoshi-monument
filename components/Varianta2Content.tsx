@@ -55,7 +55,7 @@ export default function Varianta2Content() {
 
           <Section h={t("s4h")}>
             <p>{t("s4a")}</p>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-3">
               <a
                 href="https://2bminer.com"
                 target="_blank"
@@ -100,6 +100,22 @@ export default function Varianta2Content() {
                   alt="Jednadvacet"
                   draggable={false}
                   className="max-h-12 w-auto object-contain pointer-events-none select-none"
+                />
+              </a>
+              <a
+                href="https://confirmo.net"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Confirmo"
+                className="flex items-center justify-center overflow-hidden ui-border rounded-[var(--radius-sm)] h-24 px-5 hover:brightness-110 transition cursor-pointer select-none"
+                style={{ background: "#3a1f7d" }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/partners/confirmo.webp"
+                  alt="Confirmo"
+                  draggable={false}
+                  className="max-h-8 w-auto max-w-full object-contain pointer-events-none select-none"
                 />
               </a>
             </div>
