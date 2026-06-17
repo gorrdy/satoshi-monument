@@ -148,9 +148,15 @@ export default function HomeContent() {
               </a>
               <a
                 href={`/${locale}/dalsi`}
-                className="ui-eyebrow ui-accent font-bold hover:underline inline-block"
+                className="group ui-eyebrow ui-accent font-bold inline-flex items-center gap-1.5 underline underline-offset-4 decoration-2"
               >
                 {t("about.moreLink")}
+                <span
+                  aria-hidden
+                  className="inline-block transition-transform group-hover:translate-x-1"
+                >
+                  →
+                </span>
               </a>
             </div>
           </Reveal>
