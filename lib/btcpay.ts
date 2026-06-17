@@ -104,6 +104,52 @@ export async function getInvoiceStatus(
   }
 }
 
+/**
+ * ID faktur, které mají nějakou platbu (potvrzenou / pozdní / částečnou / přeplacenou),
+ * vytvořené od daného času. Stránkovaný list endpoint — levné předfiltrování, ať se
+ * per-invoice payment-methods volá jen pro faktury, které reálně něco přijaly.
+ */
+export async function getPaidInvoiceIdsSince(
+  sinceMs: number,
+): Promise<Set<string>> {
+  assertConfigured();
+  const ids = new Set<string>();
+  const startDate = Math.floor(sinceMs / 1000);
+  for (let skip = 0; skip < 5000; skip += 100) {
+    let arr: Array<{
+      id?: string;
+      status?: string;
+      additionalStatus?: string;
+      paidAmount?: string;
+    }>;
+    try {
+      const res = await fetch(
+        `${BTCPAY_URL}/api/v1/stores/${STORE_ID}/invoices?startDate=${startDate}&take=100&skip=${skip}`,
+        {
+          headers: { Authorization: `token ${API_KEY}` },
+          signal: AbortSignal.timeout(15000),
+        },
+      );
+      if (!res.ok) break;
+      arr = await res.json();
+    } catch {
+      break;
+    }
+    if (!Array.isArray(arr) || arr.length === 0) break;
+    for (const inv of arr) {
+      const paidish =
+        inv.status === "Settled" ||
+        ["PaidLate", "PaidPartial", "PaidOver"].includes(
+          inv.additionalStatus ?? "",
+        ) ||
+        Number(inv.paidAmount ?? "0") > 0;
+      if (paidish && inv.id) ids.add(inv.id);
+    }
+    if (arr.length < 100) break;
+  }
+  return ids;
+}
+
 /** Detail invoice – použito pro načtení reálné BTC částky po settlement. */
 export async function getInvoicePaymentMethods(invoiceId: string): Promise<
   Array<{ paymentMethodId: string; amount: string; currency: string }>

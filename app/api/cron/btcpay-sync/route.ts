@@ -4,6 +4,7 @@ import {
   getInvoiceStatus,
   getInvoiceBtcPaid,
   getInvoiceBtcPaidConfirmed,
+  getPaidInvoiceIdsSince,
 } from "@/lib/btcpay";
 import { timingSafeEq } from "@/lib/auth";
 
@@ -15,12 +16,19 @@ export const dynamic = "force-dynamic";
  * navždy „pending". Tento cron projde pending BTC dary s fakturou a doreconciliuje
  * je přímo dotazem na BTCPay — totožnou logikou jako webhook (idempotentní:
  * potvrzený dar už nepřepisuje, počítá SKUTEČNĚ přijatou částku).
+ *
+ * Fáze 2 navíc zachytí pozdě/částečně doplacené EXPIRED dary (platba dorazila až
+ * po expiraci faktury) a započítá skutečně přijatou potvrzenou částku.
  */
 export async function GET(req: NextRequest) {
   const key = req.headers.get("x-cron-key") ?? "";
   if (!process.env.CRON_SECRET || !timingSafeEq(key, process.env.CRON_SECRET)) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
+
+  // Fáze 2 (expired recovery) jen na vyžádání (?expired=1) — běží na vlastním
+  // řidším timeru (á 2 h), ať list endpoint nezatěžujeme každé 3 min jako pending.
+  const doExpired = req.nextUrl.searchParams.get("expired") === "1";
 
   // Jen pending BTC dary s fakturou. Omezeno na rozumné okno (poslední 7 dní) —
   // starší nezaplacené faktury jsou dávno expirované a netřeba je opakovaně dotazovat.
@@ -117,6 +125,50 @@ export async function GET(req: NextRequest) {
     // New / Processing → necháme pending (čeká na zaplacení / konfirmaci).
   }
 
+  // --- Fáze 2: POZDĚ/ČÁSTEČNĚ doplacené EXPIRED dary ---
+  // Edge case: faktura expirovala, ale platba dorazila/potvrdila se on-chain až po
+  // expiraci (PaidLate/PaidPartial) → dar zůstal „expired" s nulovou částkou a nikdo
+  // ho nezapočítal. Expirovaných je hodně (lidé opustí checkout), takže je NEdotazujeme
+  // po jedné — z list endpointu zjistíme ID faktur s nějakou platbou (levné) a
+  // payment-methods voláme jen pro ty naše expired dary, které reálně něco přijaly.
+  const EXPIRED_WINDOW_MS = 48 * 3600 * 1000; // pozdní platby dorazí během monitoringu (hodiny)
+  const expiredSince = Date.now() - EXPIRED_WINDOW_MS;
+  const expiredRows = doExpired
+    ? await prisma.donation.findMany({
+        where: {
+          status: "expired",
+          currency: "BTC",
+          btcpayInvoiceId: { not: null },
+          createdAt: { gte: new Date(expiredSince) },
+        },
+        select: { id: true, btcpayInvoiceId: true },
+      })
+    : [];
+  let recovered = 0;
+  if (expiredRows.length) {
+    const paidIds = await getPaidInvoiceIdsSince(expiredSince);
+    for (const d of expiredRows) {
+      const invoiceId = d.btcpayInvoiceId!;
+      if (!paidIds.has(invoiceId)) continue; // faktura bez platby → přeskočit
+      // Jen POTVRZENÉ (Settled) platby — 0-conf ignorujeme (mohou být nahrazeny).
+      const confirmedPaid = await getInvoiceBtcPaidConfirmed(invoiceId);
+      if (confirmedPaid <= 0) continue;
+      const r = await prisma.donation.updateMany({
+        where: { id: d.id, status: "expired" }, // idempotence: jen dokud je expired
+        data: {
+          status: "confirmed",
+          amount: confirmedPaid,
+          amountBtc: confirmedPaid,
+          confirmedAt: new Date(),
+        },
+      });
+      if (r.count > 0) {
+        recovered++;
+        confirmed.push({ id: d.id, paid: confirmedPaid });
+      }
+    }
+  }
+
   return NextResponse.json({
     ok: true,
     pending: pending.length,
@@ -125,5 +177,8 @@ export async function GET(req: NextRequest) {
     confirmed,
     expired,
     rejected,
+    expiredPhase: doExpired,
+    expiredChecked: expiredRows.length,
+    recovered,
   });
 }
