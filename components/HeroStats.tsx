@@ -1,12 +1,13 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { formatBtc } from "@/lib/format";
 import { useCampaignStats } from "./StatsProvider";
 
 /** Kompaktní stav sbírky do hero (sociální důkaz + cíl). Živá data + reakce na platbu. */
 export default function HeroStats() {
   const t = useTranslations("progress");
+  const locale = useLocale();
   const { stats } = useCampaignStats();
 
   const pct = stats?.percent ?? 0;
@@ -29,6 +30,14 @@ export default function HeroStats() {
         <span className="ui-muted">
           · {stats?.donorCount ?? 0} {t("donors")}
         </span>
+        {goalReached && (
+          <a
+            href={`/${locale}/pravidla#vic`}
+            className="ui-link underline underline-offset-2"
+          >
+            {t("whyExtended", { goal: formatBtc(goalBtc) })} →
+          </a>
+        )}
       </div>
       <div className="relative">
         <div className="relative h-1.5 w-full ui-soft rounded-full overflow-hidden">
@@ -51,16 +60,6 @@ export default function HeroStats() {
             />
           )}
         </div>
-        {/* 🏆 na hranici 1 BTC — cíl máme v kapse */}
-        {goalReached && (
-          <span
-            className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 text-[13px] leading-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]"
-            style={{ left: `${threshold}%` }}
-            title={t("goalPocket")}
-          >
-            🏆
-          </span>
-        )}
       </div>
     </div>
   );

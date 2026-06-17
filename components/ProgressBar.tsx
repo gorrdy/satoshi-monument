@@ -52,6 +52,14 @@ export default function ProgressBar({ stats }: { stats: Stats | null }) {
         <div className="text-right">
           <div className="ui-eyebrow ui-muted mb-1">{t("goal")}</div>
           <div className="ui-mono text-2xl font-bold">{formatBtc(goalBtc)} BTC</div>
+          {goalReached && (
+            <a
+              href={`/${locale}/pravidla#vic`}
+              className="ui-eyebrow ui-link inline-block mt-1"
+            >
+              {t("whyExtended", { goal: formatBtc(goalBtc) })} →
+            </a>
+          )}
         </div>
       </div>
 
@@ -79,16 +87,6 @@ export default function ProgressBar({ stats }: { stats: Stats | null }) {
             />
           )}
         </div>
-        {/* 🏆 na hranici 1 BTC — cíl máme v kapse */}
-        {goalReached && (
-          <span
-            className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 text-lg leading-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]"
-            style={{ left: `${threshold}%` }}
-            title={t("goalPocket")}
-          >
-            🏆
-          </span>
-        )}
       </div>
       {goalReached && (
         <div className="flex items-center gap-4 mt-2 ui-mono text-[11px] ui-muted">
