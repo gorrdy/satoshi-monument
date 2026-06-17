@@ -36,7 +36,7 @@ export default function PravidlaContent() {
               <p className="ui-muted leading-relaxed">{t("noBody")}</p>
             </section>
 
-            <section className="ui-card p-6">
+            <section id="vic" className="ui-card p-6 scroll-mt-24">
               <h2 className="ui-display text-2xl font-bold mb-2 ui-accent">
                 {t("moreTitle")}
               </h2>

@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { fiatCode } from "@/lib/fiat";
 import { formatUsd } from "@/lib/format";
 import type { PaymentResult } from "./PaymentModal";
+import GoalNotice from "./GoalNotice";
 
 type Method = "CZK" | "BTC";
 
@@ -356,6 +357,8 @@ export default function DonationForm({
     >
       <h3 className="ui-display text-3xl font-bold mb-1">{t("title")}</h3>
       <p className="text-sm ui-muted mb-6">{t("subtitle")}</p>
+
+      <GoalNotice />
 
       {/* Výběr metody — karty s ikonami */}
       <div className="grid grid-cols-2 gap-3 mb-6">
