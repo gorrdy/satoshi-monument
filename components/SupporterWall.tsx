@@ -217,12 +217,12 @@ export default function SupporterWall({
   // když jsou aspoň 3 přispěvatelé.
   const showPodium = wall.length >= 3;
   const top3 = showPodium ? wall.slice(0, 3) : [];
-  const top3Ids = new Set(top3.map((e) => e.id));
   // Když má „posledního přispívajícího" aspoň jeden z top 3, rezervujeme ten řádek
   // u všech tří → karty mají stejnou výšku (jinak by nižší příčka mohla „přerůst").
   const top3HasLast = top3.some((e) => lastContribOf(e));
   const gridList = q
-    ? filtered.filter((e) => !top3Ids.has(e.id)) // top 3 jsou už v bedně vítězů
+    ? filtered // při hledání ukaž VŠECHNY shody (i top 3) — jinak by se shoda schovaná
+      // pod skupinou v bedně vítězů (např. hledání člena podle jména) vůbec neukázala
     : showPodium
       ? expanded
         ? wall.slice(3)
