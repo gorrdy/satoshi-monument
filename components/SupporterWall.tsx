@@ -213,14 +213,16 @@ export default function SupporterWall({
     );
   };
 
-  // Stupně vítězů jen ve výchozím pohledu (ne při hledání) a když je aspoň 3 přispěvatelé.
-  const showPodium = !q && wall.length >= 3;
+  // Bedna vítězů (top 3) — zobrazená VŽDY, i při hledání (zůstávají reální vítězové),
+  // když jsou aspoň 3 přispěvatelé.
+  const showPodium = wall.length >= 3;
   const top3 = showPodium ? wall.slice(0, 3) : [];
+  const top3Ids = new Set(top3.map((e) => e.id));
   // Když má „posledního přispívajícího" aspoň jeden z top 3, rezervujeme ten řádek
   // u všech tří → karty mají stejnou výšku (jinak by nižší příčka mohla „přerůst").
   const top3HasLast = top3.some((e) => lastContribOf(e));
   const gridList = q
-    ? filtered
+    ? filtered.filter((e) => !top3Ids.has(e.id)) // top 3 jsou už v bedně vítězů
     : showPodium
       ? expanded
         ? wall.slice(3)
@@ -250,8 +252,6 @@ export default function SupporterWall({
 
       {wall.length === 0 ? (
         <p className="ui-muted py-10 text-center">{t("empty")}</p>
-      ) : q && filtered.length === 0 ? (
-        <p className="ui-muted py-10 text-center">{t("noMatch")}</p>
       ) : (
         <>
           {/* Stupně vítězů (top 3) — vodorovné stupínky i na mobilu */}
@@ -327,13 +327,15 @@ export default function SupporterWall({
           )}
 
           {/* Zbytek (mřížka) */}
-          {gridList.length > 0 && (
+          {gridList.length > 0 ? (
             <div className="flex flex-wrap justify-center gap-4">
               {gridList.map((entry, i) =>
                 renderCard(entry, (i % 3) * 80, "w-full sm:w-[330px]"),
               )}
             </div>
-          )}
+          ) : q && filtered.length === 0 ? (
+            <p className="ui-muted py-10 text-center">{t("noMatch")}</p>
+          ) : null}
         </>
       )}
 
