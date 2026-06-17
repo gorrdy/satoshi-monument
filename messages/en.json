@@ -158,14 +158,19 @@
     "noTitle": "If the target is not reached",
     "noBody": "No contribution goes to waste. The funds raised will be redirected in full to developing the project — specifically to preparing an open competition for an original Czech monument. Part of the funds may also be devoted to bitcoin education via the INEV project. The Satoshi Monument Board, which in its role is accountable to the Jednadvacet community, decides on the exact allocation of the funds.",
     "moreTitle": "If we raise more",
-    "moreBody": "A pleasant problem — and one we're ready for. The 1 BTC target is only the baseline; buying the statue and putting it on permanent display brings further costs that further contributions will cover. Going over the target is therefore completely fine: you can keep contributing even after it's reached, and all contributions will appear in the supporters list. Specifically, further contributions cover:",
+    "moreP1": "The collection's baseline goal is 1 BTC — the fixed price to buy the statue from Satoshi Gallery. But the project doesn't end there. Beyond the statue itself, there are further related costs to cover, namely shipping, customs clearance, VAT, installation, fees, any currency conversion and ongoing care of the monument.",
+    "moreP2": "Based on the experience of our Austrian colleagues, who are currently raising funds for a Satoshi monument in Vienna, these additional costs can reach roughly 0.3 BTC (<at>the Austrian collection</at>). That's why we've set the collection's maximum target at 1.3 BTC.",
+    "moreP3": "Going over the 1 BTC mark is in fact desirable — it helps us fund the whole project from the community, without having to awkwardly top up the related costs from Czech companies. As long as at least 1 BTC is raised, Jednadvacet.org will cover any shortfall needed to finish the project on its own.",
+    "moreItemsIntro": "Further contributions above 1 BTC will specifically cover:",
     "moreItems": [
-      "fees and currency conversion",
-      "customs and shipping of the statue",
-      "installation and mounting on the pedestal",
-      "ongoing operation and maintenance of the monument"
+      "fees and any currency conversion",
+      "customs, VAT and shipping of the statue",
+      "installation costs",
+      "ongoing operation, maintenance and care of the monument"
     ],
-    "moreNote": "Anything left beyond the statue's costs will go toward preparing an original Czech statue through an open art competition. The Satoshi Monument Board will publish the exact split of these further contributions with proper justification.",
+    "moreP4": "If any funds remain unused after covering all costs of the purchase, shipping, installation and operation of the monument, the Satoshi Monument Board will decide on their specific use and will justify and publish its decision.",
+    "moreP5": "We plan to use any unused funds to prepare an original Czech take on the Satoshi monument through an open art competition (<vic>Beyond this statue</vic>).",
+    "moreP6": "Once the project is complete, a final financial statement of the collection will be published, including the total amount raised and an overview of the costs actually incurred.",
     "transTitle": "Transparency",
     "transBody": "All incoming contributions are carefully recorded. The running total is public and visible in real time on the main page. The Board keeps the Jednadvacet community informed about the project's status."
   },

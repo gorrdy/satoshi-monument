@@ -158,14 +158,19 @@
     "noTitle": "Když se cílová částka nevybere",
     "noBody": "Žádný příspěvek nepřijde nazmar. Vybrané prostředky budou v plné výši přesměrovány do rozvoje projektu Satoshi Monument — konkrétně na přípravu otevřené soutěže o originální český monument. Část prostředků může být také věnována na bitcoinovou edukaci prostřednictvím projektu INEV. O konkrétním rozdělení prostředků rozhodne Board Satoshi Monument, který je ze své pozice za projekt odpovědný vůči komunitě Jednadvacet.",
     "moreTitle": "Když se vybere víc",
-    "moreBody": "To bude příjemný problém, ale i s tím počítáme. Cíl 1 BTC je teprve základ — samotné pořízení a trvalé vystavení sochy obnáší další náklady, které pokryjí právě další příspěvky. Překročení cíle proto vůbec nevadí: přispívat jde i po jeho dosažení a všechny příspěvky budou uvedeny v seznamu přispěvatelů. Další příspěvky konkrétně pokryjí:",
+    "moreP1": "Základním cílem sbírky je 1 BTC – tedy pevná cena za nákup sochy od Satoshi Gallery. Tím ale celý projekt nekončí. Vedle samotné sochy bude potřeba pokrýt také další související náklady, zejména dopravu, proclení, DPH, instalaci, poplatky, případnou směnu prostředků a následnou péči o monument.",
+    "moreP2": "Podle zkušenosti rakouských kolegů, kteří aktuálně vybírají prostředky na Satoshi monument ve Vídni, mohou tyto dodatečné náklady dosáhnout přibližně 0,3 BTC (<at>rakouská sbírka</at>). Proto jsme se rozhodli nastavit maximální cílovou částku sbírky na 1,3 BTC.",
+    "moreP3": "Překročení hranice 1 BTC je naopak žádoucí, protože nám pomůže pokrýt celý projekt komunitně, bez nutnosti složitě dofinancovávat související náklady od českých firem. Pokud se ale vybere alespoň 1 BTC, Jednadvacet.org případné chybějící prostředky na dokončení projektu bude řešit vlastními silami.",
+    "moreItemsIntro": "Další příspěvky nad 1 BTC konkrétně pokryjí:",
     "moreItems": [
-      "poplatky a směnu prostředků",
-      "clo a dopravu sochy",
-      "instalaci a osazení na podstavec",
-      "následný provoz a údržbu monumentu"
+      "poplatky a případnou směnu prostředků",
+      "clo, DPH a dopravu sochy",
+      "náklady spojené s instalací",
+      "následný provoz, údržbu a péči o monument"
     ],
-    "moreNote": "Cokoli zbude nad rámec nákladů na sochu půjde na přípravu české originální sochy prostřednictvím otevřené umělecké soutěže. Přesné rozdělení dalších příspěvků zveřejní Board Satoshi Monument i s řádným odůvodněním.",
+    "moreP4": "Pokud po uhrazení všech nákladů spojených s nákupem, dopravou, instalací a provozem monumentu zůstanou nevyužité prostředky, o jejich konkrétním využití rozhodne Board Satoshi Monument a své rozhodnutí odůvodní a zveřejní.",
+    "moreP5": "Plánujeme, že případné nevyužité prostředky použijeme na přípravu originálního českého řešení Satoshi monumentu prostřednictvím otevřené umělecké soutěže (<vic>Touto sochou to nekončí</vic>).",
+    "moreP6": "Po dokončení projektu bude zveřejněno konečné finanční vyúčtování sbírky, včetně výše vybraných prostředků a přehledu skutečně vynaložených nákladů.",
     "transTitle": "Transparentnost",
     "transBody": "Veškeré příchozí příspěvky jsou pečlivě evidovány. Průběžný stav sbírky je veřejný a viditelný v reálném čase na hlavní stránce. Board Satoshi Monument průběžně informuje komunitu Jednadvacet o stavu projektu."
   },
