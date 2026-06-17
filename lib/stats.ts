@@ -65,6 +65,7 @@ export async function getStats(): Promise<CampaignStats> {
 }
 
 export interface WallItem {
+  name: string; // reálné jméno zadané u TÉTO platby (v detailu skupiny)
   amount: number;
   currency: string; // "BTC" | "CZK"
   amountBtc: number;
@@ -76,6 +77,7 @@ export interface WallEntry {
   id: string;
   name: string; // zobrazené jméno skupiny (profil nebo poslední zadané)
   lastContributor: string | null; // poslední přispívající (raw jméno poslední platby)
+  searchNames: string[]; // reálná jména přispěvatelů (pro hledání), jiná než zobrazené
   currency: string; // "BTC" | "CZK" | "MIX"
   amount: number; // zobrazená částka v dané měně (u MIX = BTC ekvivalent)
   amountBtc: number; // celkový BTC ekvivalent (pro řazení)
@@ -181,6 +183,7 @@ async function buildWallEntries(): Promise<WallEntry[]> {
 
     // Rozpis jednotlivých příspěvků (od nejnovějšího) — jen veřejná pole.
     const items: WallItem[] = [...sorted].reverse().map((r) => ({
+      name: r.name,
       amount: r.amount,
       currency: r.currency,
       amountBtc: r.amountBtc ?? 0,
@@ -188,11 +191,23 @@ async function buildWallEntries(): Promise<WallEntry[]> {
       createdAt: (r.confirmedAt ?? r.createdAt).toISOString(),
     }));
 
+    // Jména přispěvatelů pro hledání — unikátní reálná jména, která se liší od
+    // zobrazeného (jména shodná s názvem skupiny by jen nafukovala payload).
+    const dispLower = name.toLowerCase();
+    const searchNames = [
+      ...new Set(
+        list
+          .map((r) => r.name)
+          .filter((n) => n && n.toLowerCase() !== dispLower),
+      ),
+    ];
+
     entries.push({
       id: publicGroupId(key),
       name,
       // poslední přispívající = raw jméno poslední platby (užitečné u skupin/profilů)
       lastContributor: latest.name,
+      searchNames,
       currency,
       amount,
       amountBtc: totalBtc,
