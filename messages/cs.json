@@ -39,7 +39,11 @@
     "rate": "kurz",
     "goalExplainer": "Cíl je 1 BTC. Stačí, aby 2 000 lidí poslalo 50 000 sats — a socha je naše.",
     "approxFiat": "≈ {amount}",
-    "overflowNote": "Vybíráme i nad rámec cíle — přebytek pokryje poplatky, clo, dopravu a instalaci. Překročení nevadí a přispívat jde i po dosažení cíle."
+    "overflowNote": "Vybíráme i nad rámec cíle — další příspěvky pokryjí poplatky, clo, dopravu a instalaci. Překročení nevadí a přispívat jde i po dosažení cíle."
+  },
+  "goalBanner": {
+    "text": "🎉 Cíl 1 BTC je dosažen — a vybíráme dál! Další příspěvky pokryjí poplatky, clo, dopravu, instalaci a údržbu. Překročení nevadí, přispívat jde i po dosažení cíle.",
+    "rulesLink": "Pravidla sbírky"
   },
   "form": {
     "title": "Přispět na sochu",
@@ -154,9 +158,14 @@
     "noTitle": "Když se cílová částka nevybere",
     "noBody": "Žádný příspěvek nepřijde nazmar. Vybrané prostředky budou v plné výši přesměrovány do rozvoje projektu Satoshi Monument — konkrétně na přípravu otevřené soutěže o originální český monument. Část prostředků může být také věnována na bitcoinovou edukaci prostřednictvím projektu INEV. O konkrétním rozdělení prostředků rozhodne Board Satoshi Monument, který je ze své pozice za projekt odpovědný vůči komunitě Jednadvacet.",
     "moreTitle": "Když se vybere víc",
-    "moreBody": "To bude příjemný problém, ale i s tím počítáme. Případný přebytek bude směřovat na přípravu české originální sochy prostřednictvím otevřené umělecké soutěže. Všechny příspěvky i nad rámec cílové částky budou uvedeny v seznamu přispěvatelů a bude možnost je nadále navyšovat.",
-    "moreItems": [],
-    "moreNote": "Přesné rozdělení přebytku zveřejní Board Satoshi Monument i s řádným odůvodněním.",
+    "moreBody": "To bude příjemný problém, ale i s tím počítáme. Cíl 1 BTC je teprve základ — samotné pořízení a trvalé vystavení sochy obnáší další náklady, které pokryjí právě další příspěvky. Překročení cíle proto vůbec nevadí: přispívat jde i po jeho dosažení a všechny příspěvky budou uvedeny v seznamu přispěvatelů. Další příspěvky konkrétně pokryjí:",
+    "moreItems": [
+      "poplatky a směnu prostředků",
+      "clo a dopravu sochy",
+      "instalaci a osazení na podstavec",
+      "následný provoz a údržbu monumentu"
+    ],
+    "moreNote": "Cokoli zbude nad rámec nákladů na sochu půjde na přípravu české originální sochy prostřednictvím otevřené umělecké soutěže. Přesné rozdělení dalších příspěvků zveřejní Board Satoshi Monument i s řádným odůvodněním.",
     "transTitle": "Transparentnost",
     "transBody": "Veškeré příchozí příspěvky jsou pečlivě evidovány. Průběžný stav sbírky je veřejný a viditelný v reálném čase na hlavní stránce. Board Satoshi Monument průběžně informuje komunitu Jednadvacet o stavu projektu."
   },

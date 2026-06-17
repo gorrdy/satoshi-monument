@@ -39,7 +39,11 @@
     "rate": "rate",
     "goalExplainer": "The goal is 1 BTC. If 2,000 people each send 50,000 sats — the statue is ours.",
     "approxFiat": "≈ {amount}",
-    "overflowNote": "We welcome contributions beyond the goal — the surplus covers fees, customs, shipping and installation. Going over is fine, and you can keep contributing even after the goal is reached."
+    "overflowNote": "We welcome contributions beyond the goal — further contributions cover fees, customs, shipping and installation. Going over is fine, and you can keep contributing even after the goal is reached."
+  },
+  "goalBanner": {
+    "text": "🎉 The 1 BTC goal is reached — and we keep going! Further contributions cover fees, customs, shipping, installation and maintenance. Going over is welcome — you can still contribute after the goal.",
+    "rulesLink": "Collection rules"
   },
   "form": {
     "title": "Donate to the statue",
@@ -154,9 +158,14 @@
     "noTitle": "If the target is not reached",
     "noBody": "No contribution goes to waste. The funds raised will be redirected in full to developing the project — specifically to preparing an open competition for an original Czech monument. Part of the funds may also be devoted to bitcoin education via the INEV project. The Satoshi Monument Board, which in its role is accountable to the Jednadvacet community, decides on the exact allocation of the funds.",
     "moreTitle": "If we raise more",
-    "moreBody": "A pleasant problem — and one we're ready for. Any surplus will go toward preparing an original Czech statue through an open art competition. All contributions, even beyond the target amount, will appear in the supporters list and can be topped up further.",
-    "moreItems": [],
-    "moreNote": "The Satoshi Monument Board will publish the exact split of any surplus with proper justification.",
+    "moreBody": "A pleasant problem — and one we're ready for. The 1 BTC target is only the baseline; buying the statue and putting it on permanent display brings further costs that further contributions will cover. Going over the target is therefore completely fine: you can keep contributing even after it's reached, and all contributions will appear in the supporters list. Specifically, further contributions cover:",
+    "moreItems": [
+      "fees and currency conversion",
+      "customs and shipping of the statue",
+      "installation and mounting on the pedestal",
+      "ongoing operation and maintenance of the monument"
+    ],
+    "moreNote": "Anything left beyond the statue's costs will go toward preparing an original Czech statue through an open art competition. The Satoshi Monument Board will publish the exact split of these further contributions with proper justification.",
     "transTitle": "Transparency",
     "transBody": "All incoming contributions are carefully recorded. The running total is public and visible in real time on the main page. The Board keeps the Jednadvacet community informed about the project's status."
   },
