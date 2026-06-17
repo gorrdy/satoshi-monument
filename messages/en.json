@@ -41,7 +41,8 @@
     "approxFiat": "≈ {amount}",
     "overflowNote": "We welcome contributions beyond the goal — further contributions cover fees, customs, shipping and installation. Going over is fine, and you can keep contributing even after the goal is reached.",
     "baseLabel": "up to 1 BTC (statue)",
-    "overLabel": "above 1 BTC (costs)"
+    "overLabel": "above 1 BTC (costs)",
+    "goalPocket": "The 1 BTC goal is in the pocket! 🏆"
   },
   "goalBanner": {
     "text": "🎉 The 1 BTC goal is reached — and we keep going! Further contributions cover fees, customs, shipping, installation and maintenance. Going over is welcome — you can still contribute after the goal.",

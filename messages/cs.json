@@ -41,7 +41,8 @@
     "approxFiat": "≈ {amount}",
     "overflowNote": "Vybíráme i nad rámec cíle — další příspěvky pokryjí poplatky, clo, dopravu a instalaci. Překročení nevadí a přispívat jde i po dosažení cíle.",
     "baseLabel": "do 1 BTC (socha)",
-    "overLabel": "nad 1 BTC (náklady)"
+    "overLabel": "nad 1 BTC (náklady)",
+    "goalPocket": "Cíl 1 BTC máme v kapse! 🏆"
   },
   "goalBanner": {
     "text": "🎉 Cíl 1 BTC je dosažen — a vybíráme dál! Další příspěvky pokryjí poplatky, clo, dopravu, instalaci a údržbu. Překročení nevadí, přispívat jde i po dosažení cíle.",

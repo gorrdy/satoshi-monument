@@ -55,27 +55,39 @@ export default function ProgressBar({ stats }: { stats: Stats | null }) {
         </div>
       </div>
 
-      <div className="relative h-8 w-full ui-border ui-soft overflow-hidden rounded-[var(--radius-sm)]">
-        {/* základ: 0 → 1 BTC */}
-        <div
-          className="absolute inset-y-0 left-0 transition-[width] duration-1000 ease-out"
-          style={{ width: `${Math.max(2, basePct)}%`, background: "var(--accent)" }}
-        />
-        {/* nad 1 BTC (šrafovaně, na náklady) */}
-        {overPct > 0 && (
+      <div className="relative">
+        <div className="relative h-8 w-full ui-border ui-soft overflow-hidden rounded-[var(--radius-sm)]">
+          {/* základ: 0 → 1 BTC */}
           <div
-            className="absolute inset-y-0 transition-[width] duration-1000 ease-out"
-            style={{ left: `${threshold}%`, width: `${overPct}%`, background: OVER_BG }}
-            title={t("overLabel")}
+            className="absolute inset-y-0 left-0 transition-[width] duration-1000 ease-out"
+            style={{ width: `${Math.max(2, basePct)}%`, background: "var(--accent)" }}
           />
-        )}
-        {/* značka hranice 1 BTC */}
+          {/* nad 1 BTC (šrafovaně, na náklady) */}
+          {overPct > 0 && (
+            <div
+              className="absolute inset-y-0 transition-[width] duration-1000 ease-out"
+              style={{ left: `${threshold}%`, width: `${overPct}%`, background: OVER_BG }}
+              title={t("overLabel")}
+            />
+          )}
+          {/* značka hranice 1 BTC */}
+          {goalReached && (
+            <div
+              aria-hidden
+              className="absolute inset-y-0"
+              style={{ left: `${threshold}%`, width: "2px", background: "rgba(0,0,0,0.5)" }}
+            />
+          )}
+        </div>
+        {/* 🏆 na hranici 1 BTC — cíl máme v kapse */}
         {goalReached && (
-          <div
-            aria-hidden
-            className="absolute inset-y-0"
-            style={{ left: `${threshold}%`, width: "2px", background: "rgba(0,0,0,0.5)" }}
-          />
+          <span
+            className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 text-lg leading-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]"
+            style={{ left: `${threshold}%` }}
+            title={t("goalPocket")}
+          >
+            🏆
+          </span>
         )}
       </div>
       {goalReached && (

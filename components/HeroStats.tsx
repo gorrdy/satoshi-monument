@@ -30,24 +30,36 @@ export default function HeroStats() {
           · {stats?.donorCount ?? 0} {t("donors")}
         </span>
       </div>
-      <div className="relative h-1.5 w-full ui-soft rounded-full overflow-hidden">
-        <div
-          className="absolute inset-y-0 left-0 transition-[width] duration-700"
-          style={{ width: `${Math.max(2, basePct)}%`, background: "var(--accent)" }}
-        />
-        {overPct > 0 && (
+      <div className="relative">
+        <div className="relative h-1.5 w-full ui-soft rounded-full overflow-hidden">
           <div
-            className="absolute inset-y-0 transition-[width] duration-700"
-            style={{ left: `${threshold}%`, width: `${overPct}%`, background: OVER_BG }}
-            title={t("overLabel")}
+            className="absolute inset-y-0 left-0 transition-[width] duration-700"
+            style={{ width: `${Math.max(2, basePct)}%`, background: "var(--accent)" }}
           />
-        )}
+          {overPct > 0 && (
+            <div
+              className="absolute inset-y-0 transition-[width] duration-700"
+              style={{ left: `${threshold}%`, width: `${overPct}%`, background: OVER_BG }}
+              title={t("overLabel")}
+            />
+          )}
+          {goalReached && (
+            <div
+              aria-hidden
+              className="absolute inset-y-0"
+              style={{ left: `${threshold}%`, width: "1.5px", background: "rgba(0,0,0,0.5)" }}
+            />
+          )}
+        </div>
+        {/* 🏆 na hranici 1 BTC — cíl máme v kapse */}
         {goalReached && (
-          <div
-            aria-hidden
-            className="absolute inset-y-0"
-            style={{ left: `${threshold}%`, width: "1.5px", background: "rgba(0,0,0,0.5)" }}
-          />
+          <span
+            className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 text-[13px] leading-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]"
+            style={{ left: `${threshold}%` }}
+            title={t("goalPocket")}
+          >
+            🏆
+          </span>
         )}
       </div>
     </div>
