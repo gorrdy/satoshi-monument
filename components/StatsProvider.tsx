@@ -38,6 +38,8 @@ export default function StatsProvider({
   const [wall, setWall] = useState<WallEntry[]>([]);
   const [recent, setRecent] = useState<RecentDonation[]>([]);
   const [pending, setPending] = useState<PendingDonation[]>([]);
+  // Testovací override vybrané částky (jen klient, z konzole) — odsimuluje stav sbírky.
+  const [simRaised, setSimRaised] = useState<number | null>(null);
   // Předchozí vybraná částka — nárůst = právě přišla nová platba → konfety.
   const prevRaised = useRef<number | null>(null);
   // Aktuální cesta v refu (refresh je stabilní callback) — v adminu konfety nechceme.
@@ -94,8 +96,42 @@ export default function StatsProvider({
     };
   }, [refresh]);
 
+  // Testovací přepínač z konzole prohlížeče:
+  //   simulateRaised(1.05) → odsimuluje 1,05 BTC vybráno (cíl se prodlouží na 1,3,
+  //                          progress bar/hero přepočítá, banner naskočí)
+  //   simulateRaised(null) → zpět na reálná data
+  useEffect(() => {
+    const w = window as unknown as { simulateRaised?: (btc: number | null) => void };
+    w.simulateRaised = (btc) =>
+      setSimRaised(typeof btc === "number" && isFinite(btc) ? btc : null);
+    return () => {
+      delete w.simulateRaised;
+    };
+  }, []);
+
+  // Efektivní stav: při testovacím override přepočítáme cíl/procenta klientsky
+  // (stejná pravidla jako getStats: základ 1 BTC → po dosažení prodloužení na 1,3).
+  const effStats: Stats | null =
+    simRaised != null && stats
+      ? (() => {
+          const raisedBtc = simRaised;
+          const goalReached = raisedBtc >= 1;
+          const goalBtc = goalReached ? 1.3 : 1;
+          const percent = Math.min(100, (raisedBtc / goalBtc) * 100);
+          return {
+            ...stats,
+            raisedBtc,
+            goalReached,
+            goalBtc,
+            percent,
+            raisedCzk: raisedBtc * stats.btcCzkRate,
+            raisedUsd: raisedBtc * stats.btcUsdRate,
+          };
+        })()
+      : stats;
+
   return (
-    <StatsContext.Provider value={{ stats, wall, recent, pending }}>
+    <StatsContext.Provider value={{ stats: effStats, wall, recent, pending }}>
       {children}
     </StatsContext.Provider>
   );

@@ -10,6 +10,13 @@ export default function HeroStats() {
   const { stats } = useCampaignStats();
 
   const pct = stats?.percent ?? 0;
+  // Po prodloužení cíle (1 → 1,3 BTC) odliš část „nad 1 BTC".
+  const goalBtc = stats?.goalBtc ?? 1;
+  const goalReached = stats?.goalReached ?? false;
+  const threshold = goalReached && goalBtc > 0 ? (1 / goalBtc) * 100 : 100;
+  const basePct = Math.min(pct, threshold);
+  const overPct = Math.max(0, pct - threshold);
+  const OVER_BG = "#22c55e"; // zelená pro část „nad 1 BTC"
 
   return (
     <div className="max-w-md">
@@ -21,11 +28,25 @@ export default function HeroStats() {
           · {stats?.donorCount ?? 0} {t("donors")}
         </span>
       </div>
-      <div className="h-1.5 w-full ui-soft rounded-full overflow-hidden">
+      <div className="relative h-1.5 w-full ui-soft rounded-full overflow-hidden">
         <div
-          className="h-full rounded-full transition-[width] duration-700"
-          style={{ width: `${Math.max(2, pct)}%`, background: "var(--accent)" }}
+          className="absolute inset-y-0 left-0 transition-[width] duration-700"
+          style={{ width: `${Math.max(2, basePct)}%`, background: "var(--accent)" }}
         />
+        {overPct > 0 && (
+          <div
+            className="absolute inset-y-0 transition-[width] duration-700"
+            style={{ left: `${threshold}%`, width: `${overPct}%`, background: OVER_BG }}
+            title={t("overLabel")}
+          />
+        )}
+        {goalReached && (
+          <div
+            aria-hidden
+            className="absolute inset-y-0"
+            style={{ left: `${threshold}%`, width: "1.5px", background: "rgba(0,0,0,0.5)" }}
+          />
+        )}
       </div>
     </div>
   );

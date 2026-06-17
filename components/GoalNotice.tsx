@@ -29,7 +29,9 @@ export default function GoalNotice() {
     };
   }, []);
 
-  const reached = (stats?.percent ?? 0) >= 100;
+  // Spouští se dosažením základního cíle (1 BTC). Po něm se cíl prodlouží na 1,3 BTC,
+  // takže percent (z 1,3) klesne pod 100 — proto čteme goalReached, ne percent.
+  const reached = stats?.goalReached ?? false;
   if (!forced && !reached) return null;
 
   return (

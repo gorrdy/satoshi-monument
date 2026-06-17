@@ -20,9 +20,12 @@ function publicGroupId(key: string): string {
 }
 
 const GOAL_BTC = Number(process.env.GOAL_BTC ?? "1");
+// Po dosažení základního cíle se cíl prodlouží na maximální (dle pravidel sbírky).
+const GOAL_BTC_MAX = Number(process.env.GOAL_BTC_MAX ?? "1.3");
 
 export interface CampaignStats {
-  goalBtc: number;
+  goalBtc: number; // aktuální cíl (základní 1 BTC, po dosažení prodloužený na 1,3 BTC)
+  goalReached: boolean; // dosažen základní cíl (≥ GOAL_BTC) → spouští banner i prodloužení
   raisedBtc: number;
   percent: number;
   donorCount: number;
@@ -50,10 +53,14 @@ export async function getStats(): Promise<CampaignStats> {
     confirmed.map((d) => (d.donorKey ? `k:${d.donorKey}` : `s:${d.id}`)),
   );
 
-  const percent = GOAL_BTC > 0 ? Math.min(100, (raisedBtc / GOAL_BTC) * 100) : 0;
+  // Dosažení 1 BTC → cíl se prodlouží na 1,3 BTC (progress bar napočítává k němu).
+  const goalReached = raisedBtc >= GOAL_BTC;
+  const goalBtc = goalReached ? GOAL_BTC_MAX : GOAL_BTC;
+  const percent = goalBtc > 0 ? Math.min(100, (raisedBtc / goalBtc) * 100) : 0;
 
   return {
-    goalBtc: GOAL_BTC,
+    goalBtc,
+    goalReached,
     raisedBtc,
     percent,
     donorCount: donors.size,

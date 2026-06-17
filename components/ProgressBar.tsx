@@ -7,6 +7,7 @@ import CountUp from "./CountUp";
 
 export interface Stats {
   goalBtc: number;
+  goalReached: boolean;
   raisedBtc: number;
   percent: number;
   donorCount: number;
@@ -23,6 +24,14 @@ export default function ProgressBar({ stats }: { stats: Stats | null }) {
   const percent = stats?.percent ?? 0;
   const raisedBtc = stats?.raisedBtc ?? 0;
   const goalBtc = stats?.goalBtc ?? 1;
+
+  // Po prodloužení cíle (1 → 1,3 BTC) vizuálně oddělíme část „nad 1 BTC".
+  const goalReached = stats?.goalReached ?? false;
+  const threshold = goalReached && goalBtc > 0 ? (1 / goalBtc) * 100 : 100; // poloha 1 BTC na lajně
+  const basePct = Math.min(percent, threshold);
+  const overPct = Math.max(0, percent - threshold);
+  // Část „nad 1 BTC" zelenou — u sbírek intuitivní „bonus/v plusu", kontrast s oranžovou.
+  const OVER_BG = "#22c55e";
 
   return (
     <div className="w-full">
@@ -46,11 +55,40 @@ export default function ProgressBar({ stats }: { stats: Stats | null }) {
       </div>
 
       <div className="relative h-8 w-full ui-border ui-soft overflow-hidden rounded-[var(--radius-sm)]">
+        {/* základ: 0 → 1 BTC */}
         <div
           className="absolute inset-y-0 left-0 transition-[width] duration-1000 ease-out"
-          style={{ width: `${Math.max(2, percent)}%`, background: "var(--accent)" }}
+          style={{ width: `${Math.max(2, basePct)}%`, background: "var(--accent)" }}
         />
+        {/* nad 1 BTC (šrafovaně, na náklady) */}
+        {overPct > 0 && (
+          <div
+            className="absolute inset-y-0 transition-[width] duration-1000 ease-out"
+            style={{ left: `${threshold}%`, width: `${overPct}%`, background: OVER_BG }}
+            title={t("overLabel")}
+          />
+        )}
+        {/* značka hranice 1 BTC */}
+        {goalReached && (
+          <div
+            aria-hidden
+            className="absolute inset-y-0"
+            style={{ left: `${threshold}%`, width: "2px", background: "rgba(0,0,0,0.5)" }}
+          />
+        )}
       </div>
+      {goalReached && (
+        <div className="flex items-center gap-4 mt-2 ui-mono text-[11px] ui-muted">
+          <span className="inline-flex items-center gap-1.5">
+            <span className="w-3 h-3 rounded-sm" style={{ background: "var(--accent)" }} />
+            {t("baseLabel")}
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <span className="w-3 h-3 rounded-sm" style={{ background: OVER_BG }} />
+            {t("overLabel")}
+          </span>
+        </div>
+      )}
 
       <div className="flex items-center justify-between mt-3 ui-mono text-sm">
         <span className="font-bold ui-accent">
