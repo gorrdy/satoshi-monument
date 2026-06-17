@@ -13,7 +13,7 @@ export const runtime = "nodejs";
 // Verze OG karty → mění URL og:image (cache-bust pro sociální sítě).
 // Bump při výměně fotky/designu, ať si scrapery stáhnou nový náhled.
 export function generateImageMetadata() {
-  return [{ id: "v2", size, contentType, alt }];
+  return [{ id: "v3", size, contentType, alt }];
 }
 
 function fmtBtc(n: number): string {
