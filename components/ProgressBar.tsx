@@ -38,7 +38,7 @@ export default function ProgressBar({ stats }: { stats: Stats | null }) {
 
   return (
     <div className="w-full">
-      <div className="flex flex-wrap items-end justify-between gap-4 mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 sm:gap-4 mb-4">
         <div>
           <div className="ui-eyebrow ui-muted mb-1">{t("raised")}</div>
           <div className="ui-mono text-4xl sm:text-6xl font-bold leading-none ui-accent">
@@ -51,7 +51,7 @@ export default function ProgressBar({ stats }: { stats: Stats | null }) {
             </div>
           )}
         </div>
-        <div className="text-right">
+        <div className="sm:text-right">
           <div className="ui-eyebrow ui-muted mb-1">{t("goal")}</div>
           <div className="ui-mono text-2xl font-bold">{formatBtc(goalBtc)} BTC</div>
           {goalReached && (
