@@ -27,7 +27,8 @@ export interface CampaignStats {
   goalBtc: number; // aktuální cíl (základní 1 BTC, po dosažení prodloužený na 1,3 BTC)
   goalReached: boolean; // dosažen základní cíl (≥ GOAL_BTC) → spouští banner i prodloužení
   raisedBtc: number;
-  percent: number;
+  percent: number; // vůči 1 BTC, bez stropu (1 BTC = 100 %, víc = 100+ %)
+  fillPercent: number; // šířka lišty vůči aktuálnímu cíli (0–100 %)
   donorCount: number;
   btcCzkRate: number;
   btcUsdRate: number;
@@ -53,16 +54,20 @@ export async function getStats(): Promise<CampaignStats> {
     confirmed.map((d) => (d.donorKey ? `k:${d.donorKey}` : `s:${d.id}`)),
   );
 
-  // Dosažení 1 BTC → cíl se prodlouží na 1,3 BTC (progress bar napočítává k němu).
+  // Dosažení 1 BTC → cíl se prodlouží na 1,3 BTC (lišta se vizuálně plní k němu).
   const goalReached = raisedBtc >= GOAL_BTC;
   const goalBtc = goalReached ? GOAL_BTC_MAX : GOAL_BTC;
-  const percent = goalBtc > 0 ? Math.min(100, (raisedBtc / goalBtc) * 100) : 0;
+  // Procento je VŽDY vůči základnímu cíli (1 BTC) a BEZ stropu → 1 BTC = 100 %, víc = 100+ %.
+  const percent = GOAL_BTC > 0 ? (raisedBtc / GOAL_BTC) * 100 : 0;
+  // Šířka lišty se počítá k aktuálnímu (případně prodlouženému) cíli, capováno na 100 %.
+  const fillPercent = goalBtc > 0 ? Math.min(100, (raisedBtc / goalBtc) * 100) : 0;
 
   return {
     goalBtc,
     goalReached,
     raisedBtc,
     percent,
+    fillPercent,
     donorCount: donors.size,
     btcCzkRate,
     btcUsdRate,

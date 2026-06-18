@@ -10,6 +10,7 @@ export interface Stats {
   goalReached: boolean;
   raisedBtc: number;
   percent: number;
+  fillPercent: number;
   donorCount: number;
   btcCzkRate: number;
   btcUsdRate: number;
@@ -21,15 +22,16 @@ export default function ProgressBar({ stats }: { stats: Stats | null }) {
   const t = useTranslations("progress");
   const locale = useLocale();
 
-  const percent = stats?.percent ?? 0;
+  const percent = stats?.percent ?? 0; // číslo: vůči 1 BTC, bez stropu (100+ % možné)
+  const fillPercent = stats?.fillPercent ?? 0; // šířka lišty: vůči aktuálnímu cíli (0–100 %)
   const raisedBtc = stats?.raisedBtc ?? 0;
   const goalBtc = stats?.goalBtc ?? 1;
 
   // Po prodloužení cíle (1 → 1,3 BTC) vizuálně oddělíme část „nad 1 BTC".
   const goalReached = stats?.goalReached ?? false;
   const threshold = goalReached && goalBtc > 0 ? (1 / goalBtc) * 100 : 100; // poloha 1 BTC na lajně
-  const basePct = Math.min(percent, threshold);
-  const overPct = Math.max(0, percent - threshold);
+  const basePct = Math.min(fillPercent, threshold);
+  const overPct = Math.max(0, fillPercent - threshold);
   // Část „nad 1 BTC" střídavým šrafovaným vzorem (accent-2) — odliší i v tématu, kde accent==accent-2.
   const OVER_BG =
     "repeating-linear-gradient(45deg, var(--accent-2), var(--accent-2) 7px, color-mix(in srgb, var(--accent-2) 60%, #000) 7px, color-mix(in srgb, var(--accent-2) 60%, #000) 14px)";
