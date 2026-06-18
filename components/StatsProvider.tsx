@@ -117,13 +117,15 @@ export default function StatsProvider({
           const raisedBtc = simRaised;
           const goalReached = raisedBtc >= 1;
           const goalBtc = goalReached ? 1.3 : 1;
-          const percent = Math.min(100, (raisedBtc / goalBtc) * 100);
+          const percent = raisedBtc * 100; // vůči 1 BTC, bez stropu
+          const fillPercent = Math.min(100, (raisedBtc / goalBtc) * 100);
           return {
             ...stats,
             raisedBtc,
             goalReached,
             goalBtc,
             percent,
+            fillPercent,
             raisedCzk: raisedBtc * stats.btcCzkRate,
             raisedUsd: raisedBtc * stats.btcUsdRate,
           };

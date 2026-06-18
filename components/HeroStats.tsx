@@ -10,7 +10,7 @@ export default function HeroStats() {
   const locale = useLocale();
   const { stats } = useCampaignStats();
 
-  const pct = stats?.percent ?? 0;
+  const pct = stats?.fillPercent ?? 0; // šířka lišty vůči aktuálnímu cíli
   // Po prodloužení cíle (1 → 1,3 BTC) odliš část „nad 1 BTC".
   const goalBtc = stats?.goalBtc ?? 1;
   const goalReached = stats?.goalReached ?? false;
