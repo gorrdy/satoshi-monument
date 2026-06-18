@@ -16,10 +16,13 @@ const csp = [
   "font-src 'self'",
   "worker-src 'self' blob:", // canvas-confetti (Web Worker přes blob: URL)
   `connect-src 'self' ${btcpayOrigin}`.trim(),
-  `frame-src ${btcpayOrigin || "'none'"}`.trim(),
+  // 'self' kvůli vloženému PDF reportu (/[locale]/report → iframe /api/report).
+  `frame-src 'self' ${btcpayOrigin}`.trim(),
   "base-uri 'self'",
   "form-action 'self'",
-  "frame-ancestors 'none'",
+  // 'self' (ne 'none') — povolí vlastní stránce vložit náš obsah (PDF report),
+  // cizí weby nás stále zarámovat nemohou (ochrana proti clickjackingu).
+  "frame-ancestors 'self'",
 ]
   .join("; ")
   .replace(/\s+/g, " ");
