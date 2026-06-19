@@ -133,6 +133,22 @@ export default function Varianta2Content() {
                   className="max-h-7 w-auto max-w-full object-contain pointer-events-none select-none"
                 />
               </a>
+              <a
+                href="https://anycoin.cz"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Anycoin"
+                className="flex items-center justify-center overflow-hidden ui-border rounded-[var(--radius-sm)] h-24 px-5 basis-[calc(50%-0.375rem)] sm:basis-[calc(20%-0.6rem)] shrink-0 hover:brightness-110 transition cursor-pointer select-none"
+                style={{ background: "#ffffff" }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/partners/anycoin.svg"
+                  alt="Anycoin"
+                  draggable={false}
+                  className="max-h-9 w-auto max-w-full object-contain pointer-events-none select-none"
+                />
+              </a>
             </div>
             <p className="ui-muted text-sm mt-3">{t("partnersPlaceholder")}</p>
           </Section>
