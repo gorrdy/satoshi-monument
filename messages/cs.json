@@ -17,6 +17,14 @@
     "more": "Touto sochou to nekončí",
     "menu": "Menu"
   },
+  "closed": {
+    "title": "Cíl splněn — děkujeme!",
+    "body": "Hlavní sbírka na pořízení sochy je uzavřená. Socha je naše díky komunitě.",
+    "from": "od",
+    "donors": "přispěvatelů",
+    "storyCta": "Přečíst příběh sochy",
+    "supportersCta": "Podpořit péči o monument"
+  },
   "supporters": {
     "title": "Zeď Podporovatelů",
     "intro": "Sbírka na pořízení sochy má svůj strop, ale péče o monument pokračuje dál. Podporovatelé průběžně financují pojištění, údržbu a péči o sochu — přispívat jde kdykoli, bez časového omezení. Případný přebytek nad rámec údržby jde na aktivity Jednadvacet.org a bitcoinovou edukaci.",

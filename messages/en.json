@@ -17,6 +17,14 @@
     "more": "Beyond this statue",
     "menu": "Menu"
   },
+  "closed": {
+    "title": "Goal reached — thank you!",
+    "body": "The main fundraiser for the statue is closed. The statue is ours, thanks to the community.",
+    "from": "from",
+    "donors": "contributors",
+    "storyCta": "Read the statue's story",
+    "supportersCta": "Support the monument's upkeep"
+  },
   "supporters": {
     "title": "Supporters Wall",
     "intro": "The fundraiser for buying the statue has its cap, but caring for the monument continues. Supporters fund the insurance, upkeep and care of the statue on an ongoing basis — you can contribute any time, with no time limit. Any surplus beyond upkeep goes to Jednadvacet.org activities and bitcoin education.",

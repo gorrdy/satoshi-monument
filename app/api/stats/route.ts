@@ -5,9 +5,9 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   // Krátká in-process cache (lib/stats) — bez recompute ze SQLite při každém pollu.
-  const { stats, wall, recent, pending } = await getStatsBundle();
+  const { stats, wall, recent, pending, close } = await getStatsBundle();
   return NextResponse.json(
-    { stats, wall, recent, pending },
+    { stats, wall, recent, pending, close },
     {
       headers: {
         // Krátká cache na okraji (nginx/CDN) ke koalescenci náporu; data zůstávají čerstvá.

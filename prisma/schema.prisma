@@ -42,6 +42,13 @@ model Donation {
   @@index([kind, status, hiddenOnWall, confirmedAt])
 }
 
+// Globální přepínače/nastavení webu (klíč → hodnota). Např. uzavření hlavní sbírky.
+model Setting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
 // Profil identifikátoru (donorKey): jedno kanonické jméno + logo, které přebíjí
 // to, co zadá přispěvatel. Z platby se pak použije jen zpráva a částka.
 model DonorProfile {

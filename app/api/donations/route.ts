@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { createInvoice } from "@/lib/btcpay";
 import { buildSpayd, makeVariableSymbol } from "@/lib/spayd";
 import { normalizeDonorKey } from "@/lib/donorKey";
+import { getCampaignClose } from "@/lib/settings";
 import QRCode from "qrcode";
 
 export const dynamic = "force-dynamic";
@@ -112,6 +113,14 @@ export async function POST(req: NextRequest) {
       { error: "amount_too_low", minSats: MIN_SATS },
       { status: 400 },
     );
+  }
+  // Hlavní sbírka je po dosažení cíle uzavřená — nové dary už nepřijímáme.
+  // Podporovatelé (supporters) běží dál bez omezení.
+  if (kind === "monument") {
+    const close = await getCampaignClose();
+    if (close.closed) {
+      return NextResponse.json({ error: "campaign_closed" }, { status: 409 });
+    }
   }
 
   try {
