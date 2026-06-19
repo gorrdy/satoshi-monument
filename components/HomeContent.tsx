@@ -13,10 +13,14 @@ import HeroStats from "@/components/HeroStats";
 import RecentDonations from "@/components/RecentDonations";
 import Reveal from "@/components/Reveal";
 import ShareCampaign from "@/components/ShareCampaign";
+import { useCampaignStats } from "@/components/StatsProvider";
+import { formatBtc } from "@/lib/format";
 
 export default function HomeContent() {
   const t = useTranslations();
   const { locale } = useLocaleSwitch();
+  const { stats, close } = useCampaignStats();
+  const closed = close?.closed === true;
 
   return (
     <>
@@ -85,13 +89,43 @@ export default function HomeContent() {
             </div>
           </div>
 
-          {/* Formulář vpravo */}
+          {/* Formulář vpravo — po uzavření sbírky finální „poděkování" + rozcestník */}
           <div
             id="donate"
             className="animate-fade-up scroll-mt-24 w-full max-w-md mx-auto lg:mx-0 lg:ml-auto"
             style={{ animationDelay: "200ms" }}
           >
-            <DonationWidget />
+            {closed ? (
+              <div className="ui-card p-6 sm:p-8 text-center">
+                <div className="text-5xl mb-3">🎉</div>
+                <h3 className="ui-display text-2xl font-bold mb-2">
+                  {t("closed.title")}
+                </h3>
+                <p className="ui-muted mb-3">{t("closed.body")}</p>
+                <p className="ui-mono ui-accent font-bold text-2xl leading-none">
+                  {formatBtc(stats?.raisedBtc ?? 0)} BTC
+                </p>
+                <p className="ui-muted text-sm mt-1 mb-5">
+                  {t("closed.from")} {stats?.donorCount ?? 0} {t("closed.donors")}
+                </p>
+                <div className="flex flex-col gap-2.5">
+                  <a
+                    href={`/${locale}/pribeh`}
+                    className="ui-btn press px-4 py-2.5 text-sm"
+                  >
+                    {t("closed.storyCta")}
+                  </a>
+                  <a
+                    href={`/${locale}/podporovatele`}
+                    className="ui-eyebrow ui-link underline underline-offset-2"
+                  >
+                    {t("closed.supportersCta")} →
+                  </a>
+                </div>
+              </div>
+            ) : (
+              <DonationWidget />
+            )}
           </div>
         </div>
       </section>

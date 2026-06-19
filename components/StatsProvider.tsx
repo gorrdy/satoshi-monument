@@ -12,6 +12,7 @@ import { usePathname } from "next/navigation";
 import type { Stats } from "./ProgressBar";
 import type { WallEntry } from "./SupporterWall";
 import type { RecentDonation, PendingDonation } from "@/lib/stats";
+import type { CampaignClose } from "@/lib/settings";
 import { fireConfetti } from "@/lib/confetti";
 
 interface StatsValue {
@@ -19,6 +20,7 @@ interface StatsValue {
   wall: WallEntry[];
   recent: RecentDonation[];
   pending: PendingDonation[];
+  close: CampaignClose | null; // uzavření hlavní sbírky (+ snapshot)
 }
 
 const StatsContext = createContext<StatsValue>({
@@ -26,6 +28,7 @@ const StatsContext = createContext<StatsValue>({
   wall: [],
   recent: [],
   pending: [],
+  close: null,
 });
 
 /** Jeden zdroj dat sbírky pro celou stránku — místo 3 nezávislých fetchů. */
@@ -38,6 +41,7 @@ export default function StatsProvider({
   const [wall, setWall] = useState<WallEntry[]>([]);
   const [recent, setRecent] = useState<RecentDonation[]>([]);
   const [pending, setPending] = useState<PendingDonation[]>([]);
+  const [close, setClose] = useState<CampaignClose | null>(null);
   // Testovací override vybrané částky (jen klient, z konzole) — odsimuluje stav sbírky.
   const [simRaised, setSimRaised] = useState<number | null>(null);
   // Předchozí vybraná částka — nárůst = právě přišla nová platba → konfety.
@@ -56,6 +60,7 @@ export default function StatsProvider({
         wall: WallEntry[];
         recent: RecentDonation[];
         pending: PendingDonation[];
+        close: CampaignClose | null;
       };
       const raised = data.stats?.raisedBtc ?? 0;
       // Při prvním načtení jen zapamatovat; potom oslavit každý nárůst.
@@ -73,6 +78,7 @@ export default function StatsProvider({
       setWall(data.wall ?? []);
       setRecent(data.recent ?? []);
       setPending(data.pending ?? []);
+      setClose(data.close ?? null);
     } catch {}
   }, []);
 
@@ -133,7 +139,7 @@ export default function StatsProvider({
       : stats;
 
   return (
-    <StatsContext.Provider value={{ stats: effStats, wall, recent, pending }}>
+    <StatsContext.Provider value={{ stats: effStats, wall, recent, pending, close }}>
       {children}
     </StatsContext.Provider>
   );

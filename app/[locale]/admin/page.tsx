@@ -69,6 +69,14 @@ export default function AdminPage() {
       ? localStorage.getItem("admin.kindFilter") || "all"
       : "all",
   );
+  // Stav uzavření hlavní sbírky (+ snapshot) ze serveru.
+  const [campClose, setCampClose] = useState<{
+    closed: boolean;
+    closedAt: string | null;
+    raisedBtc: number;
+    donorCount: number;
+  } | null>(null);
+  const [campBusy, setCampBusy] = useState(false);
   const [view, setView] = useState<
     "payments" | "analytics" | "fiat" | "identity" | "roadmap"
   >(() => {
@@ -266,6 +274,36 @@ export default function AdminPage() {
     if (typeof window !== "undefined")
       localStorage.setItem("admin.kindFilter", kindFilter);
   }, [kindFilter]);
+
+  const loadSettings = useCallback(async () => {
+    try {
+      const r = await fetch("/api/admin/settings", { cache: "no-store" });
+      if (r.ok) setCampClose((await r.json()).close);
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    loadSettings();
+  }, [loadSettings]);
+
+  const toggleCampaignClose = async () => {
+    const closing = !campClose?.closed;
+    const msg = closing
+      ? "Uzavřít hlavní sbírku? Zafixuje se konečný stav (vybráno + přispěvatelé) a web se překlopí do finální podoby. Příjem nových darů Přispěvatelů se zastaví. (Podporovatelé běží dál.)"
+      : "Znovu otevřít hlavní sbírku? Zruší se uzavření i snapshot a web se vrátí do běžného režimu.";
+    if (!confirm(msg)) return;
+    setCampBusy(true);
+    try {
+      const r = await fetch("/api/admin/settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: closing ? "close" : "reopen" }),
+      });
+      if (r.ok) setCampClose((await r.json()).close);
+    } finally {
+      setCampBusy(false);
+    }
+  };
 
   // Checklist nákupu BTC za fiat: potvrzené CZK platby (nejstarší první).
   const loadFiat = useCallback(async () => {
@@ -1027,6 +1065,53 @@ export default function AdminPage() {
         </div>
       ) : (
       <>
+      {/* Uzavření hlavní sbírky (+ snapshot) */}
+      <div
+        className={`mb-6 rounded-xl border p-4 flex flex-wrap items-center justify-between gap-3 ${
+          campClose?.closed
+            ? "border-red-500/40 bg-red-500/10"
+            : "border-white/10 bg-white/5"
+        }`}
+      >
+        <div>
+          <div className="font-semibold">
+            {campClose?.closed
+              ? "🔒 Hlavní sbírka UZAVŘENA"
+              : "Hlavní sbírka běží"}
+          </div>
+          {campClose?.closed && (
+            <div className="text-xs text-white/50 mt-0.5 font-mono">
+              snapshot: {campClose.raisedBtc.toFixed(8)} BTC ·{" "}
+              {campClose.donorCount} přispěvatelů
+              {campClose.closedAt
+                ? " · " + new Date(campClose.closedAt).toLocaleString("cs-CZ")
+                : ""}
+            </div>
+          )}
+          {!campClose?.closed && (
+            <div className="text-xs text-white/40 mt-0.5">
+              Po uzavření se zafixuje konečný stav a web se překlopí do finální
+              podoby. Podporovatelé běží dál.
+            </div>
+          )}
+        </div>
+        <button
+          onClick={toggleCampaignClose}
+          disabled={campBusy}
+          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50 ${
+            campClose?.closed
+              ? "bg-white/10 text-white hover:bg-white/20"
+              : "bg-red-500/80 text-white hover:bg-red-500"
+          }`}
+        >
+          {campBusy
+            ? "…"
+            : campClose?.closed
+              ? "Otevřít sbírku"
+              : "Uzavřít sbírku"}
+        </button>
+      </div>
+
       <div className="flex flex-wrap gap-2 mb-6">
         {FILTERS.map((f) => {
           const c = counts[f.key];

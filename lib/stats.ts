@@ -10,6 +10,7 @@
 import crypto from "crypto";
 import { prisma } from "./prisma";
 import { getBtcCzkRate, getBtcUsdRate } from "./price";
+import { getCampaignClose } from "./settings";
 
 export type CampaignKind = "monument" | "supporters";
 export const KIND_MONUMENT: CampaignKind = "monument";
@@ -397,13 +398,32 @@ const _bundle = new Map<
 >();
 
 async function buildStatsBundle(kind: CampaignKind) {
-  const [stats, wall, recent, pending] = await Promise.all([
+  const [stats0, wall, recent, pending, close] = await Promise.all([
     getStats(kind),
     getWall(kind),
     getRecent(10, kind),
     getPending(3, kind),
+    kind === KIND_MONUMENT ? getCampaignClose() : Promise.resolve(null),
   ]);
-  return { stats, wall, recent, pending };
+  // Po uzavření hlavní sbírky zmrazíme headline na snapshot (stálý finální výsledek).
+  let stats = stats0;
+  if (close?.closed) {
+    const raisedBtc = close.raisedBtc;
+    const goalReached = raisedBtc >= GOAL_BTC;
+    const goalBtc = goalReached ? GOAL_BTC_MAX : GOAL_BTC;
+    stats = {
+      ...stats0,
+      raisedBtc,
+      donorCount: close.donorCount,
+      goalReached,
+      goalBtc,
+      percent: GOAL_BTC > 0 ? (raisedBtc / GOAL_BTC) * 100 : 0,
+      fillPercent: goalBtc > 0 ? Math.min(100, (raisedBtc / goalBtc) * 100) : 0,
+      raisedCzk: raisedBtc * stats0.btcCzkRate,
+      raisedUsd: raisedBtc * stats0.btcUsdRate,
+    };
+  }
+  return { stats, wall, recent, pending, close };
 }
 
 /** Složený stav pro /api/stats s krátkou in-process cache (anti-recompute). */
