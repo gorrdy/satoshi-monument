@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
     prisma.donation.findMany({
       where,
       orderBy: { createdAt: "desc" },
-      take: 2000, // ať se neořezávají starší dary (fiat checklist musí mít kompletní CZK)
+      take: 20000, // prakticky vše — ať hledání i fiat checklist pokryjí celou historii (ne jen nejnovější)
     }),
     prisma.donation.groupBy({ by: ["status"], _count: { _all: true } }),
   ]);
