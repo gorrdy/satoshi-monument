@@ -43,6 +43,7 @@ interface Body {
   imageUrl?: string; // logo skupiny (jen vlastní upload /api/uploads nebo logo 21)
   imageBg?: string; // barva pozadí pod logem (hex)
   group?: boolean; // uživatel přispívá „jako skupina" → založit profil identifikátoru
+  kind?: string; // "monument" (hlavní sbírka, default) | "supporters" (Zeď Podporovatelů)
 }
 
 // Veřejně smí přijít jen náš nahraný soubor nebo allowlistované logo Jednadvacet 21
@@ -87,6 +88,8 @@ export async function POST(req: NextRequest) {
   const locale = body.locale === "en" ? "en" : "cs";
   const hasName = asStr(body.name).trim().length > 0;
   const group = body.group === true;
+  // Druh sbírky: Podporovatelé (průběžná) vs hlavní monument (default).
+  const kind = body.kind === "supporters" ? "supporters" : "monument";
   const imageUrl = safePublicImageUrl(body.imageUrl);
   const imageBg =
     imageUrl && /^#[0-9a-fA-F]{3,8}$/.test(asStr(body.imageBg).trim())
@@ -123,6 +126,7 @@ export async function POST(req: NextRequest) {
       donorKey,
       imageUrl,
       imageBg,
+      kind,
       status: "pending",
     },
   });

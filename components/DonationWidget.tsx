@@ -8,18 +8,24 @@ import PaymentModal, { type PaymentResult } from "./PaymentModal";
  * Samostatný darovací widget (formulář + platební modal) pro hero sekci.
  * Po dokončení platby pošle globální událost, na kterou reaguje progress bar.
  */
-export default function DonationWidget() {
+export default function DonationWidget({
+  kind = "monument",
+}: {
+  kind?: "monument" | "supporters";
+}) {
   const [result, setResult] = useState<PaymentResult | null>(null);
 
   const refreshStats = () => {
     if (typeof window !== "undefined") {
+      // monument poslouchá StatsProvider; supporters svůj vlastní listener.
       window.dispatchEvent(new Event("stats:refresh"));
+      window.dispatchEvent(new Event("supporters:refresh"));
     }
   };
 
   return (
     <>
-      <DonationForm onResult={(r) => setResult(r)} />
+      <DonationForm onResult={(r) => setResult(r)} kind={kind} />
       {result && (
         <PaymentModal
           result={result}

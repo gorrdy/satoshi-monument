@@ -14,9 +14,11 @@ export async function GET(req: NextRequest) {
 
   const status = req.nextUrl.searchParams.get("status"); // pending | confirmed | rejected | all
   const currency = req.nextUrl.searchParams.get("currency"); // BTC | CZK (volitelné)
-  const where: { status?: string; currency?: string } = {};
+  const kind = req.nextUrl.searchParams.get("kind"); // monument | supporters (volitelné)
+  const where: { status?: string; currency?: string; kind?: string } = {};
   if (status && status !== "all") where.status = status;
   if (currency === "BTC" || currency === "CZK") where.currency = currency;
+  if (kind === "monument" || kind === "supporters") where.kind = kind;
 
   const [donations, grouped] = await Promise.all([
     prisma.donation.findMany({

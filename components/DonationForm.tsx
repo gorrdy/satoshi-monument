@@ -108,8 +108,10 @@ function trimBtc(btc: number): string {
 
 export default function DonationForm({
   onResult,
+  kind = "monument",
 }: {
   onResult: (r: PaymentResult) => void;
+  kind?: "monument" | "supporters";
 }) {
   const t = useTranslations("form");
   const locale = useLocale();
@@ -299,6 +301,7 @@ export default function DonationForm({
           group: groupMode,
           imageUrl: groupMode ? (imageUrl ?? undefined) : undefined,
           imageBg: groupMode && imageUrl ? imageBg : undefined,
+          kind,
         }),
       });
       if (!res.ok) {

@@ -60,9 +60,11 @@ function amountLabel(entry: WallEntry): string {
 export default function SupporterWall({
   wall,
   search = false,
+  wallKind = "monument",
 }: {
   wall: WallEntry[];
   search?: boolean;
+  wallKind?: "monument" | "supporters";
 }) {
   const t = useTranslations("wall");
   const tc = useTranslations("common");
@@ -113,7 +115,7 @@ export default function SupporterWall({
     }
     let cancelled = false;
     setDetailItems(null);
-    fetch(`/api/wall/items?id=${encodeURIComponent(detail.id)}`)
+    fetch(`/api/wall/items?id=${encodeURIComponent(detail.id)}&kind=${wallKind}`)
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
         if (!cancelled) setDetailItems(d?.items ?? []);
@@ -124,7 +126,7 @@ export default function SupporterWall({
     return () => {
       cancelled = true;
     };
-  }, [detail]);
+  }, [detail, wallKind]);
 
   // Hledání ignoruje diakritiku i velikost písmen.
   const fold = (s: string) =>

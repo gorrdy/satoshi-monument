@@ -13,8 +13,29 @@
     "cities": "Metropole",
     "pravidla": "Pravidla sbírky",
     "pribeh": "Příběh",
+    "podporovatele": "Podporovatelé",
     "more": "Touto sochou to nekončí",
     "menu": "Menu"
+  },
+  "supporters": {
+    "title": "Zeď Podporovatelů",
+    "intro": "Sbírka na pořízení sochy má svůj strop, ale péče o monument pokračuje dál. Podporovatelé průběžně financují pojištění, údržbu a péči o sochu — přispívat jde kdykoli, bez časového omezení. Případný přebytek nad rámec údržby jde na aktivity Jednadvacet.org a bitcoinovou edukaci.",
+    "donors": "podporovatelů",
+    "rulesLink": "Pravidla Zdi Podporovatelů"
+  },
+  "pravidlaPodp": {
+    "title": "Pravidla Zdi Podporovatelů",
+    "intro": "Zeď Podporovatelů je průběžná, časově neomezená sbírka na dlouhodobou péči o monument. Zde transparentně popisujeme, na co prostředky jdou a jak se nakládá s případným přebytkem.",
+    "goalsTitle": "Na co prostředky jdou",
+    "goals": [
+      "pojištění monumentu",
+      "běžná údržba a péče o sochu",
+      "provozní náklady spojené s umístěním a vystavením"
+    ],
+    "surplusTitle": "Když se vybere víc, než je potřeba na péči",
+    "surplusBody": "Případný přebytek nad rámec údržby a péče bude použit na podporu aktivit Jednadvacet.org, bitcoinovou edukaci do škol a další související činnosti. Konkrétní způsob a poměr rozdělení Board Satoshi Monument transparentně popíše a zdůvodní.",
+    "transTitle": "Transparentnost a reporting",
+    "transBody": "Příspěvky Podporovatelů se sčítají za celé období bez časového omezení. Aktuální stav je veřejný na Zdi Podporovatelů a Board Satoshi Monument bude pravidelně reportovat, jak byly prostředky využity."
   },
   "cities": {
     "title": "Socha už stojí ve světových metropolích",
