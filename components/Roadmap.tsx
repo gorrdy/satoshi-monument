@@ -45,9 +45,88 @@ export default function Roadmap() {
         <p className="ui-muted mt-2">{t("subtitle")}</p>
       </Reveal>
 
-      {/* Vodorovná timeline; na mobilu se vodorovně scrolluje */}
-      <div className="overflow-x-auto pb-2 -mx-4 px-4">
-        <ol className="flex min-w-max sm:min-w-0 sm:max-w-5xl mx-auto">
+      {/* MOBIL: svislá timeline (bez vodorovného scrollu) */}
+      <ol className="sm:hidden max-w-sm mx-auto">
+        {items.map((it, i) => {
+          const done = it.status === "done";
+          const current = it.status === "current";
+          const isLast = i === items.length - 1;
+          const currentBetween = current && i > 0;
+          const fillRef = currentStatusIndex >= 0 ? currentStatusIndex : lastDoneIndex;
+          // svislý spoj pod tímto bodem je oranžový, dokud nedojdeme k fillRef
+          const belowAccent = i < fillRef;
+          return (
+            <li key={it.id} className="relative flex gap-4">
+              {/* levý sloupec: spoj + tečka */}
+              <div className="relative w-6 shrink-0 flex justify-center">
+                {!isLast && (
+                  <span
+                    aria-hidden
+                    className="absolute left-1/2 -translate-x-1/2 top-6 bottom-0 w-0.5"
+                    style={{ background: belowAccent ? "var(--accent)" : "var(--line)" }}
+                  />
+                )}
+                {/* pohyblivý průběžný bod (mezi předchozím a tímto milníkem) */}
+                {currentBetween && (
+                  <span
+                    aria-hidden
+                    className="absolute left-1/2 -translate-x-1/2 -top-2 z-20 w-3 h-3 rounded-full animate-pulse"
+                    style={{
+                      background: "var(--accent)",
+                      boxShadow: "0 0 0 4px color-mix(in srgb, var(--accent) 25%, transparent)",
+                    }}
+                  />
+                )}
+                <span
+                  aria-hidden
+                  className="relative z-10 w-6 h-6 rounded-full border-2"
+                  style={{
+                    background: done ? "var(--accent)" : "var(--bg)",
+                    borderColor: "var(--accent)",
+                  }}
+                />
+              </div>
+              {/* text */}
+              <div className={`-mt-0.5 ${isLast ? "" : "pb-7"}`}>
+                {it.dateLabel && (
+                  <div className="ui-eyebrow ui-muted">{it.dateLabel}</div>
+                )}
+                <div
+                  className={`ui-display font-bold leading-tight mt-0.5 ${
+                    current ? "ui-accent" : done ? "" : "ui-muted"
+                  }`}
+                >
+                  {it.linkUrl ? (
+                    <a
+                      href={it.linkUrl}
+                      target={it.linkBlank ? "_blank" : undefined}
+                      rel={it.linkBlank ? "noopener noreferrer" : undefined}
+                      className="text-inherit hover:underline"
+                    >
+                      {it.title}
+                      {it.linkBlank && (
+                        <>
+                          {" "}
+                          <span aria-hidden className="ui-accent">↗</span>
+                        </>
+                      )}
+                    </a>
+                  ) : (
+                    it.title
+                  )}
+                </div>
+                {it.detail && (
+                  <p className="text-xs ui-muted leading-relaxed mt-1">{it.detail}</p>
+                )}
+              </div>
+            </li>
+          );
+        })}
+      </ol>
+
+      {/* DESKTOP: vodorovná timeline */}
+      <div className="hidden sm:block">
+        <ol className="flex sm:min-w-0 sm:max-w-5xl mx-auto">
           {items.map((it, i) => {
             const done = it.status === "done";
             const current = it.status === "current";
