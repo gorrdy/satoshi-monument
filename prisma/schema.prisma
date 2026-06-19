@@ -30,12 +30,16 @@ model Donation {
   paymentRef      String? // krátký kód v poznámce platby pro snadné spárování
   donorKey        String? // identifikátor přispěvatele (e-mail/řetězec) pro sčítání plateb na zdi
 
+  // Druh sbírky: "monument" = hlavní sbírka / Zeď Přispěvatelů (cíl 1 BTC),
+  // "supporters" = Zeď Podporovatelů (průběžná, pojištění/údržba/péče).
+  kind            String    @default("monument")
+
   confirmedAt     DateTime?
 
   @@index([status])
   @@index([createdAt])
-  // Pokrývá filtr+řazení veřejných dotazů (zeď/recent/pending).
-  @@index([status, hiddenOnWall, confirmedAt])
+  // Pokrývá filtr+řazení veřejných dotazů (zeď/recent/pending) — per druh sbírky.
+  @@index([kind, status, hiddenOnWall, confirmedAt])
 }
 
 // Profil identifikátoru (donorKey): jedno kanonické jméno + logo, které přebíjí

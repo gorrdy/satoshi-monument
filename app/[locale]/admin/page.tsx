@@ -22,6 +22,7 @@ interface Donation {
   paymentRef: string | null;
   donorKey: string | null;
   confirmedAt: string | null;
+  kind?: string;
 }
 
 interface FioPayment {
@@ -61,6 +62,12 @@ export default function AdminPage() {
     typeof window !== "undefined"
       ? localStorage.getItem("admin.filter") || "pending"
       : "pending",
+  );
+  // Filtr druhu sbírky: all | monument | supporters.
+  const [kindFilter, setKindFilter] = useState(() =>
+    typeof window !== "undefined"
+      ? localStorage.getItem("admin.kindFilter") || "all"
+      : "all",
   );
   const [view, setView] = useState<
     "payments" | "analytics" | "fiat" | "identity" | "roadmap"
@@ -230,8 +237,9 @@ export default function AdminPage() {
   }, []);
 
   const load = useCallback(
-    async (status: string) => {
-      const res = await fetch(`/api/admin/donations?status=${status}`, {
+    async (status: string, kind: string) => {
+      const kq = kind && kind !== "all" ? `&kind=${kind}` : "";
+      const res = await fetch(`/api/admin/donations?status=${status}${kq}`, {
         cache: "no-store",
       });
       if (res.status === 401) {
@@ -251,8 +259,13 @@ export default function AdminPage() {
   );
 
   useEffect(() => {
-    load(filter);
-  }, [filter, load]);
+    load(filter, kindFilter);
+  }, [filter, kindFilter, load]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined")
+      localStorage.setItem("admin.kindFilter", kindFilter);
+  }, [kindFilter]);
 
   // Checklist nákupu BTC za fiat: potvrzené CZK platby (nejstarší první).
   const loadFiat = useCallback(async () => {
@@ -323,7 +336,7 @@ export default function AdminPage() {
     if (action === "assign" && res.status === 404) {
       alert("K zadanému VS nebyl nalezen žádný čekající dar.");
     }
-    await load(filter);
+    await load(filter, kindFilter);
     setBusy(null);
   };
 
@@ -337,7 +350,7 @@ export default function AdminPage() {
     });
     if (res.ok) {
       setPassword("");
-      load(filter);
+      load(filter, kindFilter);
     } else {
       setLoginError("Nesprávné jméno nebo heslo.");
     }
@@ -355,7 +368,7 @@ export default function AdminPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id, action }),
     });
-    await load(filter);
+    await load(filter, kindFilter);
     setBusy(null);
   };
 
@@ -371,7 +384,7 @@ export default function AdminPage() {
       delete next[id];
       return next;
     });
-    await load(filter);
+    await load(filter, kindFilter);
     setBusy(null);
   };
 
@@ -394,7 +407,7 @@ export default function AdminPage() {
       delete next[d.id];
       return next;
     });
-    await load(filter);
+    await load(filter, kindFilter);
     setBusy(null);
   };
 
@@ -1040,6 +1053,27 @@ export default function AdminPage() {
         })}
       </div>
 
+      {/* Filtr druhu sbírky */}
+      <div className="flex flex-wrap gap-2 mb-6 -mt-3">
+        {[
+          ["all", "Vše"],
+          ["monument", "Hlavní (Přispěvatelé)"],
+          ["supporters", "Podporovatelé"],
+        ].map(([k, lbl]) => (
+          <button
+            key={k}
+            onClick={() => setKindFilter(k)}
+            className={`px-2.5 py-1 rounded-md text-xs transition-colors ${
+              kindFilter === k
+                ? "bg-white/15 text-white font-semibold"
+                : "bg-white/5 text-white/50 hover:text-white"
+            }`}
+          >
+            {lbl}
+          </button>
+        ))}
+      </div>
+
       {/* Nepárované příchozí platby z Fio */}
       {fio.filter((p) => p.status === "unmatched").length > 0 && (
         <div className="mb-8 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4">
@@ -1163,6 +1197,11 @@ export default function AdminPage() {
                   <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-white/60">
                     {d.currency}
                   </span>
+                  {d.kind === "supporters" && (
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300">
+                      Podporovatelé
+                    </span>
+                  )}
                 </div>
                 <span className="text-xs text-white/40 font-mono">
                   {new Date(d.createdAt).toLocaleString("cs-CZ")}

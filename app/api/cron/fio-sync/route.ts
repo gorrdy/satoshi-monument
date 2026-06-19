@@ -121,6 +121,7 @@ export async function GET(req: NextRequest) {
           publicMessage: owner.publicMessage,
           variableSymbol: owner.variableSymbol,
           paymentRef: owner.paymentRef,
+          kind: owner.kind, // opakovaná platba dědí druh sbírky
         },
       });
       confirmed.push({ id: dup.id, amount: tx.amount, vs: tx.vs });

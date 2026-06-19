@@ -1,10 +1,19 @@
 /**
  * Sdílené čtení dat sbírky: souhrn (progress bar) a zeď přispěvatelů.
+ *
+ * Sbírka má dva druhy (`kind`):
+ *  - "monument"   = hlavní sbírka / Zeď Přispěvatelů (cíl 1 BTC, strop 1,3 BTC)
+ *  - "supporters" = Zeď Podporovatelů (průběžná, bez cíle/stropu)
+ * Funkce přijímají `kind` (default "monument") → hlavní zeď se chová beze změny.
  */
 
 import crypto from "crypto";
 import { prisma } from "./prisma";
 import { getBtcCzkRate, getBtcUsdRate } from "./price";
+
+export type CampaignKind = "monument" | "supporters";
+export const KIND_MONUMENT: CampaignKind = "monument";
+export const KIND_SUPPORTERS: CampaignKind = "supporters";
 
 // Neodvoditelné id skupiny pro veřejnou zeď (nesmí prozradit donorKey/e-mail).
 // Solíme serverovým tajemstvím → z id nelze potvrdit konkrétní e-mail (hash
@@ -24,11 +33,11 @@ const GOAL_BTC = Number(process.env.GOAL_BTC ?? "1");
 const GOAL_BTC_MAX = Number(process.env.GOAL_BTC_MAX ?? "1.3");
 
 export interface CampaignStats {
-  goalBtc: number; // aktuální cíl (základní 1 BTC, po dosažení prodloužený na 1,3 BTC)
-  goalReached: boolean; // dosažen základní cíl (≥ GOAL_BTC) → spouští banner i prodloužení
+  goalBtc: number; // aktuální cíl (jen monument; supporters = 0)
+  goalReached: boolean; // dosažen základní cíl (jen monument)
   raisedBtc: number;
-  percent: number; // vůči 1 BTC, bez stropu (1 BTC = 100 %, víc = 100+ %)
-  fillPercent: number; // šířka lišty vůči aktuálnímu cíli (0–100 %)
+  percent: number; // monument: vůči 1 BTC bez stropu; supporters: 0
+  fillPercent: number; // šířka lišty vůči aktuálnímu cíli (0–100 %); supporters: 0
   donorCount: number;
   btcCzkRate: number;
   btcUsdRate: number;
@@ -36,9 +45,11 @@ export interface CampaignStats {
   raisedUsd: number;
 }
 
-export async function getStats(): Promise<CampaignStats> {
+export async function getStats(
+  kind: CampaignKind = KIND_MONUMENT,
+): Promise<CampaignStats> {
   const confirmed = await prisma.donation.findMany({
-    where: { status: "confirmed" },
+    where: { status: "confirmed", kind },
     select: { amountBtc: true, donorKey: true, id: true },
   });
 
@@ -54,13 +65,13 @@ export async function getStats(): Promise<CampaignStats> {
     confirmed.map((d) => (d.donorKey ? `k:${d.donorKey}` : `s:${d.id}`)),
   );
 
-  // Dosažení 1 BTC → cíl se prodlouží na 1,3 BTC (lišta se vizuálně plní k němu).
-  const goalReached = raisedBtc >= GOAL_BTC;
-  const goalBtc = goalReached ? GOAL_BTC_MAX : GOAL_BTC;
-  // Procento je VŽDY vůči základnímu cíli (1 BTC) a BEZ stropu → 1 BTC = 100 %, víc = 100+ %.
-  const percent = GOAL_BTC > 0 ? (raisedBtc / GOAL_BTC) * 100 : 0;
-  // Šířka lišty se počítá k aktuálnímu (případně prodlouženému) cíli, capováno na 100 %.
-  const fillPercent = goalBtc > 0 ? Math.min(100, (raisedBtc / goalBtc) * 100) : 0;
+  // Cíl/strop má jen hlavní sbírka. Podporovatelé jsou průběžní, bez cíle.
+  const hasGoal = kind === KIND_MONUMENT;
+  const goalReached = hasGoal && raisedBtc >= GOAL_BTC;
+  const goalBtc = hasGoal ? (goalReached ? GOAL_BTC_MAX : GOAL_BTC) : 0;
+  const percent = hasGoal && GOAL_BTC > 0 ? (raisedBtc / GOAL_BTC) * 100 : 0;
+  const fillPercent =
+    hasGoal && goalBtc > 0 ? Math.min(100, (raisedBtc / goalBtc) * 100) : 0;
 
   return {
     goalBtc,
@@ -119,10 +130,10 @@ export async function getDonorProfiles(): Promise<Map<string, DonorProfileLite>>
   return m;
 }
 
-async function buildWallEntries(): Promise<WallEntry[]> {
+async function buildWallEntries(kind: CampaignKind): Promise<WallEntry[]> {
   const [rows, profiles] = await Promise.all([
     prisma.donation.findMany({
-      where: { status: "confirmed", hiddenOnWall: false },
+      where: { status: "confirmed", hiddenOnWall: false, kind },
       orderBy: { confirmedAt: "asc" },
       select: {
         id: true,
@@ -239,31 +250,36 @@ async function buildWallEntries(): Promise<WallEntry[]> {
   return entries;
 }
 
-// Krátká in-process cache sestavených skupin — sdílí getWall() i getWallItems(),
-// takže detail (/api/wall/items) nepřepočítává všechny skupiny zvlášť.
+// Krátká in-process cache sestavených skupin (per kind) — sdílí getWall() i
+// getWallItems(), takže detail (/api/wall/items) nepřepočítává všechny skupiny.
 const WALL_TTL_MS = 12_000;
-let _wallEntries: { at: number; data: WallEntry[] } | null = null;
-async function getCachedWallEntries(): Promise<WallEntry[]> {
+const _wallEntries = new Map<CampaignKind, { at: number; data: WallEntry[] }>();
+async function getCachedWallEntries(kind: CampaignKind): Promise<WallEntry[]> {
   const now = Date.now();
-  if (_wallEntries && now - _wallEntries.at < WALL_TTL_MS) return _wallEntries.data;
-  const data = await buildWallEntries();
-  _wallEntries = { at: now, data };
+  const c = _wallEntries.get(kind);
+  if (c && now - c.at < WALL_TTL_MS) return c.data;
+  const data = await buildWallEntries(kind);
+  _wallEntries.set(kind, { at: now, data });
   return data;
 }
 
 /**
- * Veřejná zeď — VŠICHNI přispěvatelé, seřazení dle BTC ekvivalentu.
- * Bez položkového rozpisu (`items`) — ten se dotahuje lazy přes getWallItems(),
- * takže payload /api/stats zůstává malý i s rostoucím počtem dárců.
+ * Veřejná zeď — VŠICHNI přispěvatelé daného druhu, seřazení dle BTC ekvivalentu.
+ * Bez položkového rozpisu (`items`) — ten se dotahuje lazy přes getWallItems().
  */
-export async function getWall(): Promise<WallEntry[]> {
-  const entries = await getCachedWallEntries();
+export async function getWall(
+  kind: CampaignKind = KIND_MONUMENT,
+): Promise<WallEntry[]> {
+  const entries = await getCachedWallEntries(kind);
   return entries.map((e) => ({ ...e, items: undefined }));
 }
 
 /** Rozpis jednotlivých příspěvků jedné skupiny dle veřejného (soleného) id. */
-export async function getWallItems(id: string): Promise<WallItem[] | null> {
-  const entries = await getCachedWallEntries();
+export async function getWallItems(
+  id: string,
+  kind: CampaignKind = KIND_MONUMENT,
+): Promise<WallItem[] | null> {
+  const entries = await getCachedWallEntries(kind);
   return entries.find((e) => e.id === id)?.items ?? null;
 }
 
@@ -279,9 +295,12 @@ export interface RecentDonation {
 }
 
 /** Poslední potvrzené příspěvky (jednotlivé platby) pro „recent" feed. */
-export async function getRecent(limit = 10): Promise<RecentDonation[]> {
+export async function getRecent(
+  limit = 10,
+  kind: CampaignKind = KIND_MONUMENT,
+): Promise<RecentDonation[]> {
   const rows = await prisma.donation.findMany({
-    where: { status: "confirmed", hiddenOnWall: false },
+    where: { status: "confirmed", hiddenOnWall: false, kind },
     orderBy: { confirmedAt: "desc" },
     take: limit,
     select: {
@@ -299,14 +318,14 @@ export async function getRecent(limit = 10): Promise<RecentDonation[]> {
   });
 
   // Logo se váže k identifikátoru: když tahle platba logo nemá, ale stejný
-  // donorKey ho má na jiné platbě, použijeme ho (stejně jako na zdi).
+  // donorKey ho má na jiné platbě (téhož druhu), použijeme ho (jako na zdi).
   const needKeys = [
     ...new Set(rows.filter((r) => !r.imageUrl && r.donorKey).map((r) => r.donorKey!)),
   ];
   const logoByKey = new Map<string, { imageUrl: string; imageBg: string | null }>();
   if (needKeys.length) {
     const logoRows = await prisma.donation.findMany({
-      where: { donorKey: { in: needKeys }, imageUrl: { not: null } },
+      where: { donorKey: { in: needKeys }, imageUrl: { not: null }, kind },
       orderBy: { createdAt: "asc" }, // první nastavené logo vyhrává (nejde přebít pozdějším darem)
       select: { donorKey: true, imageUrl: true, imageBg: true },
     });
@@ -350,13 +369,15 @@ export interface PendingDonation {
 /**
  * Probíhající (pending) platby pro teaser „právě probíhá".
  * ZÁMĚRNĚ NEvrací jméno ani částku — klient ukáže jen rozmazaný placeholder.
- * Jen platby z posledních ~3 min (čistě vizuální teaser „právě teď") — na pozadí
- * se platba může spárovat/potvrdit i mnohem později, to tahle zkratka neovlivňuje.
+ * Jen platby z posledních ~3 min (čistě vizuální teaser „právě teď").
  */
-export async function getPending(limit = 3): Promise<PendingDonation[]> {
+export async function getPending(
+  limit = 3,
+  kind: CampaignKind = KIND_MONUMENT,
+): Promise<PendingDonation[]> {
   const since = new Date(Date.now() - 3 * 60 * 1000);
   const rows = await prisma.donation.findMany({
-    where: { status: "pending", hiddenOnWall: false, createdAt: { gt: since } },
+    where: { status: "pending", hiddenOnWall: false, kind, createdAt: { gt: since } },
     orderBy: { createdAt: "desc" },
     take: limit,
     select: { id: true, createdAt: true },
@@ -367,28 +388,30 @@ export async function getPending(limit = 3): Promise<PendingDonation[]> {
   }));
 }
 
-// ---- In-process cache složeného stavu pro /api/stats ----
-// Eliminuje recompute ze SQLite při každém pollu (klienti pollu á ~30 s).
-// Krátké TTL; data jsou stejně eventually-consistent. Každá instance vlastní cache.
+// ---- In-process cache složeného stavu pro /api/stats (per kind) ----
+// Eliminuje recompute ze SQLite při každém pollu. Krátké TTL; každá instance vlastní cache.
 const BUNDLE_TTL_MS = 12_000;
-let _bundle: { at: number; data: Awaited<ReturnType<typeof buildStatsBundle>> } | null =
-  null;
+const _bundle = new Map<
+  CampaignKind,
+  { at: number; data: Awaited<ReturnType<typeof buildStatsBundle>> }
+>();
 
-async function buildStatsBundle() {
+async function buildStatsBundle(kind: CampaignKind) {
   const [stats, wall, recent, pending] = await Promise.all([
-    getStats(),
-    getWall(),
-    getRecent(10),
-    getPending(3),
+    getStats(kind),
+    getWall(kind),
+    getRecent(10, kind),
+    getPending(3, kind),
   ]);
   return { stats, wall, recent, pending };
 }
 
 /** Složený stav pro /api/stats s krátkou in-process cache (anti-recompute). */
-export async function getStatsBundle() {
+export async function getStatsBundle(kind: CampaignKind = KIND_MONUMENT) {
   const now = Date.now();
-  if (_bundle && now - _bundle.at < BUNDLE_TTL_MS) return _bundle.data;
-  const data = await buildStatsBundle();
-  _bundle = { at: now, data };
+  const c = _bundle.get(kind);
+  if (c && now - c.at < BUNDLE_TTL_MS) return c.data;
+  const data = await buildStatsBundle(kind);
+  _bundle.set(kind, { at: now, data });
   return data;
 }

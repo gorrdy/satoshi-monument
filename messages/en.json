@@ -9,12 +9,33 @@
   "nav": {
     "donate": "Donate",
     "about": "About",
-    "wall": "Supporters",
+    "wall": "Contributors",
     "cities": "Cities",
     "pravidla": "Collection rules",
     "pribeh": "Story",
+    "podporovatele": "Supporters",
     "more": "Beyond this statue",
     "menu": "Menu"
+  },
+  "supporters": {
+    "title": "Supporters Wall",
+    "intro": "The fundraiser for buying the statue has its cap, but caring for the monument continues. Supporters fund the insurance, upkeep and care of the statue on an ongoing basis — you can contribute any time, with no time limit. Any surplus beyond upkeep goes to Jednadvacet.org activities and bitcoin education.",
+    "donors": "supporters",
+    "rulesLink": "Supporters Wall rules"
+  },
+  "pravidlaPodp": {
+    "title": "Supporters Wall rules",
+    "intro": "The Supporters Wall is an ongoing, open-ended collection for the long-term care of the monument. Here we transparently describe what the funds are used for and how any surplus is handled.",
+    "goalsTitle": "What the funds are used for",
+    "goals": [
+      "insurance of the monument",
+      "regular upkeep and care of the statue",
+      "operating costs related to its placement and display"
+    ],
+    "surplusTitle": "If more is raised than needed for care",
+    "surplusBody": "Any surplus beyond upkeep and care will be used to support Jednadvacet.org activities, bitcoin education in schools and other related work. The Satoshi Monument Board will transparently describe and justify the exact way and ratio of the split.",
+    "transTitle": "Transparency and reporting",
+    "transBody": "Supporter contributions are summed over the entire period with no time limit. The current status is public on the Supporters Wall and the Satoshi Monument Board will report regularly on how the funds were used."
   },
   "cities": {
     "title": "The statue already stands in world cities",

@@ -34,6 +34,7 @@ export default function SiteFooter() {
         <nav className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 mb-4 ui-eyebrow">
           <a href={`/${locale}/pravidla`} className="ui-link">{t("nav.pravidla")}</a>
           <a href={`/${locale}/pribeh`} className="ui-link">{t("nav.pribeh")}</a>
+          <a href={`/${locale}/podporovatele`} className="ui-link">{t("nav.podporovatele")}</a>
           <a href={`/${locale}#wall`} className="ui-link">{t("nav.wall")}</a>
           <a href={`/${locale}#donate`} className="ui-link">{t("nav.donate")}</a>
         </nav>
