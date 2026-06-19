@@ -44,6 +44,8 @@ export default function StatsProvider({
   const [close, setClose] = useState<CampaignClose | null>(null);
   // Testovací override vybrané částky (jen klient, z konzole) — odsimuluje stav sbírky.
   const [simRaised, setSimRaised] = useState<number | null>(null);
+  // Testovací override uzavření sbírky (jen klient) — náhled finální podoby.
+  const [simClosed, setSimClosed] = useState<boolean | null>(null);
   // Předchozí vybraná částka — nárůst = právě přišla nová platba → konfety.
   const prevRaised = useRef<number | null>(null);
   // Aktuální cesta v refu (refresh je stabilní callback) — v adminu konfety nechceme.
@@ -106,12 +108,20 @@ export default function StatsProvider({
   //   simulateRaised(1.05) → odsimuluje 1,05 BTC vybráno (cíl se prodlouží na 1,3,
   //                          progress bar/hero přepočítá, banner naskočí)
   //   simulateRaised(null) → zpět na reálná data
+  // simulateClosed(true) → náhled podoby „po uzavření sbírky" (jen v tomto prohlížeči),
+  //   simulateClosed(false|null) → zpět na reálný stav.
   useEffect(() => {
-    const w = window as unknown as { simulateRaised?: (btc: number | null) => void };
+    const w = window as unknown as {
+      simulateRaised?: (btc: number | null) => void;
+      simulateClosed?: (on?: boolean | null) => void;
+    };
     w.simulateRaised = (btc) =>
       setSimRaised(typeof btc === "number" && isFinite(btc) ? btc : null);
+    w.simulateClosed = (on = true) =>
+      setSimClosed(on === null ? null : Boolean(on));
     return () => {
       delete w.simulateRaised;
+      delete w.simulateClosed;
     };
   }, []);
 
@@ -138,8 +148,21 @@ export default function StatsProvider({
         })()
       : stats;
 
+  // Náhled uzavření (jen klient): snapshot = aktuální (případně simulované) hodnoty.
+  const effClose: CampaignClose | null =
+    simClosed === null
+      ? close
+      : simClosed
+        ? {
+            closed: true,
+            closedAt: close?.closedAt ?? null,
+            raisedBtc: effStats?.raisedBtc ?? 0,
+            donorCount: effStats?.donorCount ?? 0,
+          }
+        : { closed: false, closedAt: null, raisedBtc: 0, donorCount: 0 };
+
   return (
-    <StatsContext.Provider value={{ stats: effStats, wall, recent, pending, close }}>
+    <StatsContext.Provider value={{ stats: effStats, wall, recent, pending, close: effClose }}>
       {children}
     </StatsContext.Provider>
   );
