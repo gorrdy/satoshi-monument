@@ -13,7 +13,7 @@
     "cities": "Metropole",
     "pravidla": "Pravidla sbírky",
     "pribeh": "Příběh",
-    "podporovatele": "Podporovatelé",
+    "podporovatele": "Patroni",
     "more": "Touto sochou to nekončí",
     "menu": "Menu"
   },
@@ -23,17 +23,18 @@
     "from": "od",
     "donors": "přispěvatelů",
     "storyCta": "Přečíst příběh sochy",
-    "supportersCta": "Podpořit péči o monument"
+    "supportersCta": "Stát se patronem monumentu"
   },
   "supporters": {
-    "title": "Zeď Podporovatelů",
-    "intro": "Sbírka na pořízení sochy má svůj strop, ale péče o monument pokračuje dál. Podporovatelé průběžně financují pojištění, údržbu a péči o sochu — přispívat jde kdykoli, bez časového omezení. Případný přebytek nad rámec údržby jde na aktivity Jednadvacet.org a bitcoinovou edukaci.",
-    "donors": "podporovatelů",
-    "rulesLink": "Pravidla Zdi Podporovatelů"
+    "title": "Patroni monumentu",
+    "badge": "Průběžná péče · bez časového omezení",
+    "intro": "Sbírka na pořízení sochy má svůj strop, ale péče o monument pokračuje dál. Patroni průběžně financují pojištění, údržbu a péči o sochu — přispívat jde kdykoli, bez časového omezení. Případný přebytek nad rámec údržby jde na aktivity Jednadvacet.org a bitcoinovou edukaci.",
+    "donors": "patronů",
+    "rulesLink": "Pravidla pro patrony"
   },
   "pravidlaPodp": {
-    "title": "Pravidla Zdi Podporovatelů",
-    "intro": "Zeď Podporovatelů je průběžná, časově neomezená sbírka na dlouhodobou péči o monument. Zde transparentně popisujeme, na co prostředky jdou a jak se nakládá s případným přebytkem.",
+    "title": "Pravidla pro patrony monumentu",
+    "intro": "Patroni monumentu jsou průběžná, časově neomezená podpora dlouhodobé péče o sochu. Zde transparentně popisujeme, na co prostředky jdou a jak se nakládá s případným přebytkem.",
     "goalsTitle": "Na co prostředky jdou",
     "goals": [
       "pojištění monumentu",
@@ -43,7 +44,7 @@
     "surplusTitle": "Když se vybere víc, než je potřeba na péči",
     "surplusBody": "Případný přebytek nad rámec údržby a péče bude použit na podporu aktivit Jednadvacet.org, bitcoinovou edukaci do škol a další související činnosti. Konkrétní způsob a poměr rozdělení Board Satoshi Monument transparentně popíše a zdůvodní.",
     "transTitle": "Transparentnost a reporting",
-    "transBody": "Příspěvky Podporovatelů se sčítají za celé období bez časového omezení. Aktuální stav je veřejný na Zdi Podporovatelů a Board Satoshi Monument bude pravidelně reportovat, jak byly prostředky využity."
+    "transBody": "Příspěvky patronů se sčítají za celé období bez časového omezení. Aktuální stav je veřejný na zdi patronů a Board Satoshi Monument bude pravidelně reportovat, jak byly prostředky využity."
   },
   "cities": {
     "title": "Socha už stojí ve světových metropolích",
@@ -190,7 +191,7 @@
     "noTitle": "Když se cílová částka nevybere",
     "noBody": "Žádný příspěvek nepřijde nazmar. Vybrané prostředky budou v plné výši přesměrovány do rozvoje projektu Satoshi Monument — konkrétně na přípravu otevřené soutěže o originální český monument. Část prostředků může být také věnována na bitcoinovou edukaci prostřednictvím projektu INEV. O konkrétním rozdělení prostředků rozhodne Board Satoshi Monument, který je ze své pozice za projekt odpovědný vůči komunitě Jednadvacet.",
     "moreTitle": "Když se vybere víc",
-    "moreP1": "Základním cílem sbírky je 1 BTC – tedy pevná cena za nákup sochy od Satoshi Gallery. Tím ale celý projekt nekončí. Vedle samotné sochy bude potřeba pokrýt také další jednorázové náklady, zejména dopravu, proclení, DPH, instalaci, poplatky a případnou směnu prostředků. (Průběžný provoz, údržbu a péči o monument bude řešit samostatná Zeď Podporovatelů.)",
+    "moreP1": "Základním cílem sbírky je 1 BTC – tedy pevná cena za nákup sochy od Satoshi Gallery. Tím ale celý projekt nekončí. Vedle samotné sochy bude potřeba pokrýt také další jednorázové náklady, zejména dopravu, proclení, DPH, instalaci, poplatky a případnou směnu prostředků. (Průběžný provoz, údržbu a péči o monument budou řešit samostatní Patroni monumentu.)",
     "moreP2": "Podle zkušenosti rakouských kolegů, kteří aktuálně vybírají prostředky na Satoshi monument ve Vídni, mohou tyto dodatečné náklady dosáhnout přibližně 0,3 BTC (<at>rakouská sbírka</at>). Proto jsme se rozhodli nastavit maximální cílovou částku sbírky na 1,3 BTC.",
     "moreP3": "Překročení hranice 1 BTC je naopak žádoucí, protože nám pomůže pokrýt celý projekt komunitně, bez nutnosti složitě dofinancovávat související náklady od českých firem. Pokud se ale vybere alespoň 1 BTC, Jednadvacet.org případné chybějící prostředky na dokončení projektu bude řešit vlastními silami.",
     "moreItemsIntro": "Další příspěvky nad 1 BTC konkrétně pokryjí:",

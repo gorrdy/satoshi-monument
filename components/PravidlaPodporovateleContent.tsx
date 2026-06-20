@@ -12,7 +12,18 @@ export default function PravidlaPodporovateleContent() {
   return (
     <>
       <SiteHeader />
-      <main className="px-4 py-16 sm:py-20">
+      {/* Teal akcent — stejné odlišení Patronů jako na jejich zdi. */}
+      <main
+        className="px-4 py-16 sm:py-20"
+        style={
+          {
+            "--accent": "#14b8a6",
+            "--accent-2": "#2dd4bf",
+            "--accent-text": "#5eead4",
+            "--accent-fg": "#04231f",
+          } as React.CSSProperties
+        }
+      >
         <div className="max-w-3xl mx-auto">
           <BackLink />
           <span className="ui-eyebrow ui-accent">{"// "}Satoshi Monument</span>

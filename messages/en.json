@@ -13,7 +13,7 @@
     "cities": "Cities",
     "pravidla": "Collection rules",
     "pribeh": "Story",
-    "podporovatele": "Supporters",
+    "podporovatele": "Patrons",
     "more": "Beyond this statue",
     "menu": "Menu"
   },
@@ -23,17 +23,18 @@
     "from": "from",
     "donors": "contributors",
     "storyCta": "Read the statue's story",
-    "supportersCta": "Support the monument's upkeep"
+    "supportersCta": "Become a patron of the monument"
   },
   "supporters": {
-    "title": "Supporters Wall",
-    "intro": "The fundraiser for buying the statue has its cap, but caring for the monument continues. Supporters fund the insurance, upkeep and care of the statue on an ongoing basis — you can contribute any time, with no time limit. Any surplus beyond upkeep goes to Jednadvacet.org activities and bitcoin education.",
-    "donors": "supporters",
-    "rulesLink": "Supporters Wall rules"
+    "title": "Patrons of the monument",
+    "badge": "Ongoing care · no time limit",
+    "intro": "The fundraiser for buying the statue has its cap, but caring for the monument continues. Patrons fund the insurance, upkeep and care of the statue on an ongoing basis — you can contribute any time, with no time limit. Any surplus beyond upkeep goes to Jednadvacet.org activities and bitcoin education.",
+    "donors": "patrons",
+    "rulesLink": "Rules for patrons"
   },
   "pravidlaPodp": {
-    "title": "Supporters Wall rules",
-    "intro": "The Supporters Wall is an ongoing, open-ended collection for the long-term care of the monument. Here we transparently describe what the funds are used for and how any surplus is handled.",
+    "title": "Rules for patrons of the monument",
+    "intro": "Being a patron means ongoing, open-ended support for the long-term care of the monument. Here we transparently describe what the funds are used for and how any surplus is handled.",
     "goalsTitle": "What the funds are used for",
     "goals": [
       "insurance of the monument",
@@ -43,7 +44,7 @@
     "surplusTitle": "If more is raised than needed for care",
     "surplusBody": "Any surplus beyond upkeep and care will be used to support Jednadvacet.org activities, bitcoin education in schools and other related work. The Satoshi Monument Board will transparently describe and justify the exact way and ratio of the split.",
     "transTitle": "Transparency and reporting",
-    "transBody": "Supporter contributions are summed over the entire period with no time limit. The current status is public on the Supporters Wall and the Satoshi Monument Board will report regularly on how the funds were used."
+    "transBody": "Patron contributions are summed over the entire period with no time limit. The current status is public on the patrons wall and the Satoshi Monument Board will report regularly on how the funds were used."
   },
   "cities": {
     "title": "The statue already stands in world cities",
@@ -64,7 +65,7 @@
     "raised": "Raised",
     "goal": "Goal",
     "of": "of",
-    "donors": "supporters",
+    "donors": "contributors",
     "rate": "rate",
     "goalExplainer": "The goal is 1 BTC. If 2,000 people each send 50,000 sats — the statue is ours.",
     "approxFiat": "≈ {amount}",
@@ -98,7 +99,7 @@
     "publicMessagePlaceholder": "Why I contribute…",
     "donorKey": "Pairing identifier for your payments (optional)",
     "donorKeyPlaceholder": "e-mail or any string",
-    "donorKeyHint": "Use the same one for future payments — we'll sum them on the supporters wall. Only for pairing, never shown publicly.",
+    "donorKeyHint": "Use the same one for future payments — we'll sum them on the contributors wall. Only for pairing, never shown publicly.",
     "privateMessage": "Private message to organizers",
     "privateMessagePlaceholder": "Organizers only…",
     "submitBtc": "Pay with Bitcoin",
@@ -125,7 +126,7 @@
     "amount": "Amount",
     "vs": "Variable symbol",
     "note": "Note",
-    "hint": "Keep the variable symbol and the note in the payment — they let us match it quickly. Once the transfer arrives, organizers confirm it and your message appears on the supporters wall.",
+    "hint": "Keep the variable symbol and the note in the payment — they let us match it quickly. Once the transfer arrives, organizers confirm it and your message appears on the contributors wall.",
     "copy": "Copy details",
     "copied": "Copied",
     "done": "Done"
@@ -136,13 +137,13 @@
     "fallback": "If the window didn't open, continue here"
   },
   "wall": {
-    "title": "Supporters wall",
+    "title": "Contributors wall",
     "subtitle": "Thanks to everyone who has already contributed.",
     "empty": "Be the first to contribute!",
     "anonymous": "Anonymous",
     "showMore": "Show more",
     "showLess": "Show less",
-    "principle": "Supporters are ranked from the largest contribution. Multiple payments with the same identifier are summed. This list will become a permanent part of the statue's website — a QR code on the pedestal will link to it.",
+    "principle": "Contributors are ranked from the largest contribution. Multiple payments with the same identifier are summed. This list will become a permanent part of the statue's website — a QR code on the pedestal will link to it.",
     "principleLink": "How are contributions counted?",
     "searchPlaceholder": "Find your name…",
     "noMatch": "We couldn't find anyone like that.",
@@ -175,22 +176,22 @@
     "title": "How contributions are counted",
     "q1": "How are they counted?",
     "a1": "Every contribution — in CZK or bitcoin — is converted to BTC at the market rate the moment it arrives. We work exclusively with contributions in bitcoin.",
-    "q2": "How does the supporters list work?",
-    "a2": "Supporters are ranked from the largest contribution to the smallest. If you contribute several times and use the same “Pairing identifier“, your contributions are summed and you move up the ranking. You choose your displayed name or nickname with your first contribution. The identifier is never shown publicly; if you enter an email address, its uniqueness is guaranteed.",
+    "q2": "How does the contributors list work?",
+    "a2": "Contributors are ranked from the largest contribution to the smallest. If you contribute several times and use the same “Pairing identifier“, your contributions are summed and you move up the ranking. You choose your displayed name or nickname with your first contribution. The identifier is never shown publicly; if you enter an email address, its uniqueness is guaranteed.",
     "q3": "Why does it matter?",
-    "a3": "The supporters list won't be temporary. It will become a permanent part of the statue's website, linked by a QR code right on the monument's pedestal. To contribute today is to write yourself forever into the history of the Czech footprint in Bitcoin.",
-    "highlight": "Write yourself into history forever — a QR code on the statue's pedestal will lead to this supporters list.",
+    "a3": "The contributors list won't be temporary. It will become a permanent part of the statue's website, linked by a QR code right on the monument's pedestal. To contribute today is to write yourself forever into the history of the Czech footprint in Bitcoin.",
+    "highlight": "Write yourself into history forever — a QR code on the statue's pedestal will lead to this contributors list.",
     "contact": "Want to change your name, message or image, or match a payment you already sent? Write to us at"
   },
   "pravidla": {
     "title": "Collection rules",
     "intro": "The Satoshi Monument collection is a public, community-driven initiative organized and run by the association The Malahar Network z.s. — a legal entity founded by the Jednadvacet.org group to support its activities. So everything is clear and transparent from the start, here is what happens to your contributions in each possible scenario.",
     "okTitle": "If the target is reached",
-    "okBody": "The statue by Italian artist Valentina Picozzi — the same one standing in Lugano or Tokyo — will be purchased and installed in Prague. The final location is being negotiated; until it is technically and administratively confirmed, the statue will be temporarily displayed at a suitable place (we are considering, for example, the premises of partner institutions). Once the statue finds its permanent home, the collection website will turn into the monument's permanent website, and a QR code on the pedestal will link to the project's story and the list of all supporters.",
+    "okBody": "The statue by Italian artist Valentina Picozzi — the same one standing in Lugano or Tokyo — will be purchased and installed in Prague. The final location is being negotiated; until it is technically and administratively confirmed, the statue will be temporarily displayed at a suitable place (we are considering, for example, the premises of partner institutions). Once the statue finds its permanent home, the collection website will turn into the monument's permanent website, and a QR code on the pedestal will link to the project's story and the list of all contributors.",
     "noTitle": "If the target is not reached",
     "noBody": "No contribution goes to waste. The funds raised will be redirected in full to developing the project — specifically to preparing an open competition for an original Czech monument. Part of the funds may also be devoted to bitcoin education via the INEV project. The Satoshi Monument Board, which in its role is accountable to the Jednadvacet community, decides on the exact allocation of the funds.",
     "moreTitle": "If we raise more",
-    "moreP1": "The collection's baseline goal is 1 BTC — the fixed price to buy the statue from Satoshi Gallery. But the project doesn't end there. Beyond the statue itself, there are further one-off costs to cover, namely shipping, customs clearance, VAT, installation, fees and any currency conversion. (Ongoing operation, maintenance and care of the monument will be handled by a separate Supporters Wall.)",
+    "moreP1": "The collection's baseline goal is 1 BTC — the fixed price to buy the statue from Satoshi Gallery. But the project doesn't end there. Beyond the statue itself, there are further one-off costs to cover, namely shipping, customs clearance, VAT, installation, fees and any currency conversion. (Ongoing operation, maintenance and care of the monument will be handled by separate Patrons of the monument.)",
     "moreP2": "Based on the experience of our Austrian colleagues, who are currently raising funds for a Satoshi monument in Vienna, these additional costs can reach roughly 0.3 BTC (<at>the Austrian collection</at>). That's why we've set the collection's maximum target at 1.3 BTC.",
     "moreP3": "Going over the 1 BTC mark is in fact desirable — it helps us fund the whole project from the community, without having to awkwardly top up the related costs from Czech companies. As long as at least 1 BTC is raised, Jednadvacet.org will cover any shortfall needed to finish the project on its own.",
     "moreItemsIntro": "Further contributions above 1 BTC will specifically cover:",
@@ -226,7 +227,7 @@
     "s4a": "The statue plays with the viewer's movement. From one spot a figure with a laptop emerges; from another the motif breaks into lines and vanishes. It isn't just aesthetics — it's a metaphor: Satoshi never fully revealed themselves, and yet their work is here, visible to anyone who looks from the right angle. A symbol of individual freedom, open code and decentralization.",
     "s5h": "A statue built by the community",
     "s5a": "The monument in Prague wasn't born from a city-hall decision or corporate sponsorship. It exists because the Czech and international bitcoin community chipped in — voluntarily, transparently and in bitcoin. The project was organized by Jednadvacet.org together with the community. Below is the complete list of everyone who contributed — from the largest contribution to the smallest. Every name is part of the story.",
-    "donorsTitle": "List of supporters"
+    "donorsTitle": "List of contributors"
   },
   "varianta2": {
     "title": "Beyond this statue",
@@ -253,7 +254,7 @@
   },
   "diky": {
     "title": "Thank you for building Satoshi!",
-    "lead": "Your contribution is on its way and will soon appear on the supporters wall. Every sat brings the Satoshi statue in Prague closer.",
+    "lead": "Your contribution is on its way and will soon appear on the contributors wall. Every sat brings the Satoshi statue in Prague closer.",
     "shareTitle": "Help spread the word",
     "shareLead": "This fundraiser runs on community. Tell your friends and it'll happen sooner. Share:",
     "shareText": "I just contributed to the statue of Satoshi Nakamoto in Prague. Join in and be part of history! 🟠⚡",

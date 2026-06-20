@@ -46,7 +46,7 @@ export async function GET(
     ? "Let's raise a statue of Satoshi in Prague"
     : "Postavme Satoshimu sochu v Praze";
   const raisedLabel = en ? "raised" : "vybráno";
-  const donorsLabel = en ? "supporters" : "přispěvatelů";
+  const donorsLabel = en ? "contributors" : "přispěvatelů";
   const scan = en ? "Scan & contribute" : "Naskenuj a přispěj";
 
   return new ImageResponse(
