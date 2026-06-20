@@ -49,7 +49,7 @@ export default async function OgImage({
 
   const title = en ? "Satoshi Monument in Prague" : "Satoshi Monument v Praze";
   const raisedLabel = en ? "raised" : "vybráno";
-  const donorsLabel = en ? "supporters" : "přispěvatelů";
+  const donorsLabel = en ? "contributors" : "přispěvatelů";
 
   return new ImageResponse(
     (

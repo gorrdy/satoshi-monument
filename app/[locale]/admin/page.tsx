@@ -289,7 +289,7 @@ export default function AdminPage() {
   const toggleCampaignClose = async () => {
     const closing = !campClose?.closed;
     const msg = closing
-      ? "Uzavřít hlavní sbírku? Zafixuje se konečný stav (vybráno + přispěvatelé) a web se překlopí do finální podoby. Příjem nových darů Přispěvatelů se zastaví. (Podporovatelé běží dál.)"
+      ? "Uzavřít hlavní sbírku? Zafixuje se konečný stav (vybráno + přispěvatelé) a web se překlopí do finální podoby. Příjem nových darů Přispěvatelů se zastaví. (Patroni běží dál.)"
       : "Znovu otevřít hlavní sbírku? Zruší se uzavření i snapshot a web se vrátí do běžného režimu.";
     if (!confirm(msg)) return;
     setCampBusy(true);
@@ -1091,7 +1091,7 @@ export default function AdminPage() {
           {!campClose?.closed && (
             <div className="text-xs text-white/40 mt-0.5">
               Po uzavření se zafixuje konečný stav a web se překlopí do finální
-              podoby. Podporovatelé běží dál.
+              podoby. Patroni běží dál.
             </div>
           )}
         </div>
@@ -1143,7 +1143,7 @@ export default function AdminPage() {
         {[
           ["all", "Vše"],
           ["monument", "Hlavní (Přispěvatelé)"],
-          ["supporters", "Podporovatelé"],
+          ["supporters", "Patroni"],
         ].map(([k, lbl]) => (
           <button
             key={k}
@@ -1283,8 +1283,8 @@ export default function AdminPage() {
                     {d.currency}
                   </span>
                   {d.kind === "supporters" && (
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300">
-                      Podporovatelé
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-teal-500/20 text-teal-300">
+                      Patroni
                     </span>
                   )}
                 </div>
