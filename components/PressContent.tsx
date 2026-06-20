@@ -28,6 +28,20 @@ const ARTICLES: Article[] = [
     url: "https://www.investicniweb.cz/aktuality/324110-v-praze-vyroste-socha-satoshiho-nakamota-komunita-na-ni-vybrala-pres-jeden-bitcoin",
     date: "2026-06-19",
   },
+  {
+    outlet: "Kryptohodler",
+    title:
+      "V Praze vyroste socha Satoshiho Nakamota. Česká komunita už vybrala přes 1 BTC",
+    url: "https://kryptohodler.cz/v-praze-vyroste-socha-satoshiho-nakamota-ceska-komunita-uz-vybrala-pres-1-btc/",
+    date: "2026-06-18",
+  },
+  {
+    outlet: "Kryptomagazín",
+    title:
+      "Praha se dočká sochy tvůrce Bitcoinu, komunita vybrala přes jeden celý bitcoin",
+    url: "https://kryptomagazin.cz/praha-se-docka-sochy-tvurce-bitcoinu-komunita-vybrala-pres-jeden-cely-bitcoin/",
+    date: "2026-06-18",
+  },
 ];
 
 function hostOf(url: string): string {
