@@ -62,55 +62,64 @@ export default function SupportersContent() {
         }
       >
         <div className="max-w-6xl mx-auto">
-          <span className="ui-eyebrow ui-accent">{"// "}Satoshi Monument</span>
-          <h1 className="ui-display text-4xl sm:text-5xl font-bold mt-3 mb-3 leading-[1.05]">
-            {t("title")}
-          </h1>
-          <span
-            className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-full mb-4"
-            style={{
-              color: "var(--accent-text)",
-              background: "color-mix(in srgb, var(--accent) 14%, transparent)",
-              border: "1px solid color-mix(in srgb, var(--accent) 35%, transparent)",
-            }}
-          >
-            <svg
-              aria-hidden
-              width="13"
-              height="13"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-            >
-              <path d="M12 21s-6.7-4.35-9.33-8.07C1.1 10.5 1.5 7.5 3.6 6.1c1.8-1.2 4.1-.7 5.4 1L12 10l3-2.9c1.3-1.7 3.6-2.2 5.4-1 2.1 1.4 2.5 4.4.93 6.83C18.7 16.65 12 21 12 21z" />
-            </svg>
-            {t("badge")}
-          </span>
-          <p className="text-lg ui-muted leading-relaxed max-w-2xl">{t("intro")}</p>
-
-          <div className="mt-5 flex flex-wrap items-baseline gap-x-3 gap-y-1 ui-mono text-sm">
-            <span className="ui-accent font-bold text-lg">
-              {formatBtc(stats?.raisedBtc ?? 0)} BTC
-            </span>
-            {stats && (
-              <span className="ui-muted">
-                ≈ {formatFiat(stats.raisedBtc, stats, locale)} · {stats.donorCount}{" "}
-                {t("donors")}
+          {/* Stejné rozložení jako hlavní strana — text vlevo, formulář vpravo */}
+          <div className="grid lg:grid-cols-2 gap-10 lg:gap-12 items-start">
+            {/* Text vlevo */}
+            <div>
+              <span className="ui-eyebrow ui-accent">{"// "}Satoshi Monument</span>
+              <h1 className="ui-display text-4xl sm:text-5xl font-bold mt-3 mb-3 leading-[1.05]">
+                {t("title")}
+              </h1>
+              <span
+                className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-full mb-4"
+                style={{
+                  color: "var(--accent-text)",
+                  background: "color-mix(in srgb, var(--accent) 14%, transparent)",
+                  border: "1px solid color-mix(in srgb, var(--accent) 35%, transparent)",
+                }}
+              >
+                <svg
+                  aria-hidden
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M12 21s-6.7-4.35-9.33-8.07C1.1 10.5 1.5 7.5 3.6 6.1c1.8-1.2 4.1-.7 5.4 1L12 10l3-2.9c1.3-1.7 3.6-2.2 5.4-1 2.1 1.4 2.5 4.4.93 6.83C18.7 16.65 12 21 12 21z" />
+                </svg>
+                {t("badge")}
               </span>
-            )}
-          </div>
-          <a
-            href={`/${locale}/pravidla-podporovatele`}
-            className="ui-eyebrow ui-link inline-block mt-2 underline underline-offset-2"
-          >
-            {t("rulesLink")} →
-          </a>
+              <p className="text-lg ui-muted leading-relaxed max-w-md">{t("intro")}</p>
 
-          {/* Formulář příspěvku — kind=supporters */}
-          <div id="donate" className="mt-10 w-full max-w-md mx-auto lg:mx-0">
-            <DonationWidget kind="supporters" />
+              <div className="mt-5 flex flex-wrap items-baseline gap-x-3 gap-y-1 ui-mono text-sm">
+                <span className="ui-accent font-bold text-lg">
+                  {formatBtc(stats?.raisedBtc ?? 0)} BTC
+                </span>
+                {stats && (
+                  <span className="ui-muted">
+                    ≈ {formatFiat(stats.raisedBtc, stats, locale)} ·{" "}
+                    {stats.donorCount} {t("donors")}
+                  </span>
+                )}
+              </div>
+              <a
+                href={`/${locale}/pravidla-podporovatele`}
+                className="ui-eyebrow ui-link inline-block mt-2 underline underline-offset-2"
+              >
+                {t("rulesLink")} →
+              </a>
+            </div>
+
+            {/* Formulář vpravo — kind=supporters */}
+            <div
+              id="donate"
+              className="scroll-mt-24 w-full max-w-md mx-auto lg:mx-0 lg:ml-auto"
+            >
+              <DonationWidget kind="supporters" />
+            </div>
           </div>
 
-          {/* Zeď Podporovatelů */}
+          {/* Zeď patronů */}
           <div className="mt-16">
             <SupporterWall wall={wall} wallKind="supporters" search />
           </div>
