@@ -13,6 +13,7 @@
     "cities": "Cities",
     "pravidla": "Collection rules",
     "pribeh": "Story",
+    "press": "In the media",
     "podporovatele": "Patrons",
     "more": "Beyond this statue",
     "menu": "Menu"
@@ -31,6 +32,12 @@
     "intro": "The fundraiser for buying the statue has its cap, but caring for the monument continues. Patrons fund the insurance, upkeep and care of the statue on an ongoing basis — you can contribute any time, with no time limit. Any surplus beyond upkeep goes to Jednadvacet.org activities and bitcoin education.",
     "donors": "patrons",
     "rulesLink": "Rules for patrons"
+  },
+  "press": {
+    "title": "In the media",
+    "intro": "What the media have written about the Satoshi Nakamoto statue in Prague and our community fundraiser. We keep the list up to date.",
+    "readMore": "Read the article",
+    "empty": "Nothing here yet — coming soon."
   },
   "pravidlaPodp": {
     "title": "Rules for patrons of the monument",
