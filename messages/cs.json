@@ -13,6 +13,7 @@
     "cities": "Metropole",
     "pravidla": "Pravidla sbírky",
     "pribeh": "Příběh",
+    "press": "Napsali o nás",
     "podporovatele": "Patroni",
     "more": "Touto sochou to nekončí",
     "menu": "Menu"
@@ -31,6 +32,12 @@
     "intro": "Sbírka na pořízení sochy má svůj strop, ale péče o monument pokračuje dál. Patroni průběžně financují pojištění, údržbu a péči o sochu — přispívat jde kdykoli, bez časového omezení. Případný přebytek nad rámec údržby jde na aktivity Jednadvacet.org a bitcoinovou edukaci.",
     "donors": "patronů",
     "rulesLink": "Pravidla pro patrony"
+  },
+  "press": {
+    "title": "Napsali o nás",
+    "intro": "Co o pražské soše Satoshiho Nakamota a naší komunitní sbírce napsala média. Seznam průběžně doplňujeme.",
+    "readMore": "Číst článek",
+    "empty": "Zatím tu nic není — brzy doplníme."
   },
   "pravidlaPodp": {
     "title": "Pravidla pro patrony monumentu",

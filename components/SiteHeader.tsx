@@ -84,6 +84,9 @@ export default function SiteHeader({ onHome = false }: { onHome?: boolean }) {
           <a href={page("pribeh")} className="hidden md:inline ui-eyebrow ui-link">
             {t("pribeh")}
           </a>
+          <a href={page("napsali-o-nas")} className="hidden md:inline ui-eyebrow ui-link">
+            {t("press")}
+          </a>
           {/* CTA Přispět — na mobilu skryté (dostupné přes hamburger #donate) */}
           <span className="hidden sm:inline-flex">
             <a
@@ -150,6 +153,13 @@ export default function SiteHeader({ onHome = false }: { onHome?: boolean }) {
             className="ui-eyebrow ui-link py-2.5"
           >
             {t("pribeh")}
+          </a>
+          <a
+            href={page("napsali-o-nas")}
+            onClick={() => setMenuOpen(false)}
+            className="ui-eyebrow ui-link py-2.5"
+          >
+            {t("press")}
           </a>
         </nav>
       )}
