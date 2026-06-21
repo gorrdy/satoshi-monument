@@ -73,3 +73,49 @@ export async function lnbitsRecentSettled(
     return [];
   }
 }
+
+/**
+ * Hluboký sken: projde CELOU historii LNbits přes stránkování (offset) a vrátí
+ * všechny úspěšné příchozí platby s naším Order ID. Klouzavé okno `lnbitsRecentSettled`
+ * mine staré platby (výpadek cronu delší než okno, nárazový příval, dary starší než
+ * cron). Tenhle sweep je zachytí. Per Order ID ponecháme první výskyt (nejnovější).
+ */
+export async function lnbitsAllSettled(): Promise<LnbitsSettled[]> {
+  if (!URL || !KEY) return [];
+  const PAGE = 500;
+  const MAX_PAGES = 60; // pojistka: max 30 000 plateb
+  const seen = new Set<string>();
+  const out: LnbitsSettled[] = [];
+  try {
+    for (let page = 0; page < MAX_PAGES; page++) {
+      const r = await fetch(
+        `${URL}/api/v1/payments?limit=${PAGE}&offset=${page * PAGE}`,
+        { headers: { "X-Api-Key": KEY }, signal: AbortSignal.timeout(20000) },
+      );
+      if (!r.ok) break;
+      const arr = (await r.json()) as Array<{
+        status?: string;
+        amount?: number;
+        memo?: string;
+        payment_hash?: string;
+      }>;
+      if (!arr.length) break;
+      for (const p of arr) {
+        if (p.status !== "success") continue;
+        if (!p.amount || p.amount <= 0) continue;
+        const m = (p.memo ?? "").match(/Order ID:\s*([a-z0-9]+)/i);
+        if (!m || seen.has(m[1])) continue;
+        seen.add(m[1]);
+        out.push({
+          orderId: m[1],
+          hash: p.payment_hash ?? "",
+          sats: Math.round(p.amount / 1000),
+        });
+      }
+      if (arr.length < PAGE) break; // poslední stránka
+    }
+    return out;
+  } catch {
+    return out; // co se stihlo, vrať
+  }
+}

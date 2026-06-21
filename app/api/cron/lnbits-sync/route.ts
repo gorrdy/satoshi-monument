@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { timingSafeEq } from "@/lib/auth";
-import { lnbitsRecentSettled } from "@/lib/lnbits";
+import { lnbitsRecentSettled, lnbitsAllSettled } from "@/lib/lnbits";
 
 export const dynamic = "force-dynamic";
 
@@ -20,7 +20,9 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
-  const settled = await lnbitsRecentSettled(300);
+  // ?deep=1 → projde celou historii (denní pojistka); jinak rychlé okno 300 (à 10 min).
+  const deep = req.nextUrl.searchParams.get("deep") === "1";
+  const settled = deep ? await lnbitsAllSettled() : await lnbitsRecentSettled(300);
   const recovered: Array<{ id: string; sats: number }> = [];
 
   for (const s of settled) {
@@ -40,5 +42,5 @@ export async function GET(req: NextRequest) {
     if (r.count > 0) recovered.push({ id: s.orderId, sats: s.sats });
   }
 
-  return NextResponse.json({ ok: true, checked: settled.length, recovered });
+  return NextResponse.json({ ok: true, deep, checked: settled.length, recovered });
 }
