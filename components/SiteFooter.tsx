@@ -34,12 +34,17 @@ export default function SiteFooter() {
         <nav className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 mb-4 ui-eyebrow">
           <a href={`/${locale}/pravidla`} className="ui-link">{t("nav.pravidla")}</a>
           <a href={`/${locale}/pribeh`} className="ui-link">{t("nav.pribeh")}</a>
+          <a href={`/${locale}/board`} className="ui-link">{t("nav.board")}</a>
           <a href={`/${locale}#wall`} className="ui-link">{t("nav.wall")}</a>
           <a href={`/${locale}#donate`} className="ui-link">{t("nav.donate")}</a>
         </nav>
 
         <p className="mb-3">{t("footer.tagline")}</p>
-        <p className="max-w-xl mx-auto mb-3">{t("footer.org")}</p>
+        <p className="max-w-xl mx-auto mb-3">
+          <a href={`/${locale}/board`} className="ui-link hover:underline">
+            {t("footer.org")}
+          </a>
+        </p>
         <p className="mb-4">
           <a
             href="mailto:monument@jednadvacet.org"

@@ -14,6 +14,7 @@
     "pravidla": "Collection rules",
     "pribeh": "Story",
     "press": "Media",
+    "board": "Board & transparency",
     "podporovatele": "Patrons",
     "more": "Beyond this statue",
     "menu": "Menu"
@@ -38,6 +39,30 @@
     "intro": "What the media have written about the Satoshi Nakamoto statue in Prague and our community fundraiser. We keep the list up to date.",
     "readMore": "Read the article",
     "empty": "Nothing here yet — coming soon."
+  },
+  "board": {
+    "title": "Board & transparency",
+    "intro": "The direction of the Satoshi Monument project is decided by the Board, which received its mandate from the Jednadvacet.org community. Here we transparently describe how the Board came about, who is on it and what powers it has.",
+    "originTitle": "How the Board came about",
+    "originBody": "The Satoshi Monument Board was established by a vote within the 21 Leaders group on Signal, which brings together representatives of the individual Jednadvacet.org cells from across the Czech Republic. They meet twice a year at weekend gatherings to discuss the community's projects, activities and legal matters.",
+    "voteTitle": "Community vote",
+    "voteBody": "The vote took place from 28 May to 1 June 2026 and ended with 30 votes in favour and 3 against — more than the two-thirds majority required for the proposal to pass.",
+    "voteApproved": "In a single vote the community approved the composition of the Board, the scope of its powers, the proposed approach for both project variants, and the release of CZK 100,000 from Jednadvacet.org reserves to organise the competition for Variant 2.",
+    "membersTitle": "Members with decision-making power",
+    "members": [
+      "Jaroslav Petr",
+      "Jan Dvořák",
+      "Dominik Roček",
+      "Filip Zavoral",
+      "Dušan Kmetyo",
+      "Tomáš Heřmánek",
+      "Kamil Bouška"
+    ],
+    "membersNote": "All members volunteered and confirmed in advance that they agree with the proposed approach and are ready to carry it out.",
+    "powersTitle": "The Board's powers",
+    "powersBody": "The Board represents the Satoshi Monument project externally on behalf of Jednadvacet, develops both variants of the project in parallel, negotiates with partners, artists and other parties, coordinates the community fundraiser and any architectural and artistic competition, and keeps the 21 Leaders community informed about the project's progress.",
+    "orgTitle": "About the association",
+    "orgBody": "The Jednadvacet community is an informal, decentralised network with no legal personality of its own, so the Satoshi Monument project is formally represented externally by the association The Malahar Network, z. s. (Jan Dvořák, Marek Selméci and Martin Havránek). This entity was created precisely for situations where an unofficial group needs an official body — i.e. when something has to be handled through official or legal channels (contracts with partners and artists, running a public fundraiser, a possible architectural and artistic competition, etc.). We were approached to take the project under our wing and agreed; we did not seek it out. The association's role is purely supportive: it handles the necessary external activities (orders, payments, communication with suppliers, etc.) and provides the project with a legal framework, but it does not claim any decision-making power over the project's direction, which remains in the hands of the Board and the community."
   },
   "pravidlaPodp": {
     "title": "Rules for patrons of the monument",
