@@ -16,6 +16,13 @@ interface Article {
 // (řadí se automaticky od nejnovějšího).
 const ARTICLES: Article[] = [
   {
+    outlet: "Simplecoin",
+    title:
+      "Česká komunita vybrala 1 BTC na sochu Satoshiho Nakamota v Praze!",
+    url: "https://blog.simplecoin.eu/cs/ceska-komunita-vybrala-1-btc-na-sochu-satoshiho-nakamota-v-praze/",
+    date: "2026-06-20",
+  },
+  {
     outlet: "Peníze.cz",
     title: "Propad ceny bitcoinu spustil nákupy. Satoshi bude mít sochu v Praze",
     url: "https://www.penize.cz/kryptomeny/41984-propad-ceny-bitcoinu-spustil-nakupy-satoshi-bude-mit-sochu-v-praze",
