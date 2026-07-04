@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import DonationForm from "./DonationForm";
 import PaymentModal, { type PaymentResult } from "./PaymentModal";
 
@@ -15,26 +15,24 @@ export default function DonationWidget({
 }) {
   const [result, setResult] = useState<PaymentResult | null>(null);
 
-  const refreshStats = () => {
+  const refreshStats = useCallback(() => {
     if (typeof window !== "undefined") {
       // monument poslouchá StatsProvider; supporters svůj vlastní listener.
       window.dispatchEvent(new Event("stats:refresh"));
       window.dispatchEvent(new Event("supporters:refresh"));
     }
-  };
+  }, []);
+
+  const handleClose = useCallback(() => {
+    setResult(null);
+    refreshStats();
+  }, [refreshStats]);
 
   return (
     <>
       <DonationForm onResult={(r) => setResult(r)} kind={kind} />
       {result && (
-        <PaymentModal
-          result={result}
-          onClose={() => {
-            setResult(null);
-            refreshStats();
-          }}
-          onPaid={refreshStats}
-        />
+        <PaymentModal result={result} onClose={handleClose} onPaid={refreshStats} />
       )}
     </>
   );

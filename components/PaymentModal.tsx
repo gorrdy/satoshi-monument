@@ -65,6 +65,12 @@ export default function PaymentModal({
   const locale = useLocale();
   const [copied, setCopied] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
+  // Callbacky do refů → efekty na nich nezávisí, takže se BTCPay iframe nespouští
+  // znovu při každém re-renderu rodiče (to způsobovalo „probliknutí" modalu).
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+  const onPaidRef = useRef(onPaid);
+  onPaidRef.current = onPaid;
 
   // „Hotovo" u QR → poděkování + výzva ke sdílení.
   const goThanks = () => {
@@ -86,7 +92,7 @@ export default function PaymentModal({
     (focusable()[0] ?? panel)?.focus();
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        onClose();
+        onCloseRef.current();
         return;
       }
       if (e.key === "Tab") {
@@ -105,12 +111,18 @@ export default function PaymentModal({
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [onClose]);
+    // Namontovat jednou — onClose se čte přes ref, ať se listener nepředělává.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Stabilní identita BTC faktury (na CzkResult tato pole nejsou) — klíč efektu.
+  const btcInvoiceId = result.method === "btc" ? result.invoiceId : "";
+  const btcpayUrl = result.method === "btc" ? result.btcpayUrl : "";
 
   useEffect(() => {
-    if (result.method !== "btc") return;
+    if (!btcInvoiceId || !btcpayUrl) return;
     let cancelled = false;
-    loadBtcpayScript(result.btcpayUrl)
+    loadBtcpayScript(btcpayUrl)
       .then(() => {
         if (cancelled || !window.btcpay) return;
         window.btcpay.onModalReceiveMessage?.((e: MessageEvent) => {
@@ -121,18 +133,21 @@ export default function PaymentModal({
             data?.status === "confirmed" ||
             data?.status === "settled"
           ) {
-            onPaid();
+            onPaidRef.current();
             // Po úspěšné platbě v modalu → děkovná stránka.
             setTimeout(goThanks, 1200);
           }
         });
-        window.btcpay.showInvoice(result.invoiceId);
+        window.btcpay.showInvoice(btcInvoiceId);
       })
       .catch(() => {});
     return () => {
       cancelled = true;
     };
-  }, [result, onPaid]);
+    // Spustit jen JEDNOU pro danou fakturu (dle invoiceId) — ne při každém re-renderu,
+    // jinak se iframe znovu otevře a modal „probliká". Callbacky jdou přes ref.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [btcInvoiceId, btcpayUrl]);
 
   const copyDetails = async () => {
     if (result.method !== "czk") return;
