@@ -32,6 +32,66 @@ function getTransporter(): Transporter | null {
   return transporter;
 }
 
+/** Cílový e-mail pro účetní měsíční report (lze přebít env ACCOUNTING_EMAIL). */
+export const ACCOUNTING_EMAIL =
+  process.env.ACCOUNTING_EMAIL ?? "dvorakh1997+malahar@gmail.com";
+
+/**
+ * Měsíční e-mail pro účetní: CSV výpis příspěvků za daný měsíc v příloze.
+ * (PDF oficiální výpisy z banky se doplní později, až bude zdroj.)
+ */
+export async function sendMonthlyAccounting(opts: {
+  month: string; // YYYY-MM
+  filename: string;
+  csv: string;
+  count: number;
+  sumCzkValue: number;
+  attachments?: { filename: string; content: Buffer; contentType?: string }[];
+}): Promise<boolean> {
+  const tx = getTransporter();
+  if (!tx) return false;
+  const from =
+    process.env.SMTP_FROM ?? process.env.SMTP_USER ?? "monument@gorrdy.cz";
+  const replyTo = process.env.SMTP_REPLY_TO;
+
+  const sumCzk = opts.sumCzkValue.toLocaleString("cs-CZ", {
+    maximumFractionDigits: 0,
+  });
+  const extra = opts.attachments ?? [];
+  const text = [
+    `Účetní export sbírky Satoshi Monument — období do konce ${opts.month}.`,
+    "",
+    `Přiložené CSV obsahuje ${opts.count} potvrzených příspěvků`,
+    `(datum, měna, částka, kurz BTC v den přijetí, hodnota v CZK).`,
+    `Celková hodnota v čase přijetí: ≈ ${sumCzk} Kč.`,
+    "",
+    extra.length
+      ? `Přiloženo také ${extra.length} oficiálních bankovních výpisů (PDF).`
+      : "Oficiální bankovní výpisy (PDF) budou doplněny samostatně.",
+    "",
+    "CZK dary jsou v korunové hodnotě; BTC dary přepočteny denním tržním",
+    "kurzem BTC/CZK (CoinGecko) ke dni přijetí — orientační.",
+  ].join("\n");
+
+  try {
+    await tx.sendMail({
+      from,
+      to: ACCOUNTING_EMAIL,
+      replyTo,
+      subject: `Satoshi Monument — účetní export ${opts.month}`,
+      text,
+      attachments: [
+        { filename: opts.filename, content: opts.csv, contentType: "text/csv; charset=utf-8" },
+        ...extra,
+      ],
+    });
+    return true;
+  } catch (err) {
+    console.error("sendMonthlyAccounting: e-mail se nepodařilo odeslat:", err);
+    return false;
+  }
+}
+
 export interface DailyReport {
   windowHours: number;
   newTotal: number; // nově vzniklé příspěvky v okně
