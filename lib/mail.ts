@@ -61,17 +61,17 @@ export async function sendMonthlyAccounting(opts: {
   const text = [
     `Účetní export sbírky Satoshi Monument — období do konce ${opts.month}.`,
     "",
-    `Přiložené CSV obsahuje ${opts.count} potvrzených příspěvků`,
-    `(datum, měna, částka, kurz BTC v den přijetí, hodnota v CZK).`,
+    `Přiložené CSV obsahuje ${opts.count} potvrzených BTC příspěvků`,
+    `(datum, částka BTC, kurz BTC v den přijetí, hodnota v CZK).`,
     `Celková hodnota v čase přijetí: ≈ ${sumCzk} Kč.`,
     "",
-    extra.length
-      ? `Přiloženo také ${extra.length} oficiálních bankovních výpisů (PDF).`
-      : "Oficiální bankovní výpisy (PDF) budou doplněny samostatně.",
+    "CZK (bankovní) platby v CSV nejsou — ty jsou doložené oficiálními",
+    "bankovními výpisy.",
+    extra.length ? `Přiloženo také ${extra.length} bankovních výpisů (PDF).` : "",
     "",
-    "CZK dary jsou v korunové hodnotě; BTC dary přepočteny denním tržním",
-    "kurzem BTC/CZK (CoinGecko) ke dni přijetí — orientační.",
-  ].join("\n");
+    "BTC dary jsou přepočteny denním tržním kurzem BTC/CZK (CoinGecko)",
+    "ke dni přijetí — orientační.",
+  ].filter((l) => l !== null).join("\n");
 
   try {
     await tx.sendMail({

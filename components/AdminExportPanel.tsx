@@ -44,9 +44,10 @@ export default function AdminExportPanel() {
     <div className="max-w-2xl">
       <h2 className="text-lg font-semibold mb-1">Účetní export příspěvků</h2>
       <p className="text-sm text-white/60 mb-5">
-        CSV se všemi potvrzenými příspěvky přijatými <strong>do konce zvoleného
-        měsíce</strong> — datum, měna, částka, kurz BTC v den přijetí a hodnota
-        v CZK. Pro účetnictví. Otevře se přímo v Excelu (UTF-8, oddělovač „;").
+        CSV s potvrzenými <strong>BTC</strong> příspěvky přijatými <strong>do konce
+        zvoleného měsíce</strong> — datum, částka BTC, kurz BTC v den přijetí a
+        hodnota v CZK. CZK (bankovní) platby v CSV nejsou — ty jsou doložené
+        oficiálními bankovními výpisy. Otevře se přímo v Excelu (UTF-8, oddělovač „;").
       </p>
 
       <div className="flex flex-wrap items-end gap-3 mb-5">
@@ -76,12 +77,10 @@ export default function AdminExportPanel() {
 
       <div className="text-xs text-white/40 leading-relaxed space-y-1">
         <p>
-          <strong>Ocenění:</strong> CZK dary v jejich korunové hodnotě (kurz z okamžiku
-          potvrzení). BTC dary přepočteny <strong>denním tržním kurzem BTC/CZK ke dni
-          přijetí</strong> (zdroj CoinGecko) — orientační; účetní může nahradit oficiálním
-          kurzem (např. ČNB).
+          <strong>Ocenění:</strong> BTC dary přepočteny <strong>denním tržním kurzem
+          BTC/CZK ke dni přijetí</strong> (zdroj CoinGecko) — orientační; účetní může
+          nahradit oficiálním kurzem (např. ČNB).
         </p>
-        <p>Na konci souboru je souhrnný řádek (počet příspěvků + celková hodnota v CZK).</p>
       </div>
     </div>
   );
