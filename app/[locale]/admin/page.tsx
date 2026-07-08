@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import AdminAnalytics from "@/components/AdminAnalytics";
+import AdminExportPanel from "@/components/AdminExportPanel";
 
 interface Donation {
   id: string;
@@ -78,14 +79,15 @@ export default function AdminPage() {
   } | null>(null);
   const [campBusy, setCampBusy] = useState(false);
   const [view, setView] = useState<
-    "payments" | "analytics" | "fiat" | "identity" | "roadmap"
+    "payments" | "analytics" | "fiat" | "identity" | "roadmap" | "export"
   >(() => {
     if (typeof window === "undefined") return "payments";
     const v = localStorage.getItem("admin.view");
     return v === "analytics" ||
       v === "fiat" ||
       v === "identity" ||
-      v === "roadmap"
+      v === "roadmap" ||
+      v === "export"
       ? v
       : "payments";
   });
@@ -517,6 +519,7 @@ export default function AdminPage() {
           { key: "fiat", label: "Nákup BTC za fiat" },
           { key: "identity", label: "Identity" },
           { key: "roadmap", label: "Roadmapa" },
+          { key: "export", label: "Účetní export" },
           { key: "analytics", label: "Analytika" },
         ] as const).map((tb) => (
           <button
@@ -535,6 +538,8 @@ export default function AdminPage() {
 
       {view === "analytics" ? (
         <AdminAnalytics />
+      ) : view === "export" ? (
+        <AdminExportPanel />
       ) : view === "fiat" ? (
         (() => {
           const todo = fiatList.filter((d) => !d.btcPurchased);
