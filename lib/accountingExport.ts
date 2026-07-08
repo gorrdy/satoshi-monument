@@ -101,12 +101,6 @@ export async function buildContributionsCsv(
     );
   }
 
-  lines.push("");
-  lines.push(
-    [q(`SOUHRN k ${month} (konec měsíce)`), "", "", "", "", "", "",
-      num(sumCzkValue, 2), q(`${rows.length} příspěvků`), "", "", "", ""].join(";"),
-  );
-
   return {
     month,
     filename: `ucetni-prispevky-${month}.csv`,
