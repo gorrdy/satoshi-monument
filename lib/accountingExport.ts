@@ -58,10 +58,30 @@ export async function buildContributionsCsv(
     },
   });
 
+  // Bankovní detaily (Fio) pro CZK dary — napárování s řádky bankovního výpisu.
+  const czkIds = rows.filter((r) => r.currency === "CZK").map((r) => r.id);
+  const fioMap = new Map<string, { date: string; payerName: string; fioId: string }>();
+  if (czkIds.length) {
+    const fios = await prisma.fioPayment.findMany({
+      where: { donationId: { in: czkIds } },
+      select: { donationId: true, date: true, payerName: true, fioId: true },
+    });
+    for (const f of fios) {
+      if (f.donationId && !fioMap.has(f.donationId)) {
+        fioMap.set(f.donationId, {
+          date: (f.date ?? "").slice(0, 10), // „2026-06-17+0200" → „2026-06-17"
+          payerName: f.payerName ?? "",
+          fioId: f.fioId ?? "",
+        });
+      }
+    }
+  }
+
   const header = [
     "Datum přijetí", "Čas (UTC)", "Kampaň", "Měna", "Částka (původní)", "Částka BTC",
     "Kurz CZK/BTC (den přijetí)", "Hodnota CZK (den přijetí)", "Způsob platby",
-    "Zdroj kurzu", "Variabilní symbol", "Jméno (veřejné)", "ID transakce",
+    "Zdroj kurzu", "Variabilní symbol", "Bankovní datum", "Plátce (z banky)",
+    "Fio ID pohybu", "Jméno (veřejné)", "ID transakce",
   ];
   const lines = [header.map(q).join(";")];
   let sumCzkValue = 0;
@@ -88,6 +108,7 @@ export async function buildContributionsCsv(
 
     const method =
       d.currency === "CZK" ? "Bankovní převod (Fio)" : "Bitcoin (on-chain/Lightning)";
+    const fio = fioMap.get(d.id);
     lines.push(
       [
         q(day), q(time), q(kamp), q(d.currency),
@@ -95,7 +116,9 @@ export async function buildContributionsCsv(
         num(d.amountBtc, 8),
         rate != null ? num(Math.round(rate), 0) : "",
         czkValue != null ? num(czkValue, 2) : "",
-        q(method), q(source), q(d.variableSymbol || ""), q(d.name || ""),
+        q(method), q(source), q(d.variableSymbol || ""),
+        q(fio?.date || ""), q(fio?.payerName || ""), q(fio?.fioId || ""),
+        q(d.name || ""),
         q(d.currency === "CZK" ? d.id : d.btcpayInvoiceId || d.id),
       ].join(";"),
     );
