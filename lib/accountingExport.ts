@@ -4,9 +4,10 @@ import { fetchDailyBtcCzk, rateForDay } from "@/lib/priceHistory";
 // Začátek sbírky — od kdy potřebujeme historické kurzy.
 const CAMPAIGN_START = "2026-05-25";
 
-// České číslo: desetinná čárka, bez oddělovače tisíců.
+// Číslo s desetinnou TEČKOU, bez oddělovače tisíců — univerzálně čitelné
+// (čárka jako desetinný oddělovač se v mnoha nástrojích čte jako oddělovač tisíců).
 const num = (v: number | null | undefined, dp: number) =>
-  v == null ? "" : Number(v).toFixed(dp).replace(".", ",");
+  v == null ? "" : Number(v).toFixed(dp);
 const q = (s: unknown) => `"${String(s ?? "").replace(/"/g, '""')}"`;
 
 /** Poslední dokončený měsíc jako YYYY-MM (default cutoff). */
@@ -61,7 +62,7 @@ export async function buildContributionsCsv(
   });
 
   const header = [
-    "Datum přijetí", "Čas (UTC)", "Kampaň", "Částka BTC",
+    "Datum přijetí", "Čas (UTC)", "Kampaň", "Částka (sat)", "Částka (BTC)",
     "Kurz CZK/BTC (den přijetí)", "Hodnota CZK (den přijetí)", "Zdroj kurzu",
     "Jméno (veřejné)", "ID transakce",
   ];
@@ -74,15 +75,18 @@ export async function buildContributionsCsv(
     const time = when.toISOString().slice(11, 16);
     const kamp = d.kind === "supporters" ? "Podporovatelé (Patroni)" : "Hlavní sbírka";
 
+    const btc = d.amountBtc ?? 0;
+    const sats = Math.round(btc * 1e8);
     const rate = rateForDay(rates, day);
-    const czkValue = rate != null && d.amountBtc != null ? d.amountBtc * rate : null;
+    const czkValue = rate != null ? btc * rate : null;
     if (czkValue != null) sumCzkValue += czkValue;
 
     lines.push(
       [
         q(day), q(time), q(kamp),
-        num(d.amountBtc, 8),
-        rate != null ? num(Math.round(rate), 0) : "",
+        String(sats),
+        num(btc, 8),
+        rate != null ? String(Math.round(rate)) : "",
         czkValue != null ? num(czkValue, 2) : "",
         q("CoinGecko (denní)"),
         q(d.name || ""),
