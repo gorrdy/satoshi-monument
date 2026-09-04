@@ -3,9 +3,18 @@
  * Slouží k automatickému párování příchozích CZK plateb podle variabilního symbolu.
  *
  * Pozn.: token je vázaný na účet; používej READ-ONLY token. Limit: 1 dotaz / 30 s.
+ *
+ * Konektivita: Fio blokuje IP našeho serveru na API hostu (fioapi.fio.cz). Když je
+ * nastavené `FIO_TUNNEL_PORT`, jdou dotazy přes lokální SSH tunel (127.0.0.1:PORT →
+ * fioapi.fio.cz:443 přes povolený stroj, viz systemd monument-fio-tunnel). node:https
+ * se správným SNI/Host obejde blok; TLS je end-to-end na Fio (tunel jen přenáší bajty).
  */
 
-const FIO_BASE = "https://fioapi.fio.cz/v1/rest";
+import { request as httpsRequest } from "node:https";
+
+const FIO_HOST = "fioapi.fio.cz";
+const FIO_PATH = "/v1/rest";
+const TUNNEL_PORT = process.env.FIO_TUNNEL_PORT; // např. "9443" → přes tunel
 
 export interface FioTx {
   id: string; // ID pohybu (column22)
@@ -38,6 +47,56 @@ function parseTx(tx: RawTx): FioTx {
   };
 }
 
+interface FioResp {
+  ok: boolean;
+  status: number;
+  text: string;
+}
+
+/** GET na Fio API — přes tunel (node:https se správným SNI/Host) nebo napřímo (fetch). */
+function fioGet(path: string, timeoutMs = 12000): Promise<FioResp> {
+  const fullPath = `${FIO_PATH}${path}`;
+  if (TUNNEL_PORT) {
+    return new Promise((resolve) => {
+      const req = httpsRequest(
+        {
+          host: "127.0.0.1",
+          port: Number(TUNNEL_PORT),
+          path: fullPath,
+          method: "GET",
+          servername: FIO_HOST, // SNI + ověření certifikátu proti fioapi.fio.cz
+          headers: { Host: FIO_HOST },
+          timeout: timeoutMs,
+        },
+        (res) => {
+          let data = "";
+          res.on("data", (c) => (data += c));
+          res.on("end", () =>
+            resolve({
+              ok: (res.statusCode ?? 0) >= 200 && (res.statusCode ?? 0) < 300,
+              status: res.statusCode ?? 0,
+              text: data,
+            }),
+          );
+        },
+      );
+      req.on("timeout", () => {
+        req.destroy();
+        resolve({ ok: false, status: 0, text: "" });
+      });
+      req.on("error", () => resolve({ ok: false, status: 0, text: "" }));
+      req.end();
+    });
+  }
+  // Napřímo (bez tunelu).
+  return fetch(`https://${FIO_HOST}${fullPath}`, {
+    cache: "no-store",
+    signal: AbortSignal.timeout(timeoutMs),
+  })
+    .then(async (res) => ({ ok: res.ok, status: res.status, text: await res.text() }))
+    .catch(() => ({ ok: false, status: 0, text: "" }));
+}
+
 export interface FioFetchResult {
   ok: boolean;
   reason?: "no_token" | "rate_limited" | "error";
@@ -53,15 +112,7 @@ export async function fetchNewFioTransactions(): Promise<FioFetchResult> {
   const token = process.env.FIO_TOKEN;
   if (!token) return { ok: false, reason: "no_token", transactions: [] };
 
-  let res: Response;
-  try {
-    res = await fetch(`${FIO_BASE}/last/${token}/transactions.json`, {
-      cache: "no-store",
-      signal: AbortSignal.timeout(10000),
-    });
-  } catch {
-    return { ok: false, reason: "error", transactions: [] };
-  }
+  const res = await fioGet(`/last/${token}/transactions.json`);
 
   if (res.status === 409) {
     return { ok: false, reason: "rate_limited", status: 409, transactions: [] };
@@ -70,23 +121,25 @@ export async function fetchNewFioTransactions(): Promise<FioFetchResult> {
     return { ok: false, reason: "error", status: res.status, transactions: [] };
   }
 
-  const data = (await res.json()) as {
+  let data: {
     accountStatement?: { transactionList?: { transaction?: RawTx[] } };
   };
+  try {
+    data = JSON.parse(res.text);
+  } catch {
+    return { ok: false, reason: "error", status: res.status, transactions: [] };
+  }
   const list = data.accountStatement?.transactionList?.transaction ?? [];
   return { ok: true, transactions: list.map(parseTx) };
 }
 
 /**
  * Jednorázové nastavení „zarážky" na dané datum (YYYY-MM-DD) — při zapínání
- * integrace, ať se nestahuje celá historie účtu.
+ * integrace / re-syncu, ať se stáhne požadovaný rozsah historie.
  */
 export async function setFioCursorDate(date: string): Promise<boolean> {
   const token = process.env.FIO_TOKEN;
   if (!token) return false;
-  const res = await fetch(`${FIO_BASE}/set-last-date/${token}/${date}/`, {
-    cache: "no-store",
-    signal: AbortSignal.timeout(10000),
-  });
+  const res = await fioGet(`/set-last-date/${token}/${date}/`);
   return res.ok;
 }
