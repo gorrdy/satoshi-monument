@@ -11,7 +11,7 @@ function url(locale: string, route: string): string {
 }
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  return ROUTES.flatMap((route) =>
+  const localized = ROUTES.flatMap((route) =>
     routing.locales.map((locale) => ({
       url: url(locale, route),
       changeFrequency: "weekly" as const,
@@ -23,4 +23,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
       },
     })),
   );
+  // /art — samostatná stránka mimo locale prefix (dvojjazyčná přepínačem).
+  return [
+    ...localized,
+    { url: `${BASE}/art`, changeFrequency: "monthly" as const, priority: 0.6 },
+  ];
 }
