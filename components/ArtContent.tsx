@@ -1,5 +1,6 @@
 "use client";
 
+import SiteHeader from "./SiteHeader";
 import SiteFooter from "./SiteFooter";
 import { useLocaleSwitch } from "./I18nProvider";
 
@@ -9,7 +10,7 @@ import { useLocaleSwitch } from "./I18nProvider";
  * jazyk řídí sdílený přepínač v hlavičce (useLocaleSwitch). Mimo locale prefix.
  */
 export default function ArtContent() {
-  const { locale, switchLocale } = useLocaleSwitch();
+  const { locale } = useLocaleSwitch();
   const en = locale === "en";
   const L = (cs: string, e: string) => (en ? e : cs);
 
@@ -33,32 +34,8 @@ export default function ArtContent() {
 
   return (
     <>
-      <main className="px-4 py-10 sm:py-16">
-        {/* Bez hlavičky — jen decentní přepínač jazyka vpravo nahoře. */}
-        <div className="max-w-2xl mx-auto flex justify-end mb-8 sm:mb-10">
-          <div className="ui-eyebrow flex items-center gap-2 select-none">
-            <button
-              type="button"
-              onClick={() => switchLocale("cs")}
-              className={en ? "ui-muted hover:opacity-80" : "ui-accent"}
-              aria-pressed={!en}
-            >
-              CS
-            </button>
-            <span aria-hidden className="ui-muted opacity-40">
-              /
-            </span>
-            <button
-              type="button"
-              onClick={() => switchLocale("en")}
-              className={en ? "ui-accent" : "ui-muted hover:opacity-80"}
-              aria-pressed={en}
-            >
-              EN
-            </button>
-          </div>
-        </div>
-
+      <SiteHeader />
+      <main className="px-4 py-16 sm:py-24">
         {/* Hero */}
         <header className="max-w-3xl mx-auto text-center mb-16 sm:mb-20">
           <span className="ui-eyebrow ui-accent">
