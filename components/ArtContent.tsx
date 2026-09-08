@@ -1,6 +1,5 @@
 "use client";
 
-import SiteFooter from "./SiteFooter";
 import { useLocaleSwitch } from "./I18nProvider";
 
 /**
@@ -261,7 +260,6 @@ export default function ArtContent() {
           </section>
         </div>
       </main>
-      <SiteFooter />
     </>
   );
 }
